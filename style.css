@@ -1,0 +1,27 @@
+body {
+  background-color: #f0f0f0;
+}
+
+#outer{
+  width: 100%;
+}
+
+#inner {
+  display: table;
+  margin: 0 auto;
+  background-color: white;
+  width: 60%;
+  padding: 10px;
+}
+
+.highlight{
+  margin: 20px;
+  padding: 1px 1px 1px 10px;
+}
+
+img, video {
+  display: block;
+  margin: auto;
+  border: 0px;
+  padding: 0px;
+}

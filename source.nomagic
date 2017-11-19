@@ -1,0 +1,284 @@
+# HTML
+<h1>Part 0: Logistic Regression</h1>
+<h2>Introduction</h2>
+
+Let's say we want to build a model to discriminate the following blue and red points in 2-dimensional space:
+
+# CODE
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.clf()
+plt.grid()
+
+X = np.array([[-0.1, -0.5, 1.3,  -0.6, -1.5, 0.2, -0.3, 0.7,  1.1,
+	       -1.0, -0.5, -1.3, -1.4, -0.9, 0.4, -0.4, 0.3],
+              [1.4, -0.1,  0.9,  0.4,  0.4,  0.2, -0.4, -0.8, -1.5,
+	       0.9, -1.5, -0.45, -1.2, -1.1, -1.3, 0.6, -0.5]])
+Y = np.array([[0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1]])
+
+colormap = np.array(['r', 'b'])
+
+def plot_scatter():
+   plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+   plt.xlim([-2.0,2.0])
+   plt.ylim([-2.0,2.0])
+   plt.title('Input points')
+   plt.savefig('image.png')
+
+plot_scatter()
+
+
+# HTML
+In other words, given a point, $(x_1, x_2)$, we want to output either $0$ or $1$. (blue and red.)
+
+We can use logistic regression for this problem. In logistic regression, we first learn *weights* ($w_1, w_2$) and *bias* ($b$). This phase is called "training". Then we use the following formula to predict if the new point is blue or red. This phase is called "prediction" or "inference".
+
+$$
+\hat{y} = 0 \quad \text{if} \quad \left(\frac{1}{1+e^{-(w_1x_1 + w_2x_2 + b)}} < 0.5 \right) \\
+\hat{y} = 1 \quad \quad \text{otherwise}
+$$
+
+Here is a visual representation of our model:
+
+<br>
+Image1
+<br>
+
+or alternatively we can visualize the same:
+
+<br>
+Image2
+<br>
+
+We use sigmoid function as $g(z)$ in logistic regression:
+
+$$ g(z) = \frac{1}{1+e^{-z}} $$
+
+# CODE
+plt.clf()
+plt.grid()
+
+sigmoid = lambda x: 1/(1+np.exp(-x))
+
+def plot_sigmoid():
+   xs = np.arange(-10, 10, 0.001)
+   plt.ylim([-0.1, 1.1])
+   plt.plot(xs, sigmoid(xs), label=r'$f(x) = \frac{1}{1+e^{-x}}$')
+   plt.legend(loc='upper left', fontsize=15)
+   plt.title('Sigmoid function')
+   plt.savefig('image.png')
+
+plot_sigmoid()
+
+
+# HTML
+<h2>Maximum Likelihood Estimation</h2>
+So, in training, our goal is to *learn* three numbers: $w_1, w_2, b$.
+
+We want to find $w_1, w_2, b$ that minimizes some definition of a cost function. Let's try to attempt a cost function for this problem.
+
+Let's say we have two points:
+
+$x = \begin{bmatrix} -0.1 \\ 1.4 \end{bmatrix}, y=0$
+
+and similarly:
+
+$x = \begin{bmatrix} 1.3  \\ 0.9 \end{bmatrix}, y=1$
+
+We want a classifier that produces very high $\hat{y}$ when $y=1$, and conversely very low values $\hat{y}$ when $y=0$.
+
+In other words,
+
+1. If $y=1$, we want to maximize $\hat{y}$.
+2. If $y=0$, we want to maximize $1-\hat{y}$.
+
+If we combine (1) and (2), we want to maximize:
+
+$$P(y|x) = \hat{y}^y.(1-\hat{y})^{(1-y)}$$
+
+Maximizing above is equal to maximizing:
+
+$$log(P(y|x)) = log(\hat{y}^y.(1-\hat{y})^{(1-y)}) = ylog(\hat{y}) + (1-y)log(1-\hat{y})$$
+
+or we want to minimize:
+
+$$L(y, \hat{y}) = - \left(ylog(\hat{y}) + (1-y)log(1-\hat{y})\right)$$
+
+The above formula defines a cost function for only one sample. We also need a loss function for multiple samples. Let's start by an example. Say, we have three positive samples and two different classifiers output the following $\hat{y}$ for those three samples:
+
+- Classifier 1: 0.9, 0.4, 0.8
+- Classifier 2: 0.7, 0.7, 0.7
+
+Which classifier is "better"?
+
+There are multiple answers for this question. One of the answers is maximum likelihood estimation (MLE). MLE decides this question by multiplying those numbers and taking the maximum:
+
+- Classifier 1: 0.9 x 0.4 x 0.8 ~= 0.29
+- Classifier 2: 0.7 x 0.7 x 0.7 ~= 0.34
+
+So, in this case, Classifier 2 is "more likely". More formally, for multiple samples, MLE wants to maximize:
+
+$$ P(Y|X) = \prod P(y|x) $$
+
+this is called maximum likelihood. Maximizing the above is equal to maximizing below:
+
+$$ log(P(Y|X)) = \sum log P(y|x) $$
+
+and we need to minimize:
+
+$$L(\hat{y}, y) = - \sum log P(y|x) = - \sum \left ( ylog(\hat{y}) + (1-y)log(1-\hat{y}) \right )$$
+
+Sometimes we use the notation $J$ for the quantity we want to minimize for all samples, and $L$ for one sample.
+
+Let's add the Loss to the end of our computation graph:
+
+![alt text](https://celebi.users.x20web.corp.google.com/colab0/image-0002.png)
+
+In order to do gradient descent, we need:
+
+$$\frac{dL}{dw_1} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{dw_1}, \quad \frac{dL}{dw_2} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{dw_1}, \quad
+\frac{dL}{db} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{db}$$
+
+Because we want to do:
+
+$$w_1 := w_1 - \alpha \frac{dL}{dw_1}, \quad w_2 := w_2 - \alpha \frac{dL}{dw_2}, \quad b := b - \alpha \frac{dL}{db} $$
+
+Let's do some calculus:
+
+$$ \frac{dL}{d\hat{y}} = \frac{d}{d\hat{y}} - \left(ylog(\hat{y}) + (1-y)log(1-\hat{y})\right) = \frac{d}{d\hat{y}} - ylog(\hat{y}) +  \frac{d}{d\hat{y}} - (1-y)log(1-\hat{y})
+  = \frac{-y}{\hat{y}} + \frac{1-y}{1-\hat{y}} $$
+
+$$ \frac{d\hat{y}}{dz} = \frac{e^{-z}}{(1+e^{-z})^2} = \frac{1 + e^{-z} - 1}{(1+e^{-z})^2} = \frac{1 + e^{-z}}{(1+e^{-z})^2} - \frac{1}{(1+e^{-z})^2} =
+\frac{1}{1+e^{-z}} - \left( \frac{1}{(1+e^{-z})^2} \right )^2 = g(z) - (g(z)) ^2 = g(z) (1-g(z)) $$
+
+$$
+  \frac{dz}{dw_1} = x_1, \quad \frac{dz}{dw_2} = x_2, \quad \frac{dz}{db} = 1
+$$
+
+$$
+\frac{dL}{dz} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} = \left (  \frac{-y}{\hat{y}} + \frac{1-y}{1-\hat{y}}  \right ) \left ( \hat{y} (1-\hat{y}) \right )
+  = \frac{-y}{\hat{y}} \hat{y} (1-\hat{y}) + \frac{1-y}{1-\hat{y}} \hat{y} (1-\hat{y}) = -y (1-\hat{y}) + (1-y) \hat{y} = -y + y\hat{y} + \hat{y} - y\hat{y} = \hat{y} - y
+$$
+
+$$\frac{dL}{dw_1} = \frac{dL}{dz} \frac{dz}{dw_1} = (\hat{y} - y) x_1, \quad \frac{dL}{dw_2} = \frac{dL}{dz} \frac{dz}{dw_2} = (\hat{y} - y) x_2, \quad \frac{dL}{db} = \frac{dL}{dz} \frac{dz}{db} = (\hat{y} - y)$$
+
+# CODE
+plt.clf()
+plt.grid()
+
+sigmoid_der = lambda x: sigmoid(x)*(1-sigmoid(x))
+
+def plot_sigmoid_der():
+   xs = np.arange(-10, 10, 0.001)
+   plt.ylim([-0.1, 0.4])
+   plt.plot(xs, sigmoid_der(xs), label=r"sigmoid der: $f'(x) = f(x)(1-f(x))}}$")
+   plt.legend(loc='upper left', fontsize=17)
+   plt.title('Sigmoid derivative function')
+   plt.savefig('image.png')
+
+plot_sigmoid_der()
+
+# HTML
+<h1>Minimizing Loss using Gradient Descent</h1>
+
+# CODE
+plt.clf()
+plt.grid()
+
+epsilon = 0.1 ** 10
+
+W = np.array([[-4.0],[29.0]])
+b = 0
+alpha = 0.4
+
+W_cache = []
+losses_cache = []
+
+for i in range(20):
+  Z = np.matmul(W.T, X) + b
+  Y_hat = sigmoid(Z)
+
+  loss = -1 * np.sum(Y * np.log(Y_hat+epsilon) + (1-Y) * np.log(1-Y_hat+epsilon))
+  losses_cache.append(loss)
+  W_cache.append(W.copy())
+
+  dw = np.matmul(X, (Y_hat - Y).T)
+  db = np.sum(Y_hat - Y)
+
+  W -= alpha * dw
+  b -= alpha * db
+
+plt.plot(losses_cache)
+plt.title('Loss')
+plt.savefig('image.png')
+
+# HTML
+It turns out we just trained a pretty good classifier for this problem. We achieved 100% accuracy. Let's try to visualize our decision boundary.
+
+Remember that we are predicting "1" if:
+
+$$ \frac{1}{1+e^{-(Wx+b)}} > 0.5 $$
+
+and "0" otherwise. So, our decision boundary is:
+
+$$ \frac{1}{1+e^{-(Wx+b)}} = 0.5 $$
+
+If we do some math:
+
+$$ e^{-(Wx + b)} = 1 $$
+$$ Wx + b = 0 $$
+$$ w_1 x_1 + w_2x_2 + b = 0$$
+$$ x_2 = \frac{-w_1x_1 - b}{w_2} $$
+
+Now, let's see what will be the value of $x_2$ when $x_1=-1.5$ and $x_1 =1.5$.
+
+<h2>Decision boundary</h2>
+
+# CODE
+plt.clf()
+plt.grid()
+
+def plot_decision_boundary(X, Y, W, b):
+   xs = np.array([-1.5, 1.5])
+   ys = (-W[0] * xs - b)/W[1]
+
+   plt.plot(xs, ys, c='black')
+
+   plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+   plt.xlim([-2.0,2.0])
+   plt.ylim([-2.0,2.0])
+   plt.title('Decision boundary')
+   plt.savefig('image.png')
+
+plot_decision_boundary(X, Y, W, b)
+
+# HTML
+We can do better. Now, let's see the decision boundary step by step.
+
+# CODE
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import numpy as np
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.set_xlim([-1.5, 1.5])
+ax.set_ylim([-1.5, 1.5])
+title = ax.set_title('Decision boundary')
+
+def animate(i):
+  xs = np.array([-1.5, 1.5])
+  ys = (-W_cache[i].squeeze()[0] * xs - b)/W_cache[i].squeeze()[1]
+  lines.set_data(xs, ys)
+  return lines,
+
+ax.scatter(X[0][Y.squeeze()==0], X[1][Y.squeeze()==0], c="red")
+ax.scatter(X[0][Y.squeeze()==1], X[1][Y.squeeze()==1], c="blue")
+
+lines, = ax.plot([], [], c='black')
+
+anim = animation.FuncAnimation(fig, animate, len(W_cache), blit=True, interval=500)
+anim.save('animation.mp4', writer='avconv', fps=20, codec="libx264")
+
