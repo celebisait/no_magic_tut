@@ -1,7 +1,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
 <head>
-<title>Mathedemo</title>
+<title>Logistic Regression</title>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    TeX: {
+       equationNumbers: { autoNumber: "AMS" },
+       TagSide: "right"
+    }
+  });
+</script>
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
 </script>

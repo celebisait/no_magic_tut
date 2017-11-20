@@ -14,9 +14,15 @@ body {
   padding: 10px;
 }
 
-.highlight{
+.highlight {
   margin: 20px;
   padding: 1px 1px 1px 10px;
+}
+
+.code_stdout {
+  margin: 20px;
+  padding: 1px 1px 1px 10px;
+  background-color: #f0f0f0;
 }
 
 img, video {
@@ -24,4 +30,8 @@ img, video {
   margin: auto;
   border: 0px;
   padding: 0px;
+}
+
+.equation {
+  padding: 0px 100px 0px 0px;
 }

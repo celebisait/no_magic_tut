@@ -1,14 +1,28 @@
+import sys
 import collections
+import StringIO
+import contextlib
 
 from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 
+
+@contextlib.contextmanager
+def stdoutIO(stdout=None):
+  old = sys.stdout
+  if stdout is None:
+    stdout = StringIO.StringIO()
+  sys.stdout = stdout
+  yield stdout
+  sys.stdout = old
+
+
 CODE_TAG = '# CODE'
 HTML_TAG = '# HTML'
 TAGS = {HTML_TAG, CODE_TAG}
 
-Part = collections.namedtuple('Part', ['tag', 'content'])
+Part = collections.namedtuple('Part', ['tag', 'content', 'info'])
 FORMATTER = HtmlFormatter(style='friendly')
 
 
@@ -23,12 +37,14 @@ def partition(template, source_lines):
       buffer_lines.append(line)
       continue
     if buffer_lines:
-      parts.append(Part(current_tag, '\n'.join(buffer_lines)))
+      parts.append(
+          Part(current_tag, '\n'.join(buffer_lines[1:]), eval(buffer_lines[0])))
       buffer_lines = []
     current_tag = line
 
   if buffer_lines:
-    parts.append(Part(current_tag, '\n'.join(buffer_lines)))
+    parts.append(
+        Part(current_tag, '\n'.join(buffer_lines[1:]), eval(buffer_lines[0])))
     buffer_lines = []
 
   return parts
@@ -37,19 +53,24 @@ def partition(template, source_lines):
 IMAGE_PNG = "'image.png'"
 ANIMATION_GIF = "'animation.mp4'"
 ANIMATION_GIF = "'animation.mp4'"
+PRINT = "print"
 image_counter = 0
 animation_counter = 0
 
 
-def add_image(image_name):
-  return '<img src={}/>'.format(image_name)
+def add_image(image_name, width):
+  return '<img width="{}" src={}/>'.format(width, image_name)
 
-def add_animation(animation_name):
-  return """<video width="800" height="600" controls>
+
+def add_animation(animation_name, width):
+  return """<video width="{}" controls>
 <source src={} type="video/mp4">
-</video>""".format(animation_name)
+</video>""".format(width, animation_name)
 
-def generate_code_html(source):
+def add_stdout(text):
+  return '<div class="code_stdout"><pre>{}</pre></div>'.format(text)
+
+def generate_code_html(source, info):
   global image_counter
   global animation_counter
 
@@ -60,14 +81,19 @@ def generate_code_html(source):
     highlighted = highlight(source, PythonLexer(), FORMATTER)
     source = source.replace(IMAGE_PNG, image_name)
     exec (source, globals())
-    highlighted += add_image(image_name)
+    highlighted += add_image(image_name, info['width'])
     image_counter += 1
   elif ANIMATION_GIF in source:
     highlighted = highlight(source, PythonLexer(), FORMATTER)
     source = source.replace(ANIMATION_GIF, animation_name)
     exec (source, globals())
-    highlighted += add_animation(animation_name)
+    highlighted += add_animation(animation_name, info['width'])
     animation_counter += 1
+  elif PRINT in source:
+    highlighted = highlight(source, PythonLexer(), FORMATTER)
+    with stdoutIO() as s:
+      exec source
+    highlighted += add_stdout(s.getvalue())
 
   return highlighted
 
@@ -78,7 +104,7 @@ def generate_html(template, source_lines):
     if part.tag == HTML_TAG:
       body += part.content
     elif part.tag == CODE_TAG:
-      body += generate_code_html(part.content.strip())
+      body += generate_code_html(part.content.strip(), part.info)
 
   return template.replace('$BODY', body)
 

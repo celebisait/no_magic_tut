@@ -1,54 +1,123 @@
 # HTML
-<h1>Part 0: Logistic Regression</h1>
-<h2>Introduction</h2>
+{}
+<center><h1>Part 0: Logistic Regression</h1></center>
+<h1>Introduction</h1>
 
+<p>
 Let's say we want to build a model to discriminate the following blue and red points in 2-dimensional space:
+</p>
 
 # CODE
+{'type': 'image', 'width': 600}
 import numpy as np
 import matplotlib.pyplot as plt
-
-plt.clf()
-plt.grid()
 
 X = np.array([[-0.1, -0.5, 1.3,  -0.6, -1.5, 0.2, -0.3, 0.7,  1.1,
 	       -1.0, -0.5, -1.3, -1.4, -0.9, 0.4, -0.4, 0.3],
               [1.4, -0.1,  0.9,  0.4,  0.4,  0.2, -0.4, -0.8, -1.5,
 	       0.9, -1.5, -0.45, -1.2, -1.1, -1.3, 0.6, -0.5]])
 Y = np.array([[0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1]])
-
 colormap = np.array(['r', 'b'])
 
-def plot_scatter():
+def plot_scatter(X, Y, colormap, path):
    plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
    plt.xlim([-2.0,2.0])
    plt.ylim([-2.0,2.0])
-   plt.title('Input points')
-   plt.savefig('image.png')
+   plt.xlabel('$x_1$', size=20)
+   plt.ylabel('$x_2$', size=20)
+   plt.title('Input 2D points', size=18)
+   plt.grid()
+   plt.savefig(path)
 
-plot_scatter()
+plot_scatter(X, Y, colormap, 'image.png')
 
+plt.close()
+plt.clf()
+plt.cla()
 
 # HTML
-In other words, given a point, $(x_1, x_2)$, we want to output either $0$ or $1$. (blue and red.)
+{}
+<p>
+In other words, given a point, $(x_1, x_2)$, we want to output either $0$ or $1$. (blue or red.)
+</p>
 
-We can use logistic regression for this problem. In logistic regression, we first learn *weights* ($w_1, w_2$) and *bias* ($b$). This phase is called "training". Then we use the following formula to predict if the new point is blue or red. This phase is called "prediction" or "inference".
+<p>
+We can use <b>Logistic Regression</b> for this problem. In Logistic Regression, we first learn <b>weights</b> ($w_1, w_2$) and <b>bias</b> ($b$). This phase is called <b>training</b>. Then we use the following formula to predict if the new point is blue or red. This phase is called <b>prediction</b> or <b>inference</b>.
+</p>
 
-$$
-\hat{y} = 0 \quad \text{if} \quad \left(\frac{1}{1+e^{-(w_1x_1 + w_2x_2 + b)}} < 0.5 \right) \\
-\hat{y} = 1 \quad \quad \text{otherwise}
-$$
+<p class="equation">
+\begin{equation} \label{eq:inference}
+\hat{y} =
+  \begin{cases}
+  0, & \text{if}\ \quad \frac{1}{1+e^{-(w_1x_1 + w_2x_2 + b)}} < 0.5 \\
+  1, & \text{otherwise}
+  \end{cases}
+\end{equation}
+</p>
 
+<p>
+In the above equation, $\hat{y}$ depicts our <b>guess</b> for a given label, or our <b>prediction</b>.
+</p>
+
+<p>
+Parameters of a Logistic Regression model contains <b>weights</b> ($w_1, w_2$) and <b>bias</b> ($b$).
+These parameters are <i>learned</i> with a <b>learning algorithm</b>. After they are learned, we apply
+them using a function to predict a new sample's class.
+</p>
+
+<p>
+Let's make an example prediction for a new given point. Let's assume somebody already learned some weights ($W$) and bias ($b$) for us:
+</p>
+
+$$ W = \begin{bmatrix} 6.33 \\ -4.22 \end{bmatrix}, \quad b=1.99 $$
+
+<p>
+For a new given point ($x_1, x_2$) in the two dimensional space, say, $X = \begin{bmatrix} 1.1 \\ -0.6 \end{bmatrix}$,
+we can predict the class using Equation \ref{eq:inference}.
+</p>
+
+# CODE
+{}
+sigmoid = lambda x: 1/(1+np.exp(-x))
+
+W = np.array([6.33, -4.22])
+X = np.array([1.1, -0.6])
+b = 1.99
+
+print sigmoid(W.dot(X) + b)
+
+# HTML
+{}
+<p>
+Let's try another point, $X = \begin{bmatrix} -1.2 \\ 1.0 \end{bmatrix}$.
+</p>
+
+# CODE
+{}
+sigmoid = lambda x: 1/(1+np.exp(-x))
+
+W = np.array([6.33, -4.22])
+X = np.array([-1.2, 1.0])
+b = 1.99
+
+print sigmoid(W.dot(X) + b)
+
+# HTML
+{}
 Here is a visual representation of our model:
 
 <br>
+<br>
 Image1
+<br>
 <br>
 
 or alternatively we can visualize the same:
 
 <br>
+<br>
 Image2
+<br>
 <br>
 
 We use sigmoid function as $g(z)$ in logistic regression:
@@ -56,7 +125,7 @@ We use sigmoid function as $g(z)$ in logistic regression:
 $$ g(z) = \frac{1}{1+e^{-z}} $$
 
 # CODE
-plt.clf()
+{'type': 'image', 'width': 600}
 plt.grid()
 
 sigmoid = lambda x: 1/(1+np.exp(-x))
@@ -71,10 +140,14 @@ def plot_sigmoid():
 
 plot_sigmoid()
 
+plt.close()
+plt.clf()
+plt.cla()
 
 # HTML
-<h2>Maximum Likelihood Estimation</h2>
-So, in training, our goal is to *learn* three numbers: $w_1, w_2, b$.
+{}
+<h1>Maximum Likelihood Estimation</h1>
+So, in training, our goal is to <b>learn</b> three numbers: $w_1, w_2, b$.
 
 We want to find $w_1, w_2, b$ that minimizes some definition of a cost function. Let's try to attempt a cost function for this problem.
 
@@ -90,8 +163,10 @@ We want a classifier that produces very high $\hat{y}$ when $y=1$, and conversel
 
 In other words,
 
-1. If $y=1$, we want to maximize $\hat{y}$.
-2. If $y=0$, we want to maximize $1-\hat{y}$.
+<ol>
+  <li>If $y=1$, we want to maximize $\hat{y}$.</li>
+  <li>If $y=0$, we want to maximize $1-\hat{y}$.</li>
+</ol>
 
 If we combine (1) and (2), we want to maximize:
 
@@ -107,15 +182,19 @@ $$L(y, \hat{y}) = - \left(ylog(\hat{y}) + (1-y)log(1-\hat{y})\right)$$
 
 The above formula defines a cost function for only one sample. We also need a loss function for multiple samples. Let's start by an example. Say, we have three positive samples and two different classifiers output the following $\hat{y}$ for those three samples:
 
-- Classifier 1: 0.9, 0.4, 0.8
-- Classifier 2: 0.7, 0.7, 0.7
+<ul>
+  <li> Classifier 1: 0.9, 0.4, 0.8 </li>
+  <li> Classifier 2: 0.7, 0.7, 0.7 </li>
+</ul>
 
 Which classifier is "better"?
 
 There are multiple answers for this question. One of the answers is maximum likelihood estimation (MLE). MLE decides this question by multiplying those numbers and taking the maximum:
 
-- Classifier 1: 0.9 x 0.4 x 0.8 ~= 0.29
-- Classifier 2: 0.7 x 0.7 x 0.7 ~= 0.34
+<ul>
+  <li> Classifier 1: $0.9 \times 0.4 \times 0.8 \simeq 0.29$ </li>
+  <li> Classifier 2: $0.7 \times 0.7 \times 0.7 \simeq 0.34$ </li>
+</ul>
 
 So, in this case, Classifier 2 is "more likely". More formally, for multiple samples, MLE wants to maximize:
 
@@ -133,7 +212,11 @@ Sometimes we use the notation $J$ for the quantity we want to minimize for all s
 
 Let's add the Loss to the end of our computation graph:
 
+<br>
+<br>
 ![alt text](https://celebi.users.x20web.corp.google.com/colab0/image-0002.png)
+<br>
+<br>
 
 In order to do gradient descent, we need:
 
@@ -164,7 +247,7 @@ $$
 $$\frac{dL}{dw_1} = \frac{dL}{dz} \frac{dz}{dw_1} = (\hat{y} - y) x_1, \quad \frac{dL}{dw_2} = \frac{dL}{dz} \frac{dz}{dw_2} = (\hat{y} - y) x_2, \quad \frac{dL}{db} = \frac{dL}{dz} \frac{dz}{db} = (\hat{y} - y)$$
 
 # CODE
-plt.clf()
+{'type': 'image', 'width': 600}
 plt.grid()
 
 sigmoid_der = lambda x: sigmoid(x)*(1-sigmoid(x))
@@ -179,11 +262,16 @@ def plot_sigmoid_der():
 
 plot_sigmoid_der()
 
+plt.close()
+plt.clf()
+plt.cla()
+
 # HTML
+{}
 <h1>Minimizing Loss using Gradient Descent</h1>
 
 # CODE
-plt.clf()
+{'type': 'image', 'width': 600}
 plt.grid()
 
 epsilon = 0.1 ** 10
@@ -196,24 +284,29 @@ W_cache = []
 losses_cache = []
 
 for i in range(20):
-  Z = np.matmul(W.T, X) + b
-  Y_hat = sigmoid(Z)
+   Z = np.matmul(W.T, X) + b
+   Y_hat = sigmoid(Z)
 
-  loss = -1 * np.sum(Y * np.log(Y_hat+epsilon) + (1-Y) * np.log(1-Y_hat+epsilon))
-  losses_cache.append(loss)
-  W_cache.append(W.copy())
+   loss = -1 * np.sum(Y * np.log(Y_hat+epsilon) + (1-Y) * np.log(1-Y_hat+epsilon))
+   losses_cache.append(loss)
+   W_cache.append(W.copy())
 
-  dw = np.matmul(X, (Y_hat - Y).T)
-  db = np.sum(Y_hat - Y)
+   dw = np.matmul(X, (Y_hat - Y).T)
+   db = np.sum(Y_hat - Y)
 
-  W -= alpha * dw
-  b -= alpha * db
+   W -= alpha * dw
+   b -= alpha * db
 
 plt.plot(losses_cache)
 plt.title('Loss')
 plt.savefig('image.png')
 
+plt.close()
+plt.clf()
+plt.cla()
+
 # HTML
+{}
 It turns out we just trained a pretty good classifier for this problem. We achieved 100% accuracy. Let's try to visualize our decision boundary.
 
 Remember that we are predicting "1" if:
@@ -233,13 +326,13 @@ $$ x_2 = \frac{-w_1x_1 - b}{w_2} $$
 
 Now, let's see what will be the value of $x_2$ when $x_1=-1.5$ and $x_1 =1.5$.
 
-<h2>Decision boundary</h2>
+<h1>Decision boundary</h1>
 
 # CODE
-plt.clf()
+{'type': 'image', 'width': 600}
 plt.grid()
 
-def plot_decision_boundary(X, Y, W, b):
+def plot_decision_boundary(X, Y, W, b, path):
    xs = np.array([-1.5, 1.5])
    ys = (-W[0] * xs - b)/W[1]
 
@@ -249,18 +342,21 @@ def plot_decision_boundary(X, Y, W, b):
    plt.xlim([-2.0,2.0])
    plt.ylim([-2.0,2.0])
    plt.title('Decision boundary')
-   plt.savefig('image.png')
+   plt.savefig(path)
 
-plot_decision_boundary(X, Y, W, b)
+plot_decision_boundary(X, Y, W, b, 'image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
 
 # HTML
+{}
 We can do better. Now, let's see the decision boundary step by step.
 
 # CODE
-import matplotlib
-import matplotlib.pyplot as plt
+{'type': 'animation', 'width': 600}
 import matplotlib.animation as animation
-import numpy as np
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
@@ -282,3 +378,330 @@ lines, = ax.plot([], [], c='black')
 anim = animation.FuncAnimation(fig, animate, len(W_cache), blit=True, interval=500)
 anim.save('animation.mp4', writer='avconv', fps=20, codec="libx264")
 
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+Let's see the decision boundary in a more "lazy" setting:
+
+# CODE
+{'type': 'image', 'width': 600}
+plt.grid()
+
+def plot_decision_boundary_lazy(X, Y, W, b, counter_param):
+   nx, ny = 10, 10
+   xs = np.linspace(-1.5, 1.5, nx)
+   ys = np.linspace(-1.5, 1.5, ny)
+   xv, yv = np.meshgrid(xs, ys)
+
+   X_fake = np.stack((xv.flatten(),yv.flatten()), axis=0)
+
+   predictions = sigmoid(np.matmul(W.T, X_fake) + b)
+
+   plt.contourf(xv,yv,predictions.reshape((nx, ny)), counter_param)
+
+   plt.scatter(X[0][Y.squeeze()==0], X[1][Y.squeeze()==0], c="red")
+   plt.scatter(X[0][Y.squeeze()==1], X[1][Y.squeeze()==1], c="blue")
+
+   plt.xlim([-1.7, 1.7])
+   plt.ylim([-1.7, 1.7])
+
+   plt.title('Decision boundary')
+   plt.savefig('image.png')
+
+plot_decision_boundary_lazy(X, Y, W, b, 50)
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+<h1> Visualizing the error surface </h1>
+
+We can also visualize the cost as a function of $W$, on 2-D surface.
+
+# CODE
+{'type': 'image', 'width': 900}
+plt.grid()
+
+from mpl_toolkits.mplot3d.axes3d import Axes3D
+
+def plot_error_surface(X, Y, b):
+   nx, ny = 100, 100
+   xs = np.linspace(-30, 30, nx)
+   ys = np.linspace(-30, 30, ny)
+   xv, yv = np.meshgrid(xs, ys)
+
+   W_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
+
+   Y_hat = sigmoid(np.matmul(X.T, W_fake) + b)
+   losses = -(Y.T * np.log(Y_hat + epsilon) + (1-Y.T) * np.log(1-Y_hat+epsilon))
+   losses = np.sum(losses, axis=0, keepdims=True)
+
+   fig = plt.figure(figsize=(12,6))
+   ax = fig.add_subplot(1,2,1, projection='3d')
+   ax.plot_surface(xv, yv, losses.reshape(nx, ny), rstride=4, cstride=4, alpha=0.25)
+   ax.scatter([W[0]], [W[1]], [0.627], c='red')
+
+   ax = fig.add_subplot(1,2,2, projection='3d')
+   ax.plot_surface(xv, yv, losses.reshape(nx, ny), rstride=4, cstride=4, alpha=0.25)
+   ax.scatter([W[0]], [W[1]], [0.627], c='red')
+   ax.view_init(45, 45)
+
+   fig.tight_layout()
+   plt.savefig('image.png')
+
+plot_error_surface(X, Y, b)
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+Let's see step by step.
+
+# CODE
+{'type': 'image', 'width': 900}
+nx, ny = 100, 100
+xs = np.linspace(-30, 30, nx)
+ys = np.linspace(-30, 30, ny)
+xv, yv = np.meshgrid(xs, ys)
+
+W_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
+
+Y_hat = sigmoid(np.matmul(X.T, W_fake) + b)
+losses = -(Y.T * np.log(Y_hat + epsilon) + (1-Y.T) * np.log(1-Y_hat+epsilon))
+losses = np.sum(losses, axis=0, keepdims=True)
+
+fig = plt.figure(figsize=(12,6))
+ax = fig.add_subplot(111, projection='3d')
+title = ax.set_title('Gradient descent updates')
+
+ax.plot_surface(xv, yv, losses.reshape(nx, ny), rstride=4, cstride=4, alpha=0.25)
+
+# Setting the axes properties
+ax.set_xlim3d([-30, 30.0])
+ax.set_ylim3d([-30, 30.0])
+ax.set_zlim3d([-1.0, 325.0])
+
+def animate(i):
+   graph.set_data([W_cache[i][0]], [W_cache[i][1]])
+   graph.set_3d_properties([losses_cache[i]])
+
+   xtemp = [W_cache[ii].squeeze()[0] for ii in range(i+1)]
+   ytemp = [W_cache[ii].squeeze()[1] for ii in range(i+1)]
+   ztemp = losses_cache[0:i+1]
+
+   lines.set_data(xtemp, ytemp)
+   lines.set_3d_properties(ztemp)
+   return title, graph, lines
+
+graph, = ax.plot([], [], [], linestyle="", marker="o", c='red')
+lines, = ax.plot([], [], [], c='red')
+
+anim = animation.FuncAnimation(fig, animate, len(W_cache), interval=50, blit=True)
+anim.save('animation.mp4', writer='avconv', fps=10, codec="libx264")
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+<h1> Applying Logistic Regression using low-level Tensorflow APIs</h1>
+
+# CODE
+{'type': 'image', 'width': 600}
+import tensorflow as tf
+
+t_X = tf.placeholder(tf.float32, [2, None])
+t_Y = tf.placeholder(tf.float32, [1, None])
+
+t_W = tf.Variable([[-4.0, 29.0]])
+t_b = tf.Variable(tf.zeros([1]))
+
+t_Z = tf.matmul(t_W, t_X) + t_b
+t_Yhat = tf.sigmoid(t_Z)
+#t_Loss = -tf.reduce_sum( (t_Y * tf.log(t_Yhat+epsilon)) + ((1 - t_Y) * tf.log(1 - t_Yhat+epsilon)) )
+t_Loss = tf.reduce_sum(tf.nn.sigmoid_cross_entropy_with_logits(logits = t_Z,  labels = t_Y))
+
+train = tf.train.GradientDescentOptimizer(0.8).minimize(t_Loss)
+init = tf.global_variables_initializer()
+session = tf.Session()
+
+session.run(init)
+
+losses = []
+for i in range(20):
+   ttrain, ttloss = session.run([train, t_Loss], feed_dict={t_X:X, t_Y:Y})
+   losses.append(ttloss)
+
+
+plt.grid()
+plt.plot(losses)
+plt.title('Tensorflow Loss')
+plt.savefig('image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+Drawing the decision boundary of Tensorflow:
+
+# CODE
+{'type': 'image', 'width': 600}
+plt.grid()
+WW = session.run(t_W)
+bb = session.run(t_b)
+
+plot_decision_boundary(X, Y, WW.T, bb[0], 'image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+<h1>Softmax regression for three classes</h1>
+
+# CODE
+{'type': 'image', 'width': 600}
+plt.grid()
+
+X = np.array([[-0.1, -0.5, 1.3, -0.6, -1.5, 0.2, -0.3,  0.7,  1.1, -1.0,
+               -0.5, -1.3,  -1.4, -0.9, 0.4 , -0.4, 0.3, -1.6, -0.5, -1.0],
+              [1.4,  -0.1, 0.9,  0.4,  0.4, 0.2, -0.4, -0.8, -1.5,  0.9,
+               1.5, -0.45, -1.2, -0.7, -1.3, 0.6, -0.5, -0.7, -1.4, -1.4]])
+Y = np.array([[0, 0, 1, 0, 2, 1, 1, 1, 1, 0, 0, 2, 2, 2, 1, 0, 1, 2, 2, 2]])
+
+colormap = np.array(['r', 'b', 'g'])
+
+def plot_scatter(X, Y, path):
+   plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+   plt.xlim([-2.0,2.0])
+   plt.ylim([-2.0,2.0])
+   plt.title('Input points')
+   plt.savefig(path)
+
+plot_scatter(X, Y, 'image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
+
+
+# HTML
+{}
+<h1>One hot vector representation</h1>
+
+We represent the output as a one hot vector. In other words, we represent red points using $\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$ and similary $\begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}$ for blues and lastly $\begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$ for greens.
+
+<br>
+<br>
+Image1
+<br>
+<br>
+
+We haven't decided about a loss function for the above setting. We can use cross entropy loss function:
+
+<br>
+<br>
+Image2
+<br>
+<br>
+
+# HTML
+{}
+<h1> References </h1>
+
+<ol>
+  <li> Andrew Ng Coursera Machine Learning course. </li>
+  <li> http://colah.github.io/posts/2015-08-Backprop/ </li>
+  <li> http://neuralnetworksanddeeplearning.com/chap2.html </li>
+  <li> https://theclevermachine.wordpress.com/2014/09/08/derivation-derivatives-for-common-neural-network-activation-functions/ </li>
+  <li> http://ufldl.stanford.edu/tutorial/ </li>
+  <li> https://distill.pub/ </li>
+  <li> http://cs231n.github.io/ </li>
+</ol>
+
+
+# HTML
+{}
+<h1>Appendix</h1>
+<h2>Some other activation functions</h2>
+
+<ul>
+  <li>Sigmoid</li>
+  <li>Tanh</li>
+  <li>RELU</li>
+</ul>
+
+# CODE
+{'type': 'image', 'width': 600}
+plt.grid()
+
+sigmoid = lambda x: 1/(1+np.exp(-x))
+tanh    = lambda x: (np.exp(x)-np.exp(-x))/(np.exp(x)+np.exp(-x))
+relu    = lambda x: np.maximum(0, x)
+
+def plot_activation_functions():
+   xs = np.arange(-4, 4, 0.001)
+
+   plt.plot(xs, sigmoid(xs), label=r'sigmoid: $\frac{1}{1+e^{-x}}$')
+   plt.plot(xs, tanh(xs), label=r'tanh: $\frac{e^{x}-e^{-x}}{e^{x}+e^{-x}}$')
+   plt.plot(xs, relu(xs), label=r'relu: $max(0, x)$')
+
+   plt.legend(loc='lower right', fontsize=15)
+   plt.ylim([-1.2,1.2])
+   plt.savefig('image.png')
+
+plt.title('Other activation functions')
+plot_activation_functions()
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+<h2> Derivatives of other activation functions </h2>
+
+# CODE
+{'type': 'image', 'width': 600}
+plt.grid()
+
+sigmoid_der = lambda x: sigmoid(x)*(1-sigmoid(x))
+tanh_der    = lambda x: 1-np.tanh(x)**2
+relu_der    = lambda x: (x > 0) * 1.0
+
+def plot_activation_functions():
+   xs = np.arange(-4, 4, 0.001)
+
+   plt.plot(xs, sigmoid_der(xs), label=r"sigmoid der: $f'(x) = f(x)(1-f(x))}}$")
+   plt.plot(xs, tanh_der(xs), label=r'tanh der: $1-tan^2h(x)$')
+   plt.plot(xs, relu_der(xs), label=r'relu der')
+
+   plt.legend(loc='upper left', fontsize=15)
+   plt.ylim([-0.2,1.4])
+   plt.savefig('image.png')
+
+plt.title('Derivatives of activation functions')
+plot_activation_functions()
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+<h1>TODO</h1>
+
+<ul>
+  <li> Add proof for convexity of the loss function used in logistic regression. </li>
+</ul>
