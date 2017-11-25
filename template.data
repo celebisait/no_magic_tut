@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
 <head>
-<title>Logistic Regression</title>
+<title>Part 1: Logistic Regression</title>
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
     TeX: {

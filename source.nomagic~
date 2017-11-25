@@ -1,10 +1,10 @@
 # HTML
 {}
-<center><h1>Part 1: Logistic Regression <span style="color: red">[Draft]</span></h1></center>
-
+<center><h1>Part 0: Logistic Regression <span style="color: red">[Draft]</span></h1></center>
 <h1>Introduction</h1>
+
 <p>
-Let's say we want to build a model to discriminate the following red and blue points in 2-dimensional space:
+Let's say we want to build a model to discriminate the following blue and red points in 2-dimensional space:
 </p>
 
 # CODE
@@ -38,7 +38,7 @@ plt.cla()
 # HTML
 {}
 <p>
-In other words, given a point, $(x_1, x_2)$, we want to output either $0$ or $1$. (In this tutorial $0$ represents red, $1$ represents blue.)
+In other words, given a point, $(x_1, x_2)$, we want to output either $0$ or $1$. (blue or red.)
 </p>
 
 <p>
@@ -106,8 +106,8 @@ print sigmoid(W.dot(X) + b)
 # HTML
 {}
 <p>
-We see that we get a value close to $1$ first and close to $0$ secondly. <b>Remember:</b> if the value is smaller than 0.5,
-it means our prediction is <b>red</b> and otherwise it is <b>blue</b>.
+We see that we get a value close to $1$ first and close to $0$ secondly. <b>Remember:</b> if the value is bigger than 0.5,
+it means our prediction is <b>blue</b> and otherwise it is <b>red</b>.
 </p>
 
 <h1>Computation Graph</h1>
@@ -127,17 +127,6 @@ or alternatively we can visualize the same:
 <img class="static_image" style="width: 500px;" src="static_images/image001.png"/>
 
 <p>
-We typically see the first version of the computation graph visualization more than the second one in
-the literature. The first version looks more compact, however, I personally enjoy the second one better
-since it is more explicit in terms of the input-output at each node.
-</p>
-
-<p>
-In the second representation, if there is an arrow <b>from</b> node $A$ <b>to</b> node $B$, it means $A$ is needed to
-compute $B$. It is that simple. We will dive more into computation graph internals in the following tutorials.
-</p>
-
-<p>
 We use sigmoid function as $g(z)$ in logistic regression:
 </p>
 
@@ -151,12 +140,10 @@ def plot_sigmoid():
    plt.grid()
    plt.xlim([-10.0, 10.0])
    plt.ylim([-0.1, 1.1])
-   xs = np.arange(-10, 10, 0.001)
-   plt.xlabel('$z$', size=20)
-   plt.ylabel('$g(z)$', size=20)
-   plt.title('Sigmoid function', size=18)
-   plt.plot(xs, sigmoid(xs), label=r'$g(z)= \frac{1}{1+e^{-z}}$')
    plt.legend(loc='upper left', fontsize=17)
+   plt.title('Sigmoid function', size=18)
+   xs = np.arange(-10, 10, 0.001)
+   plt.plot(xs, sigmoid(xs), label=r'$f(x) = \frac{1}{1+e^{-x}}$')
    plt.savefig('image.png')
 
 plot_sigmoid()
@@ -170,13 +157,11 @@ plt.cla()
 <h1>Maximum Likelihood Estimation</h1>
 
 <p>
-In training, our goal is to <b>learn</b> three numbers: $w_1, w_2, b$ that best
-<b>discriminates</b> red and blue points.
+In training, our goal is to <b>learn</b> three numbers: $w_1, w_2, b$.
 </p>
 
 <p>
-We want to find $w_1, w_2, b$ that minimizes some definition of a <b>cost function</b>.
-Let's attempt to write a cost function for this problem.
+We want to find $w_1, w_2, b$ that minimizes some definition of a <b>cost function</b>. Let's attempt to write a cost function for this problem.
 Let's say we have two points:
 </p>
 
@@ -189,9 +174,7 @@ and similarly:
 $$x = \begin{bmatrix} 1.3  \\ 0.9 \end{bmatrix}, y=1$$
 
 <p>
-We want a classifier that produces very <b>high</b> $\hat{y}$ when $y=1$, and conversely
-very <b>low</b> $\hat{y}$ when $y=0$. ($\hat{y}$ represents our <b>prediction</b>, we hope that
-$\hat{y} = y$.)
+We want a classifier that produces very <b>high</b> $\hat{y}$ when $y=1$, and conversely very <b>low</b> $\hat{y}$ when $y=0$.
 </p>
 
 <p>
@@ -222,14 +205,7 @@ or we want to <b>minimize</b>:
 $$L(y, \hat{y}) = - \left(ylog(\hat{y}) + (1-y)log(1-\hat{y})\right)$$
 
 <p>
-The above formula defines a cost function for only <b>one sample</b>. We call this $L$,
-and $L$ stands or <b>loss</b>. We also need a loss function for <b>multiple samples</b>
-(which we will call $J$).
-</p>
-
-<p>
-Let's start by an example. Say, we have <b>three positive samples</b> and <b>two different
-classifiers</b> output the following $\hat{y}$ for those three samples:
+The above formula defines a cost function for only <b>one sample</b>. We call this $L$, and $L$ stands or <b>loss</b>. We also need a loss function for <b>multiple samples</b> (which we will call $J$). Let's start by an example. Say, we have <b>three positive samples</b> and <b>two different classifiers</b> output the following $\hat{y}$ for those three samples:
 
 <ul>
   <li> <b>Classifier 1</b>: 0.9, 0.4, 0.8 </li>
@@ -273,9 +249,7 @@ Here we use the notation $J$ for the quantity we want to minimize for <b>all sam
 <h1>Gradient Descent</h1>
 
 <p>
-Gradient descent is probably one of the most <i>beautiful</i> algorithm ever invented, in my opinion.
-It is an iterative algorithm that makes the output better and better in each step. In each iteration,
-we make a step towards to the opposite of the gradient. Hence, it is gradient <i>descent</i>.
+Gradient descent is probably one of the most <i>beautiful</i> <b>learning algorithm</b> ever invented. It is an iterative algorithm that makes the output better and better in each step. In each iteration, we make a step towards to the opposite of the gradient. Hence, it is gradient <i>descent</i>.
 </p>
 
 <p>
@@ -320,7 +294,7 @@ $$\frac{dL}{dw_1} = \frac{dL}{dz} \frac{dz}{dw_1} = (\hat{y} - y) x_1, \quad \fr
 
 # HTML
 {}
-<p>We took the <b>derivative of sigmoid function</b> while deriving the above gradients:</p>
+<p>We took the <b>derivate of sigmoid function</b> while deriving the above gradients:</p>
 
 $$
 \frac{d\hat{y}}{dz} = g(z) (1-g(z))
@@ -337,12 +311,10 @@ def plot_sigmoid_der():
    plt.grid()
    plt.ylim([-10.0, 10.0])
    plt.ylim([-0.1, 0.4])
-   xs = np.arange(-10, 10, 0.001)
-   plt.xlabel('$z$', size=20)
-   plt.ylabel("$g'(z)$", size=20)
-   plt.title('Derivative of sigmoid function', size=18)
-   plt.plot(xs, sigmoid_der(xs), label=r"$g'(z) = g(z)(1-g(z))}}$")
    plt.legend(loc='upper left', fontsize=17)
+   plt.title('Derivative of sigmoid function', size=18)
+   xs = np.arange(-10, 10, 0.001)
+   plt.plot(xs, sigmoid_der(xs), label=r"sigmoid der: $f'(x) = f(x)(1-f(x))}}$")
    plt.savefig('image.png')
 
 plot_sigmoid_der()
@@ -417,18 +389,13 @@ plt.cla()
 <p>
 It turns out we just trained a pretty good classifier for this problem. We achieved 100% accuracy. Let's try to visualize our <b>decision boundary</b>.
 
-<b>Remember:</b> if the value is smaller than 0.5,
-it means our prediction is <b>red</b> and otherwise it is <b>blue</b>. (see Equation \ref{eq:inference})
+<b>Remember:</b> if the value is bigger than 0.5, it means our prediction is <b>blue</b> and otherwise it is <b>red</b>. (see Equation \ref{eq:inference}) So, we predict <b>blue</b> if:
 </p>
 
-<p>
-So, we predict <b>red</b> if:
-</p>
-
-$$ \frac{1}{1+e^{-(w_1x_1+w_2x_2+b)}} < 0.5 $$
+$$ \frac{1}{1+e^{-(w_1x_1+w_2x_2+b)}} > 0.5 $$
 
 <p>
-and <b>blue</b> otherwise. So, our decision boundary is:
+and <b>red</b> otherwise. So, our decision boundary is:
 </p>
 
 $$ \frac{1}{1+e^{-(w_1x_1+w_2x_2+b)}} = 0.5 $$
@@ -492,23 +459,19 @@ ax.set_ylim([-2.0, 2.0])
 ax.set_xlabel('$x_1$', size=20)
 ax.set_ylabel('$x_2$', size=20)
 
-ax.set_title('Decision boundary - Animated', size = 18)
+ax.set_title('Decision boundary - Animated')
 
 def animate(i):
   xs = np.array([-2.0, 2.0])
   ys = (-W_cache[i].flatten()[0] * xs - b)/W_cache[i].flatten()[1]
   lines.set_data(xs, ys)
+  return lines,
 
-  text_box.set_text('Iteration: {}'.format(i))
-
-  return lines, text_box
-
-lines, = ax.plot([], [], c='black')
 ax.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
-text_box = ax.text(1.1, 1.6, 'Iteration 0', size = 16)
+lines, = ax.plot([], [], c='black')
 
 anim = animation.FuncAnimation(fig, animate, len(W_cache), blit=True, interval=500)
-anim.save('animation.mp4', writer='avconv', fps=2, codec="libx264")
+anim.save('animation.mp4', writer='avconv', fps=20, codec="libx264")
 
 plt.close()
 plt.clf()
@@ -554,19 +517,6 @@ plot_decision_boundary_lazy(X, Y, W_cache[-1], b_cache[-1], 50)
 plt.close()
 plt.clf()
 plt.cla()
-
-# HTML
-{}
-<p>
-Here, background <b>blue</b> means our prediction is very close to $0$ which means it is confidently
-classified as <b>red</b>. And conversely, background <b>red</b> means our prediction is very close to
-$1$ which means it is confidently classified as <b>blue</b>.
-</p>
-
-<p>
-For our predictions in the <b>greenish middle area</b>, we are not confident on our predictions. Our
-predictions are close to $0.5$, as expected.
-</p>
 
 # HTML
 {}
@@ -670,18 +620,14 @@ def animate(i):
    lines.set_data(line_data[0], line_data[1])
    lines.set_3d_properties(line_data[2])
 
-   text_box.set_text('Iteration: {}'.format(i))
-
-   return graph, lines, text_box
+   return graph, lines
 
 line_data = [[], [], []]
 graph = ax.scatter([], [], [], s=50, c='red')
 lines, = ax.plot([], [], [], c='red')
 
-text_box = ax.text(20.0, 20.0, 500.0, 'Iteration 0', size = 16)
-
 anim = animation.FuncAnimation(fig, animate, len(W_cache), interval=50, blit=True)
-anim.save('animation.mp4', writer='avconv', fps=2, codec="libx264")
+anim.save('animation.mp4', writer='avconv', fps=10, codec="libx264")
 
 plt.close()
 plt.clf()
@@ -690,25 +636,6 @@ plt.cla()
 # HTML
 {}
 <h1> Applying Logistic Regression using low-level Tensorflow APIs</h1>
-
-<p>
-<b>TensorFlow</b> is an open-source software library for Machine Intelligence.
-Nodes in the TensorFlow graph represent mathematical operations, while the graph edges
-represent the multidimensional data arrays (tensors) communicated between them.
-The flexible architecture allows you to deploy computation to one or more CPUs
-or GPUs in a desktop, server, or mobile device with a single API.
-</p>
-
-<p>
-It is very common to write your classifier using TensorFlow APIs, rather than using
-simple Python/Numpy especially if you are having <b>big data</b> and want to
-<b>parallelize</b> computation over multiple machines/CPU/GPU.
-</p>
-
-<p>
-Here is how to train the same classifier for the above red and blue points
-using low-level TensorFlow API:
-</p>
 
 # CODE
 {'type': 'image', 'width': 600}
@@ -758,6 +685,5 @@ plt.cla()
   <li> http://ufldl.stanford.edu/tutorial/ </li>
   <li> https://distill.pub/ </li>
   <li> http://cs231n.github.io/ </li>
-  <li> https://www.tensorflow.org/ </li>
 </ol>
 

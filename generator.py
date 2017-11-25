@@ -52,18 +52,17 @@ def partition(template, source_lines):
 
 IMAGE_PNG = "'image.png'"
 ANIMATION_GIF = "'animation.mp4'"
-ANIMATION_GIF = "'animation.mp4'"
 PRINT = "print"
 image_counter = 0
 animation_counter = 0
 
 
 def add_image(image_name, width):
-  return '<img width="{}" src={}/>'.format(width, image_name)
+  return '<img class="generated_image" width="{}" src={}/>'.format(width, image_name)
 
 
 def add_animation(animation_name, width):
-  return """<video width="{}" controls>
+  return """<video class="generated_video" width="{}" controls>
 <source src={} type="video/mp4">
 </video>""".format(width, animation_name)
 
