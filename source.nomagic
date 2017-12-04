@@ -4,7 +4,8 @@
 
 <h1>Introduction</h1>
 <p>
-Let's say we want to build a model to discriminate the following red and blue points in 2-dimensional space:
+Let's say we want to build a model to discriminate the following <b>red</b> and <b>blue</b>
+points in 2-dimensional space:
 </p>
 
 # CODE
@@ -42,7 +43,7 @@ In other words, given a point, $(x_1, x_2)$, we want to output either $0$ or $1$
 </p>
 
 <p>
-We can use <b>Logistic Regression</b> for this problem. In Logistic Regression, we first learn <b>weights</b> ($w_1, w_2$) and <b>bias</b> ($b$). This phase is called <b>training</b>. Then we use the following formula to predict if the new point is blue or red. This phase is called <b>prediction</b> or <b>inference</b>.
+We can use <b>Logistic Regression</b> for this problem. In Logistic Regression, we first learn <b>weights</b> ($w_1, w_2$) and <b>bias</b> ($b$). This phase is called <b>training</b>. Then we use the following formula to predict if the new point is red or blue. This phase is called <b>prediction</b> or <b>inference</b>.
 </p>
 
 <p class="equation">
@@ -177,6 +178,9 @@ In training, our goal is to <b>learn</b> three numbers: $w_1, w_2, b$ that best
 <p>
 We want to find $w_1, w_2, b$ that minimizes some definition of a <b>cost function</b>.
 Let's attempt to write a cost function for this problem.
+</p>
+
+<p>
 Let's say we have two points:
 </p>
 

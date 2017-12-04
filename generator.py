@@ -117,7 +117,7 @@ def main():
   with open('template.data') as f:
     template = f.read()
 
-  with open('source.nomagic') as f:
+  with open('source2.nomagic') as f:
     source = f.readlines()
 
   output = generate_html(template, source)

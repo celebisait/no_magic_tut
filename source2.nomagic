@@ -1,124 +1,203 @@
 # HTML
 {}
-<h1>Softmax regression for three classes</h1>
+<center><h1>Part 2: Softmax Regression <span style="color: red">[Draft]</span></h1></center>
+
+<h1>Introduction</h1>
+<p>
+Let's say we want to build a model to discriminate the following <b>red</b>, <b>blue</b>
+and <b>green</b> points in 2-dimensional space:
+</p>
 
 # CODE
 {'type': 'image', 'width': 600}
-plt.grid()
+import numpy as np
+import matplotlib.pyplot as plt
 
 X = np.array([[-0.1, -0.5, 1.3, -0.6, -1.5, 0.2, -0.3,  0.7,  1.1, -1.0,
                -0.5, -1.3,  -1.4, -0.9, 0.4 , -0.4, 0.3, -1.6, -0.5, -1.0],
               [1.4,  -0.1, 0.9,  0.4,  0.4, 0.2, -0.4, -0.8, -1.5,  0.9,
                1.5, -0.45, -1.2, -0.7, -1.3, 0.6, -0.5, -0.7, -1.4, -1.4]])
 Y = np.array([[0, 0, 1, 0, 2, 1, 1, 1, 1, 0, 0, 2, 2, 2, 1, 0, 1, 2, 2, 2]])
-
 colormap = np.array(['r', 'b', 'g'])
 
-def plot_scatter(X, Y, path):
+def plot_scatter(X, Y, colormap, path):
+   plt.grid()
+   plt.xlim([-2.0, 2.0])
+   plt.ylim([-2.0, 2.0])
+   plt.xlabel('$x_1$', size=20)
+   plt.ylabel('$x_2$', size=20)
+   plt.title('Input 2D points', size=18)
    plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
-   plt.xlim([-2.0,2.0])
-   plt.ylim([-2.0,2.0])
-   plt.title('Input points', size=18)
    plt.savefig(path)
 
-plot_scatter(X, Y, 'image.png')
+plot_scatter(X, Y, colormap, 'image.png')
 
 plt.close()
 plt.clf()
 plt.cla()
 
-
 # HTML
 {}
+<p>
+In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>, <b>blue</b> or <b>green</b>.
+</p>
+
+<p>
+We can use <b>Softmax Regression</b> for this problem. We first learn <b>weights</b>
+($w_{1,1}, w_{1,2}, w_{2,1}, w_{2,2}, w_{3,1}, w_{3,2}$) and <b>bias</b> ($b_1, b_2, b_3$).
+This phase is called <b>training</b>. Then we use the following formula to predict if the
+new point is red, blue or green. This phase is called <b>prediction</b> or <b>inference</b>.
+</p>
+
 <h1>One hot vector representation</h1>
 
-We represent the output as a one hot vector. In other words, we represent red points using $\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$ and similary $\begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}$ for blues and lastly $\begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$ for greens.
+<p>
+We represent the output as a one hot vector. In other words, we represent <b>red points</b>
+using $\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$ and similarly for <b>blue points</b> using
+$\begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}$ and lastly for <b>green points</b> using
+$\begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$.
+</p>
 
-<br>
-<br>
-Image1
-<br>
-<br>
+<h1>Computation Graph</h1>
 
-We haven't decided about a loss function for the above setting. We can use cross entropy loss function:
+<p>
+Here is a visual representation of our model:
+</p>
 
-<br>
-<br>
-Image2
-<br>
-<br>
+<img class="static_image" style="width: 900px;" src="static_images/image003.png"/>
+
+<p>
+and simply pick the biggest $a_i$ to do the <b>final prediction</b>.
+</p>
+
+<p>
+We use sigmoid function as $g(z)$:
+</p>
+
+$$ g(z) = \frac{1}{1+e^{-z}} $$
+
+<h1>Maximum Likelihood Estimation</h1>
+
+<p>
+In training, our goal is to <b>learn</b> a matrix $W$ of size $(3 \times 2)$  and a $b$ of size $(3 \times 1)$
+that best <b>discriminates</b> red, blue and green points.
+</p>
+
+<p>
+We want to find $W$ and $b$ that minimizes some definition of a <b>cost function</b>.
+Let's attempt to write a cost function for this problem.
+</p>
+
+<p>
+Let's say we have three points:
+</p>
+
+$$x = \begin{bmatrix} -0.1 \\ 1.4 \end{bmatrix}, y=0$$
+
+$$x = \begin{bmatrix} 1.3  \\ 0.9 \end{bmatrix}, y=1$$
+
+<p>
+and similarly,
+</p>
+
+$$x = \begin{bmatrix} -1.4  \\ -1.1 \end{bmatrix}, y=2$$
+
+<p>
+Now, let's list these $y$ as a <b>one hot vector</b> and, their corresponding $a$ values:
+</p>
+
+$$y = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, a = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix} $$
+
+$$y = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, a = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix} $$
+
+$$y = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, a = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix} $$
+
+<p>
+Intuitively, we want a classifier that produces <b>similar</b> looking $a$ and $y$. This means, if
+$y = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$, then, for example, having
+$a = \begin{bmatrix} 0.8 \\ 0.1 \\ 0.1 \end{bmatrix}$ is <b>more desirable</b> than having
+$a = \begin{bmatrix} 0.6 \\ 0.2 \\ 0.2 \end{bmatrix}$.
+
+<p>
+In other words, we want to <b>maximize</b>:
+</p>
+
+$$P(y|x) = \prod_{j=1}^{3} {a_j^{y_j} (1-a_j)^{(1-y_j)} }$$
+
+<p>
+Here, $a_j$ represents the jth item in the vector $a$, and similarly $y_j$ represents the jth value in $y$.
+For example, when $a = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix}$, then, $a_1 = 0.9, a_2 = 0.1$ and
+$a_3 = 0.0$.
+</p>
+
+$$y = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, a = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix}, P(y|x) = 0.9 \times 0.9 \times 1.0 = 0.810 $$
+
+$$y = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, a = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix}, P(y|x) = 0.9 \times 0.8 \times 0.9 = 0.648 $$
+
+$$y = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, a = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix}, P(y|x) = 0.9 \times 0.8 \times 0.7 = 0.504 $$
+
+<p>
+<b>Bigger</b> the $P(y|x)$ is the <b>better</b>.
+</p>
+
+<p>
+Similar to <b>Logistic Regression</b>, in order to define the <b>loss</b> for multiple samples, we will simply multiply
+each value for each sample (<b>Maximum Likelihood Estimation</b>):
+</p>
+
+$$J = \prod_{i=1}^{M} P(y^{(i)}|x^{(i)}) $$
+
+<p>
+here, $y^{(i)}$, $x^{(i)}$ and $a^{(i)}$ corresponds to ith sample in the training set out of $M$ training samples. We can rewrite it as:
+</p>
+
+$$J = \prod_{i=1}^{M} \prod_{j=1}^{3}  (a_j^{(i)}) ^ {y_j^{(i)}} (1-a_j^{(i)})^{(1-y_j^{(i)})} $$
+
+<p>
+Maximizing above is equal to maximizing:
+</p>
+
+$$J = log \left( \prod_{i=1}^{M} \prod_{j=1}^{3} (a_j^{(i)}) ^ {y_j^{(i)}} (1-a_j^{(i)})^{(1-y_j^{(i)})} \right ) $$
+
+<p>
+with more math:
+</p>
+
+$$J = \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} log(a_j^{(i)}) (1-y_j^{(i)}) log(1-a_j^{(i)}) $$
+
+<p>
+If we add our <b>Log Loss</b> to our computation graph:
+</p>
+
+<img class="static_image" style="width: 800px;" src="static_images/image004.png"/>
+
+
+<h1>Gradient Descent</h1>
+
+<p>
+In order to do gradient descent, we need the derivatives:
+</p>
+
+$$
+\frac{dL}{dW} = \frac{dL}{da} \frac{da}{dz'} \frac{dz'}{dz} \frac{dz}{dW}, \quad
+
+\frac{dL}{db} = \frac{dL}{da} \frac{da}{dz'} \frac{dz'}{dz} \frac{dz}{db}
+$$
+
+<p>
+Let's do some calculus:
+<img src="static_images/evil1.png" style="width:30px; height:30px;">
+<img src="static_images/evil2.png" style="width:30px; height:30px;">
+</p>
+
+<p>
+TODO TODO TODO TODO. Actually do the math.
+</p>
 
 # HTML
 {}
-<h1>Appendix</h1>
-<h2>Some other activation functions</h2>
+<h1>References</h1>
 
 <ul>
-  <li>Sigmoid</li>
-  <li>Tanh</li>
-  <li>RELU</li>
-</ul>
-
-# CODE
-{'type': 'image', 'width': 600}
-plt.grid()
-
-sigmoid = lambda x: 1/(1+np.exp(-x))
-tanh    = lambda x: (np.exp(x)-np.exp(-x))/(np.exp(x)+np.exp(-x))
-relu    = lambda x: np.maximum(0, x)
-
-def plot_activation_functions():
-   xs = np.arange(-4, 4, 0.001)
-
-   plt.plot(xs, sigmoid(xs), label=r'sigmoid: $\frac{1}{1+e^{-x}}$')
-   plt.plot(xs, tanh(xs), label=r'tanh: $\frac{e^{x}-e^{-x}}{e^{x}+e^{-x}}$')
-   plt.plot(xs, relu(xs), label=r'relu: $max(0, x)$')
-
-   plt.legend(loc='lower right', fontsize=17)
-   plt.ylim([-1.2,1.2])
-   plt.savefig('image.png')
-
-plt.title('Other activation functions', size = 18)
-plot_activation_functions()
-
-plt.close()
-plt.clf()
-plt.cla()
-
-# HTML
-{}
-<h2> Derivatives of other activation functions </h2>
-
-# CODE
-{'type': 'image', 'width': 600}
-plt.grid()
-
-sigmoid_der = lambda x: sigmoid(x)*(1-sigmoid(x))
-tanh_der    = lambda x: 1-np.tanh(x)**2
-relu_der    = lambda x: (x > 0) * 1.0
-
-def plot_activation_functions():
-   xs = np.arange(-4, 4, 0.001)
-
-   plt.plot(xs, sigmoid_der(xs), label=r"sigmoid der: $f'(x) = f(x)(1-f(x))}}$")
-   plt.plot(xs, tanh_der(xs), label=r'tanh der: $1-tan^2h(x)$')
-   plt.plot(xs, relu_der(xs), label=r'relu der')
-
-   plt.legend(loc='upper left', fontsize=17)
-   plt.ylim([-0.2,1.4])
-   plt.savefig('image.png')
-
-plt.title('Derivatives of activation functions', size = 18)
-plot_activation_functions()
-
-plt.close()
-plt.clf()
-plt.cla()
-
-# HTML
-{}
-<h1>TODO</h1>
-
-<ul>
-  <li> Add proof for convexity of the loss function used in logistic regression. </li>
+  <li> http://ufldl.stanford.edu/tutorial/supervised/SoftmaxRegression/
 </ul>
