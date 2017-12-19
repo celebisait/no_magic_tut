@@ -96,6 +96,148 @@ We use sigmoid function as $g(z)$:
 
 $$ g(z) = \frac{1}{1+e^{-z}} $$
 
+<h1>Feed-forward Phase</h1>
+
+<p>
+Let's assume that we are given the weights and bias. How do we calculate the output?
+</p>
+
+<p>
+We represent $X$ as a matrix. $X$ contains all the points. In our case $X$ contains $M=20$
+samples and for each sample we have $(x,y)$. $Y$ contains all the labels (red, blue and green)
+as a one hot vector. $W$ has the weights. $b$ has the bias:
+</p>
+
+$$
+X =
+\begin{bmatrix}
+    0   &  0   & \dots &  0 \\
+    0   &  0   & \dots &  0 \\
+\end{bmatrix}_{2 \times M}, \quad
+Y =
+\begin{bmatrix}
+    0   &  0   & \dots &  0 \\
+    0   &  0   & \dots &  0 \\
+    0   &  0   & \dots &  0 \\
+\end{bmatrix}_{3 \times M}, \quad
+W =
+\begin{bmatrix}
+    0   &  0   \\
+    0   &  0   \\
+    0   &  0   \\
+\end{bmatrix}_{3 \times 2}
+b =
+\begin{bmatrix}
+    0  \\
+    0  \\
+    0  \\
+\end{bmatrix}_{3 \times 1}
+$$
+
+<p>
+Feed-forward basically means given $X, Y, W$ and $b$, will produce us $a$ and $L$.
+</p>
+
+$$
+Z = W X + b
+$$
+
+<p>
+Here we can see it visually:
+</p>
+
+$$
+\begin{bmatrix}
+    0   &  0   & \dots &  0 \\
+    0   &  0   & \dots &  0 \\
+    0   &  0   & \dots &  0 \\
+\end{bmatrix}_{3 \times M}
+=
+\begin{bmatrix}
+    0   &  0   \\
+    0   &  0   \\
+    0   &  0   \\
+\end{bmatrix}_{3 \times 2}
+\begin{bmatrix}
+    0   &  0   & \dots &  0 \\
+    0   &  0   & \dots &  0 \\
+\end{bmatrix}_{2 \times M}
++
+\begin{bmatrix}
+    0  \\
+    0  \\
+    0  \\
+\end{bmatrix}_{3 \times 1}
+$$
+
+<p>
+As you may realized, the summation here is called <b>broadcasting</b>.
+</p>
+
+<p>
+After getting $Z$, we want to calculate $Z'$:
+</p>
+
+$$
+Z' = g(Z)
+$$
+
+<p>
+Here we can see it visually:
+</p>
+
+$$
+\begin{bmatrix}
+    0   &  0   & \dots &  0 \\
+    0   &  0   & \dots &  0 \\
+    0   &  0   & \dots &  0 \\
+\end{bmatrix}_{3 \times M}
+=
+g\left(
+\begin{bmatrix}
+    0   &  0   & \dots &  0 \\
+    0   &  0   & \dots &  0 \\
+    0   &  0   & \dots &  0 \\
+\end{bmatrix}_{3 \times M}
+\right)
+$$
+
+<p>
+As you may realized, taking sigmoid here of a matrix mean taking the sigmoid of each
+value in the matrix seperately.
+</p>
+
+<p>
+Now, we need to get $a$ using $Z'$. Naively, we can do something like:
+</p>
+
+$$
+A = \frac{e^{Z'}}{ \text{Sum over the rows of } e^{Z'} }
+$$
+
+Or visually:
+
+$$
+\begin{bmatrix}
+    0   &  0   & \dots &  0 \\
+    0   &  0   & \dots &  0 \\
+    0   &  0   & \dots &  0 \\
+\end{bmatrix}_{3 \times M}
+=
+\frac{
+e^{\begin{bmatrix}
+    0   &  0   & \dots &  0 \\
+    0   &  0   & \dots &  0 \\
+    0   &  0   & \dots &  0 \\
+\end{bmatrix}_{3 \times M}}
+}
+{
+\begin{bmatrix}
+    0   &  0   & \dots &  0 \\
+\end{bmatrix}_{1 \times M}
+}
+$$
+
 <h1>Maximum Likelihood Estimation</h1>
 
 <p>
