@@ -219,7 +219,7 @@ returns a new N-dimensional vector that sums up to $1$. The exact formula is (So
 
 <p class="equation">
 \begin{equation} \label{eq:softmax}
-a_i = \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
+a_i = \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}}
 \end{equation}
 </p>
 
@@ -259,15 +259,15 @@ For example,
 </p>
 
 $$
-\frac{d}{d z_2} a_1
+\frac{d}{d z'_2} a_1
 $$
 
 <p>
-refers to how much $a_1$ will change if play with $z_2$.
+refers to how much $a_1$ will change if play with $z'_2$.
 </p>
 
 <p>
-Using the same logic for each element for $a_i$ and $z_j$ would produce us $N \times N$ matrix of derivatives.
+Using the same logic for each element for $a_i$ and $z'_j$ would produce us $N \times N$ matrix of derivatives.
 </p>
 
 <p>
@@ -275,7 +275,7 @@ Let's try to take derivative for <b>one particular element</b>:
 </p>
 
 $$
-\frac{d}{d z_n} a_m = \frac{d}{d z_n} \frac{e^{z_m}}{\sum_{j=1}^N e^{z_j}}
+\frac{d}{d z'_m} a_i = \frac{d}{d z'_m} \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}}
 $$
 
 <p>
@@ -291,7 +291,7 @@ In our case:
 </p>
 
 $$
-f(x) = e^{z_m}, \quad g(x) = \sum_{j=1}^N e^{z_j}
+f(x) = e^{z'_i}, \quad g(x) = \sum_{j=1}^N e^{z'_j}
 $$
 
 <p>
@@ -299,7 +299,7 @@ Let's apply <b>Quotient Rule</b>, if $m=n$:
 </p>
 
 $$
-\frac{d}{d z_n} a_m = \frac{d}{d z_n} \frac{e^{z_m}}{\sum_{j=1}^N e^{z_j}} =
+\frac{d}{d z'_m} a_i = \frac{d}{d z'_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z'_j}} =
 \frac{ (e^{z_m})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_m} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } =
 \frac{ e^{z_m} \sum_{j=1}^N e^{z_j} - e^{z_m} e^{z_n} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } =
 \frac{ e^{z_m} } { \sum_{j=1}^N e^{z_j} }  \frac{ \sum_{j=1}^N - e^{z_n} } { \sum_{j=1}^N e^{z_j} } = (a_m)(1-a_n)
