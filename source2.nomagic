@@ -194,7 +194,7 @@ In order to do gradient descent, we need the derivatives:
 $$
 \frac{dL}{dw_{m,n}} = \sum_{i=1}^3 \left (\frac{dL}{da_i} \right) \left (\frac{da_i}{dz'_m} \right)  \left (\frac{dz'_m}{dz_m} \right ) \left(\frac{dz_m}{dw_{m,n}} \right ), \quad
 
-\frac{dL}{db} = \sum_{i=1}^3 \left (\frac{dL}{da_i} \right) \left (\frac{da_i}{dz'_m} \right)  \left (\frac{dz'_m}{dz_m} \right ) \left(\frac{dz_m}{b_m} \right )
+\frac{dL}{db_m} = \sum_{i=1}^3 \left (\frac{dL}{da_i} \right) \left (\frac{da_i}{dz'_m} \right)  \left (\frac{dz'_m}{dz_m} \right ) \left(\frac{dz_m}{b_m} \right )
 $$
 
 <p>
@@ -295,29 +295,29 @@ f(x) = e^{z'_i}, \quad g(x) = \sum_{j=1}^N e^{z'_j}
 $$
 
 <p>
-Let's apply <b>Quotient Rule</b>, if $m=n$:
+Let's apply <b>Quotient Rule</b>, if $i=m$:
 </p>
 
 $$
-\frac{d}{d z'_m} a_i = \frac{d}{d z'_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z'_j}} =
-\frac{ (e^{z_m})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_m} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } =
-\frac{ e^{z_m} \sum_{j=1}^N e^{z_j} - e^{z_m} e^{z_n} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } =
-\frac{ e^{z_m} } { \sum_{j=1}^N e^{z_j} }  \frac{ \sum_{j=1}^N - e^{z_n} } { \sum_{j=1}^N e^{z_j} } = (a_m)(1-a_n)
+\frac{d}{d z'_m} a_i = \frac{d}{d z'_m} \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}} =
+\frac{ (e^{z'_i})' \sum_{j=1}^N e^{z'_j}  - (\sum_{j=1}^N e^{z'_j})' e^{z'_i} }{ [\sum_{j=1}^N e^{z'_j}] ^ 2 } =
+\frac{ e^{z'_i} \sum_{j=1}^N e^{z'_j} - e^{z'_m} e^{z'_i} }{ [\sum_{j=1}^N e^{z'_j}] ^ 2 } =
+\frac{ e^{z'_i} } { \sum_{j=1}^N e^{z'_j} }  \frac{ \sum_{j=1}^N e^{z'_j} - e^{z'_m} } { \sum_{j=1}^N e^{z'_j} } = (a_i)(1-a_m)
 $$
 
 <p>
-Notice that we simplify, by plugging $a_i$ (see Equation \ref{eq:softmax}) in the last step above.
+Notice that we simplify, by plugging $a_i$ and $a_m$ (see Equation \ref{eq:softmax}) in the last step above.
 </p>
 
 <p>
-Similarly, if $m \neq n$:
+Similarly, if $i \neq m$:
 </p>
 
 $$
-\frac{d}{d z_n} a_m = \frac{d}{d z_n} \frac{e^{z_m}}{\sum_{j=1}^N e^{z_j}} =
-\frac{ (e^{z_m})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_m} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } =
-\frac{ 0 - e^{z_m} e^{z_n} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } = -\frac{ e^{z_m} } { \sum_{j=1}^N e^{z_j} } \frac{ e^{z_n} }{ \sum_{j=1}^N e^{z_j} }
-= - (a_m) (a_n)
+\frac{d}{d z'_m} a_i = \frac{d}{d z'_m} \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}} =
+\frac{ (e^{z'_i})' \sum_{j=1}^N e^{z'_j}  - (\sum_{j=1}^N e^{z'_j})' e^{z'_i} }{ [\sum_{j=1}^N e^{z'_j}] ^ 2 } =
+\frac{ 0 - e^{z'_m} e^{z'_i} }{ [\sum_{j=1}^N e^{z'_j}] ^ 2 } = -\frac{ e^{z'_m} } { \sum_{j=1}^N e^{z'_j} } \frac{ e^{z'_i} }{ \sum_{j=1}^N e^{z'_j} }
+= - (a_m) (a_i)
 $$
 
 <p>
@@ -325,10 +325,10 @@ More succintly, we can summarize all above:
 </p>
 
 $$
-\frac{d}{d z_n} a_m =
+\frac{d}{d z'_m} a_i =
   \begin{cases}
-    (a_m)(1-a_n), & \text{if}\ \quad  m = n \\
-    - (a_m) (a_n), & \text{if}\ \quad  m \neq n
+    (a_i)(1-a_m), & \text{if}\ \quad  i = m \\
+    - (a_m) (a_i), & \text{if}\ \quad  i \neq m
   \end{cases}
 $$
 
