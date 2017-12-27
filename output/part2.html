@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
 <head>
-<title>Part 1: Logistic Regression</title>
+<title>Part2: Softmax Regression</title>
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
     TeX: {
@@ -26,6 +26,11 @@ MathJax.Hub.Config({
 <div id="outer">
     <div id="inner">
 <center><h1>Part 2: Softmax Regression <span style="color: red">[Draft]</span></h1></center>
+
+<p>
+What I cannot create, I do not understand.
+-- Richard Feynman
+</p>
 
 <h1>Introduction</h1>
 <p>
@@ -58,7 +63,7 @@ and <b>green</b> points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="images/image000.png"/><p>
+<img class="generated_image" width="600" src="../images/image000.png"/><p>
 In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>, <b>blue</b> or <b>green</b>.
 </p>
 
@@ -84,7 +89,7 @@ $\begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$.
 Here is a visual representation of our model:
 </p>
 
-<img class="static_image" style="width: 900px;" src="static_images/image003.png"/>
+<img class="static_image" style="width: 900px;" src="../static_images/image003.png"/>
 
 <p>
 and simply pick the biggest $a_i$ to do the <b>final prediction</b>.
@@ -238,7 +243,151 @@ e^{\begin{bmatrix}
 }
 $$
 
-<h1>Maximum Likelihood Estimation</h1>
+<p>
+However, this <b>numerically unstable</b>. Because $e^x$ easily overflows 64bit (even 128bit).
+We need to approach it differently.
+</p>
+
+<h1>Numerical Stability of Softmax function</h1>
+
+<p>
+The Softmax function takes an N-dimensional vector of real values and
+returns a new N-dimensional vector that sums up to $1$. The exact formula is (Softmax equation):
+</p>
+
+<p class="equation">
+\begin{equation} \label{eq:softmax}
+a_i = \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}}
+\end{equation}
+</p>
+
+<p>
+Let's make an example:
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">softmax</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
+<span class="k">print</span> <span class="n">a</span>
+<span class="k">print</span> <span class="n">softmax</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+<div class="code_stdout"><pre>[ 1.  2.  3.]
+[ 0.09003057  0.24472847  0.66524096]
+</pre></div><p>
+Intuitively, softmax increases/emphasizes the <b>relative difference</b> between large and small values.
+</p>
+
+<p>
+However, let's look at this:
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">softmax</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1000.0</span><span class="p">,</span> <span class="mf">2000.0</span><span class="p">,</span> <span class="mf">3000.0</span><span class="p">])</span>
+<span class="k">print</span> <span class="n">a</span>
+<span class="k">print</span> <span class="n">softmax</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+<div class="code_stdout"><pre>[ 1000.  2000.  3000.]
+[ nan  nan  nan]
+</pre></div><p>
+We are getting <b>nan</b> values along with a <b>RuntimeWarning: overflow encountered in exp</b>.
+Simply because:
+</p>
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1000</span><span class="p">))</span>
+</pre></div>
+<div class="code_stdout"><pre>inf
+</pre></div>Instead, we can approach it differently:
+
+$$
+a_i = \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}} = \frac{e^{z'_i}e^K}{\sum_{j=1}^N e^{z'_j} e^K}
+    = \frac{e^{z'_i + K}}{\sum_{j=1}^N e^{z'_j + K}}
+$$
+
+<p>
+for some fixed $K$. And we can pick $K = - max(z'_1, z'_2, \dots, z'_N)$.
+</p>
+
+<p>
+More practically:
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">softmax</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="nb">max</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="nb">max</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1000.0</span><span class="p">,</span> <span class="mf">2000.0</span><span class="p">,</span> <span class="mf">3000.0</span><span class="p">])</span>
+<span class="k">print</span> <span class="n">a</span>
+<span class="k">print</span> <span class="n">softmax</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+<div class="code_stdout"><pre>[ 1000.  2000.  3000.]
+[ 0.  0.  1.]
+</pre></div><p>
+As you can see, we still have some numerical issues. First and second value of the softmax
+shouldn't be $0$, they should be very close $0$, but not exactly $0$. Hmmm, but this is
+not as bad as <b>nan</b> issue.
+</p>
+
+<p>
+So, to wrap-up the Feed-Forward phase, we can finalize the forward propagation step:
+</p>
+<div class="highlight"><pre><span></span><span class="n">sigmoid</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">stable_softmax</span><span class="p">(</span><span class="n">Z_hat</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Z_hat</span> <span class="o">-</span> <span class="n">Z_hat</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Z_hat</span> <span class="o">-</span> <span class="n">Z_hat</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># this simple implementation is numerically unstable, because:</span>
+<span class="c1"># np.log() returns -inf for small inputs very close to 0</span>
+<span class="k">def</span> <span class="nf">get_loss</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">):</span>
+  <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Y_one_hot</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="o">+</span>
+                     <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Y_one_hot</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">A</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">loss</span>
+
+<span class="c1"># semantically same with above function, and numerically stable.</span>
+<span class="k">def</span> <span class="nf">get_loss_numerically_stable</span><span class="p">(</span><span class="n">Z_hat</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">):</span>
+  <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Y_one_hot</span> <span class="o">*</span> <span class="p">(</span> <span class="p">(</span><span class="n">Z_hat</span> <span class="o">-</span> <span class="n">Z_hat</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span> <span class="o">-</span>
+                                    <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Z_hat</span> <span class="o">-</span> <span class="n">Z_hat</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span>
+				 <span class="p">)</span> <span class="o">+</span>
+                     <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Y_one_hot</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Z_hat</span> <span class="o">-</span> <span class="n">Z_hat</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span>
+		                       <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Z_hat</span> <span class="o">-</span> <span class="n">Z_hat</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)))</span> <span class="o">-</span>
+		                       <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Z_hat</span> <span class="o">-</span> <span class="n">Z_hat</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span>
+				     <span class="p">)</span>
+		    <span class="p">)</span>
+  <span class="k">return</span> <span class="n">loss</span>
+
+<span class="k">def</span> <span class="nf">forward_propagate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+  <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+  <span class="n">Z_hat</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+  <span class="n">A</span> <span class="o">=</span> <span class="n">stable_softmax</span><span class="p">(</span><span class="n">Z_hat</span><span class="p">)</span>
+  <span class="n">L1</span> <span class="o">=</span> <span class="n">get_loss</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">)</span>
+  <span class="n">L2</span> <span class="o">=</span> <span class="n">get_loss_numerically_stable</span><span class="p">(</span><span class="n">Z_hat</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">)</span>
+
+  <span class="n">dA</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">Y</span> <span class="o">/</span> <span class="n">A</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Y</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">A</span><span class="p">)</span>
+  <span class="k">print</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+  <span class="k">print</span><span class="p">(</span><span class="n">dA</span><span class="p">)</span>
+
+  <span class="k">print</span><span class="p">(</span><span class="n">L1</span><span class="p">)</span>
+  <span class="k">print</span><span class="p">(</span><span class="n">L2</span><span class="p">)</span>
+
+<span class="n">Y_one_hot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">forward_propagate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</pre></div>
+<div class="code_stdout"><pre>(3, 20)
+[[ 1.50161426  1.61799669 -3.0702384   1.58707692 -6.74846583 -2.81344576
+  -2.59429925 -2.70093314 -2.63576612  1.57615739  1.51213272 -6.58715159
+  -6.46241595 -6.59946465 -2.54556741  1.56032154 -2.68560773 -6.51192786
+  -6.52475885 -6.46662797]
+ [ 1.44404442  1.4592665  -3.15381149  1.45202514 -7.88637578 -3.19005552
+  -3.15649505 -3.11858749 -3.06898856  1.44428308  1.43915755 -7.82959833
+  -7.8538458  -7.7912658  -3.09393411  1.44944601 -3.14237607 -7.85737153
+  -7.74494109 -7.81137494]
+ [ 1.55872366  1.43538751 -2.79942872  1.46795993 -8.14852741 -3.02032863
+  -3.35872112 -3.23520317 -3.39255125  1.48552971  1.55320159 -8.58654419
+  -8.91821391 -8.60542834 -3.52178167  1.49434907 -3.23191298 -8.75912362
+  -8.8826988  -8.96720056]]
+40.0856705699
+40.0856705699
+</pre></div><h1>Maximum Likelihood Estimation</h1>
 
 <p>
 In training, our goal is to <b>learn</b> a matrix $W$ of size $(3 \times 2)$  and a $b$ of size $(3 \times 1)$
@@ -338,7 +487,7 @@ $$J = - \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} log(a_j^{(i)}) (1-y_j^{(i)}) log
 If we add our <b>Log Loss</b> to our computation graph:
 </p>
 
-<img class="static_image" style="width: 800px;" src="static_images/image004.png"/>
+<img class="static_image" style="width: 800px;" src="../static_images/image004.png"/>
 
 
 <h1>Gradient Descent</h1>
@@ -347,7 +496,7 @@ If we add our <b>Log Loss</b> to our computation graph:
 Let's see what happens if we change $w_{2, 1}$ in the network, step by step:
 </p>
 
-<img class="static_image" style="width: 900px;" src="static_images/image005.gif"/>
+<img class="static_image" style="width: 900px;" src="../static_images/image005.gif"/>
 
 <p>
 In order to do gradient descent, we need the derivatives:
@@ -361,8 +510,8 @@ $$
 
 <p>
 Let's do some calculus:
-<img src="static_images/evil1.png" style="width:30px; height:30px;">
-<img src="static_images/evil2.png" style="width:30px; height:30px;">
+<img src="../static_images/evil1.png" style="width:30px; height:30px;">
+<img src="../static_images/evil2.png" style="width:30px; height:30px;">
 </p>
 
 $$
@@ -374,38 +523,11 @@ $$
 <h1>Derivative of Softmax Function</h1>
 
 <p>
-The Softmax function takes an N-dimensional vector of real values and
-returns a new N-dimensional vector that sums up to $1$. The exact formula is (Softmax equation):
-</p>
-
-
-<p class="equation">
-\begin{equation} \label{eq:softmax}
-a_i = \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}}
-\end{equation}
-</p>
-
-<p>
-Let's make an example:
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">softmax</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-  <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
-
-<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
-<span class="k">print</span> <span class="n">a</span>
-<span class="k">print</span> <span class="n">softmax</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-</pre></div>
-<div class="code_stdout"><pre>[ 1.  2.  3.]
-[ 0.09003057  0.24472847  0.66524096]
-</pre></div><p>
-Intuitively, softmax increases/emphasizes the <b>relative difference</b> between large and small values.
-</p>
-
-<p>
 A nice property about the Softmax function that it produces a legit <b>Probability Distrubition</b>.
 In classification (or more generally in Machine Learning) we often want to assign prababilities to
 categories or classes. Softmax function is known to work well numereous applications/areas.
 </p>
+
 
 <p>
 Softmax is a vector function -- it takes a vector as an input and returns another vector. Therefore, we
@@ -486,9 +608,51 @@ More succintly, we can summarize all above:
 $$
 \frac{d}{d z'_m} a_i =
   \begin{cases}
-    (a_i)(1-a_m), & \text{if}\ \quad  i = m \\
+    (a_i)(1-a_m),  & \text{if}\ \quad  i = m \\
     - (a_m) (a_i), & \text{if}\ \quad  i \neq m
   \end{cases}
+$$
+
+<p>
+or equally:
+</p>
+
+$$
+\frac{d}{d z'_m} a_i = (a_i)(\delta_{i,m} - a_m)
+$$
+
+<p>
+where $\delta_{i,m} = 1$ if $i=m$, and $0$ otherwise.
+</p>
+
+<p>
+The reason we want to write it this way is that we don't want to use any <b>loops</b>. And we can
+execute the above using matrix operations like:
+</p>
+
+$$
+\mathbf{a} \mathbf{e^T} \circ (\mathbf{I} - \mathbf{e} \mathbf{a^T})
+$$
+
+<p>
+where $\mathbf{e}$ is a vector of $1$'s of size $K\times1$ for a suitable $K$ and $\circ$ represents Hadamard product,
+in other words element-wise product of matrices.
+</p>
+
+$$
+\begin{bmatrix} \frac{da_1}{dz'_1} \frac{da_2}{dz'_1} \frac{da_3}{dz'_1} \\
+                \frac{da_1}{dz'_2} \frac{da_2}{dz'_2} \frac{da_3}{dz'_2} \\
+                \frac{da_1}{dz'_3} \frac{da_2}{dz'_3} \frac{da_3}{dz'_3}
+\end{bmatrix}
+\begin{bmatrix} \frac{dL}{da_1} \\
+                \frac{dL}{da_2} \\
+                \frac{dL}{da_3}
+\end{bmatrix}
+=
+\begin{bmatrix} \frac{dL}{dz'_1} \\
+                \frac{dL}{dz'_2} \\
+                \frac{dL}{dz'_3}
+\end{bmatrix}
 $$
 
 <p>

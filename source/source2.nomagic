@@ -2,6 +2,11 @@
 {}
 <center><h1>Part 2: Softmax Regression <span style="color: red">[Draft]</span></h1></center>
 
+<p>
+What I cannot create, I do not understand.
+-- Richard Feynman
+</p>
+
 <h1>Introduction</h1>
 <p>
 Let's say we want to build a model to discriminate the following <b>red</b>, <b>blue</b>
@@ -64,7 +69,7 @@ $\begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$.
 Here is a visual representation of our model:
 </p>
 
-<img class="static_image" style="width: 900px;" src="static_images/image003.png"/>
+<img class="static_image" style="width: 900px;" src="../static_images/image003.png"/>
 
 <p>
 and simply pick the biggest $a_i$ to do the <b>final prediction</b>.
@@ -89,24 +94,24 @@ as a one hot vector. $W$ has the weights. $b$ has the bias:
 </p>
 
 $$
-X = 
+X =
 \begin{bmatrix}
     0   &  0   & \dots &  0 \\
     0   &  0   & \dots &  0 \\
-\end{bmatrix}_{2 \times M}, \quad 
-Y = 
+\end{bmatrix}_{2 \times M}, \quad
+Y =
 \begin{bmatrix}
     0   &  0   & \dots &  0 \\
     0   &  0   & \dots &  0 \\
     0   &  0   & \dots &  0 \\
 \end{bmatrix}_{3 \times M}, \quad
-W = 
+W =
 \begin{bmatrix}
     0   &  0   \\
     0   &  0   \\
     0   &  0   \\
 \end{bmatrix}_{3 \times 2}
-b = 
+b =
 \begin{bmatrix}
     0  \\
     0  \\
@@ -218,6 +223,153 @@ e^{\begin{bmatrix}
 }
 $$
 
+<p>
+However, this <b>numerically unstable</b>. Because $e^x$ easily overflows 64bit (even 128bit).
+We need to approach it differently.
+</p>
+
+<h1>Numerical Stability of Softmax function</h1>
+
+<p>
+The Softmax function takes an N-dimensional vector of real values and
+returns a new N-dimensional vector that sums up to $1$. The exact formula is (Softmax equation):
+</p>
+
+<p class="equation">
+\begin{equation} \label{eq:softmax}
+a_i = \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}}
+\end{equation}
+</p>
+
+<p>
+Let's make an example:
+</p>
+
+# CODE
+{}
+def softmax(a):
+  return np.exp(a) / np.sum(np.exp(a))
+
+a = np.array([1.0, 2.0, 3.0])
+print a
+print softmax(a)
+
+# HTML
+{}
+<p>
+Intuitively, softmax increases/emphasizes the <b>relative difference</b> between large and small values.
+</p>
+
+<p>
+However, let's look at this:
+</p>
+
+# CODE
+{}
+def softmax(a):
+  return np.exp(a) / np.sum(np.exp(a))
+
+a = np.array([1000.0, 2000.0, 3000.0])
+print a
+print softmax(a)
+
+# HTML
+{}
+<p>
+We are getting <b>nan</b> values along with a <b>RuntimeWarning: overflow encountered in exp</b>.
+Simply because:
+</p>
+
+# CODE
+{}
+print(np.exp(1000))
+
+# HTML
+{}
+Instead, we can approach it differently:
+
+$$
+a_i = \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}} = \frac{e^{z'_i}e^K}{\sum_{j=1}^N e^{z'_j} e^K}
+    = \frac{e^{z'_i + K}}{\sum_{j=1}^N e^{z'_j + K}}
+$$
+
+<p>
+for some fixed $K$. And we can pick $K = - max(z'_1, z'_2, \dots, z'_N)$.
+</p>
+
+<p>
+More practically:
+</p>
+
+# CODE
+{}
+def softmax(a):
+  return np.exp(a-max(a)) / np.sum(np.exp(a-max(a)))
+
+a = np.array([1000.0, 2000.0, 3000.0])
+print a
+print softmax(a)
+
+# HTML
+{}
+<p>
+As you can see, we still have some numerical issues. First and second value of the softmax
+shouldn't be $0$, they should be very close $0$, but not exactly $0$. Hmmm, but this is
+not as bad as <b>nan</b> issue.
+</p>
+
+<p>
+So, to wrap-up the Feed-Forward phase, we can finalize the forward propagation step:
+</p>
+
+# CODE
+{}
+sigmoid = lambda x: 1/(1+np.exp(-x))
+
+def stable_softmax(Z_hat):
+  return np.exp(Z_hat - Z_hat.max(axis = 0)) / np.sum(np.exp(Z_hat - Z_hat.max(axis = 0)), axis = 0)
+
+# this simple implementation is numerically unstable, because:
+# np.log() returns -inf for small inputs very close to 0
+def get_loss(A, Y_one_hot):
+  loss = -1 * np.sum(Y_one_hot * np.log(A) +
+                     (1-Y_one_hot) * np.log(1-A))
+  return loss
+
+# semantically same with above function, and numerically stable.
+def get_loss_numerically_stable(Z_hat, Y_one_hot):
+  loss = -1 * np.sum(Y_one_hot * ( (Z_hat - Z_hat.max(axis = 0)) -
+                                    np.log(np.sum(np.exp(Z_hat - Z_hat.max(axis = 0)), axis = 0))
+				 ) +
+                     (1-Y_one_hot) * ( np.log(np.sum(np.exp(Z_hat - Z_hat.max(axis = 0)), axis = 0) -
+		                       np.exp(Z_hat - Z_hat.max(axis = 0))) -
+		                       np.log(np.sum(np.exp(Z_hat - Z_hat.max(axis = 0)), axis = 0))
+				     )
+		    )
+  return loss
+
+def forward_propagate(X, Y_one_hot, W, b):
+  Z = np.matmul(W, X) + b
+  Z_hat = sigmoid(Z)
+  A = stable_softmax(Z_hat)
+  L1 = get_loss(A, Y_one_hot)
+  L2 = get_loss_numerically_stable(Z_hat, Y_one_hot)
+
+  dA = (-Y / A) + (1-Y) / (1-A)
+  print(A.shape)
+
+  print(dA)
+
+  print(L1)
+  print(L2)
+
+Y_one_hot = np.eye(3)[Y[0]].T
+W = np.random.rand(3, 2)
+b = np.random.rand(3, 1)
+forward_propagate(X, Y_one_hot, W, b)
+
+# HTML
+{}
 <h1>Maximum Likelihood Estimation</h1>
 
 <p>
@@ -318,7 +470,7 @@ $$J = - \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} log(a_j^{(i)}) (1-y_j^{(i)}) log
 If we add our <b>Log Loss</b> to our computation graph:
 </p>
 
-<img class="static_image" style="width: 800px;" src="static_images/image004.png"/>
+<img class="static_image" style="width: 800px;" src="../static_images/image004.png"/>
 
 
 <h1>Gradient Descent</h1>
@@ -327,7 +479,7 @@ If we add our <b>Log Loss</b> to our computation graph:
 Let's see what happens if we change $w_{2, 1}$ in the network, step by step:
 </p>
 
-<img class="static_image" style="width: 900px;" src="static_images/image005.gif"/>
+<img class="static_image" style="width: 900px;" src="../static_images/image005.gif"/>
 
 <p>
 In order to do gradient descent, we need the derivatives:
@@ -341,8 +493,8 @@ $$
 
 <p>
 Let's do some calculus:
-<img src="static_images/evil1.png" style="width:30px; height:30px;">
-<img src="static_images/evil2.png" style="width:30px; height:30px;">
+<img src="../static_images/evil1.png" style="width:30px; height:30px;">
+<img src="../static_images/evil2.png" style="width:30px; height:30px;">
 </p>
 
 $$
@@ -354,41 +506,11 @@ $$
 <h1>Derivative of Softmax Function</h1>
 
 <p>
-The Softmax function takes an N-dimensional vector of real values and
-returns a new N-dimensional vector that sums up to $1$. The exact formula is (Softmax equation):
-</p>
-
-
-<p class="equation">
-\begin{equation} \label{eq:softmax}
-a_i = \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}}
-\end{equation}
-</p>
-
-<p>
-Let's make an example:
-</p>
-
-# CODE
-{}
-def softmax(a):
-  return np.exp(a) / np.sum(np.exp(a))
-
-a = np.array([1.0, 2.0, 3.0])
-print a
-print softmax(a)
-
-# HTML
-{}
-<p>
-Intuitively, softmax increases/emphasizes the <b>relative difference</b> between large and small values.
-</p>
-
-<p>
 A nice property about the Softmax function that it produces a legit <b>Probability Distrubition</b>.
 In classification (or more generally in Machine Learning) we often want to assign prababilities to
 categories or classes. Softmax function is known to work well numereous applications/areas.
 </p>
+
 
 <p>
 Softmax is a vector function -- it takes a vector as an input and returns another vector. Therefore, we
@@ -469,9 +591,51 @@ More succintly, we can summarize all above:
 $$
 \frac{d}{d z'_m} a_i =
   \begin{cases}
-    (a_i)(1-a_m), & \text{if}\ \quad  i = m \\
+    (a_i)(1-a_m),  & \text{if}\ \quad  i = m \\
     - (a_m) (a_i), & \text{if}\ \quad  i \neq m
   \end{cases}
+$$
+
+<p>
+or equally:
+</p>
+
+$$
+\frac{d}{d z'_m} a_i = (a_i)(\delta_{i,m} - a_m)
+$$
+
+<p>
+where $\delta_{i,m} = 1$ if $i=m$, and $0$ otherwise.
+</p>
+
+<p>
+The reason we want to write it this way is that we don't want to use any <b>loops</b>. And we can
+execute the above using matrix operations like:
+</p>
+
+$$
+\mathbf{a} \mathbf{e^T} \circ (\mathbf{I} - \mathbf{e} \mathbf{a^T})
+$$
+
+<p>
+where $\mathbf{e}$ is a vector of $1$'s of size $K\times1$ for a suitable $K$ and $\circ$ represents Hadamard product,
+in other words element-wise product of matrices.
+</p>
+
+$$
+\begin{bmatrix} \frac{da_1}{dz'_1} \frac{da_2}{dz'_1} \frac{da_3}{dz'_1} \\
+                \frac{da_1}{dz'_2} \frac{da_2}{dz'_2} \frac{da_3}{dz'_2} \\
+                \frac{da_1}{dz'_3} \frac{da_2}{dz'_3} \frac{da_3}{dz'_3}
+\end{bmatrix}
+\begin{bmatrix} \frac{dL}{da_1} \\
+                \frac{dL}{da_2} \\
+                \frac{dL}{da_3}
+\end{bmatrix}
+=
+\begin{bmatrix} \frac{dL}{dz'_1} \\
+                \frac{dL}{dz'_2} \\
+                \frac{dL}{dz'_3}
+\end{bmatrix}
 $$
 
 <p>

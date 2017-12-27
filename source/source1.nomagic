@@ -82,15 +82,15 @@ we can predict the class using Equation \ref{eq:inference}.
 sigmoid = lambda x: 1/(1+np.exp(-x))
 
 W = np.array([6.33, -4.22]) # some magical W
-X = np.array([1.1, -0.6])   # point we want to classify
+x = np.array([1.1, -0.6])   # point we want to classify
 b = 1.99
 
-print sigmoid(W.dot(X) + b)
+print sigmoid(W.dot(x) + b)
 
 # HTML
 {}
 <p>
-Let's try another point, $X = \begin{bmatrix} -1.2 \\ 1.0 \end{bmatrix}$.
+Let's try another point, $x = \begin{bmatrix} -1.2 \\ 1.0 \end{bmatrix}$.
 </p>
 
 # CODE
@@ -98,11 +98,11 @@ Let's try another point, $X = \begin{bmatrix} -1.2 \\ 1.0 \end{bmatrix}$.
 sigmoid = lambda x: 1/(1+np.exp(-x))
 
 W = np.array([6.33, -4.22]) # some magical W
-X = np.array([-1.2, 1.0])   # point we want to classify
+x = np.array([-1.2, 1.0])   # point we want to classify
 
 b = 1.99
 
-print sigmoid(W.dot(X) + b)
+print sigmoid(W.dot(x) + b)
 
 # HTML
 {}
@@ -119,13 +119,13 @@ it means our prediction is <b>red</b> and otherwise it is <b>blue</b>.
 Here is a visual representation of our model:
 </p>
 
-<img class="static_image" src="static_images/image000.png"/>
+<img class="static_image" src="../static_images/image000.png"/>
 
 <p>
 or alternatively we can visualize the same:
 </p>
 
-<img class="static_image" style="width: 500px;" src="static_images/image001.png"/>
+<img class="static_image" style="width: 500px;" src="../static_images/image001.png"/>
 
 <p>
 We typically see the first version of the computation graph visualization more than the second one in
@@ -272,7 +272,7 @@ $$J = - \sum log P(y|x) = - \sum \left ( ylog(\hat{y}) + (1-y)log(1-\hat{y}) \ri
 Here we use the notation $J$ for the quantity we want to minimize for <b>all samples</b>, and $L$ for <b>one sample</b>. Let's add these to our computation graph visualization:
 </p>
 
-<img class="static_image" style="width: 900px;" src="static_images/image002.png"/>
+<img class="static_image" style="width: 900px;" src="../static_images/image002.png"/>
 
 <h1>Gradient Descent</h1>
 
@@ -301,8 +301,8 @@ $$w_1 := w_1 - \alpha \frac{dL}{dw_1}, \quad w_2 := w_2 - \alpha \frac{dL}{dw_2}
 
 <p>
 Let's do some calculus:
-<img src="static_images/evil1.png" style="width:30px; height:30px;">
-<img src="static_images/evil2.png" style="width:30px; height:30px;">
+<img src="../static_images/evil1.png" style="width:30px; height:30px;">
+<img src="../static_images/evil2.png" style="width:30px; height:30px;">
 </p>
 
 $$ \frac{dL}{d\hat{y}} = \frac{d}{d\hat{y}} - \left(ylog(\hat{y}) + (1-y)log(1-\hat{y})\right) = \frac{d}{d\hat{y}} - ylog(\hat{y}) +  \frac{d}{d\hat{y}} - (1-y)log(1-\hat{y})

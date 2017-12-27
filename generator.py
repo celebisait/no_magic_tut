@@ -80,18 +80,18 @@ def generate_code_html(source, info):
     highlighted = highlight(source, PythonLexer(), FORMATTER)
     source = source.replace(IMAGE_PNG, image_name)
     exec (source, globals())
-    highlighted += add_image(image_name, info['width'])
+    highlighted += add_image('"../' + image_name[1:], info['width'])
     image_counter += 1
   elif ANIMATION_GIF in source:
     highlighted = highlight(source, PythonLexer(), FORMATTER)
     source = source.replace(ANIMATION_GIF, animation_name)
     exec (source, globals())
-    highlighted += add_animation(animation_name, info['width'])
+    highlighted += add_animation('"../' + animation_name[1:], info['width'])
     animation_counter += 1
   elif PRINT in source:
     highlighted = highlight(source, PythonLexer(), FORMATTER)
     with stdoutIO() as s:
-      exec source
+      exec (source, globals())
     highlighted += add_stdout(s.getvalue())
 
   return highlighted
@@ -109,20 +109,25 @@ def generate_html(template, source_lines):
 
 
 def main():
+  input_file = 'source/source2.nomagic'
+  output_file = 'output/part2.html'
+  # title = 'Part1: Logistic Regression'
+  title = 'Part2: Softmax Regression'
 
   # write CSS file
   with open('pygments.css', 'w') as f:
     f.write(FORMATTER.get_style_defs('.highlight'))
 
-  with open('template.data') as f:
+  with open('source/template.data') as f:
     template = f.read()
+    template = template.replace('$TITLE', title)
 
-  with open('source2.nomagic') as f:
+  with open(input_file) as f:
     source = f.readlines()
 
   output = generate_html(template, source)
 
-  with open('output.html', 'w') as f:
+  with open(output_file, 'w') as f:
     f.write(output)
 
 

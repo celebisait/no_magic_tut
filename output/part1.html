@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
 <head>
-<title>Part 1: Logistic Regression</title>
+<title>Part1: Logistic Regression</title>
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
     TeX: {
@@ -18,6 +18,7 @@ MathJax.Hub.Config({
 </script>
 <link rel="stylesheet" href="pygments.css">
 <link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 </head>
 
 <body>
@@ -28,7 +29,8 @@ MathJax.Hub.Config({
 
 <h1>Introduction</h1>
 <p>
-Let's say we want to build a model to discriminate the following red and blue points in 2-dimensional space:
+Let's say we want to build a model to discriminate the following <b>red</b> and <b>blue</b>
+points in 2-dimensional space:
 </p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
@@ -56,12 +58,12 @@ Let's say we want to build a model to discriminate the following red and blue po
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="images/image000.png"/><p>
+<img class="generated_image" width="600" src="../images/image000.png"/><p>
 In other words, given a point, $(x_1, x_2)$, we want to output either $0$ or $1$. (In this tutorial $0$ represents red, $1$ represents blue.)
 </p>
 
 <p>
-We can use <b>Logistic Regression</b> for this problem. In Logistic Regression, we first learn <b>weights</b> ($w_1, w_2$) and <b>bias</b> ($b$). This phase is called <b>training</b>. Then we use the following formula to predict if the new point is blue or red. This phase is called <b>prediction</b> or <b>inference</b>.
+We can use <b>Logistic Regression</b> for this problem. In Logistic Regression, we first learn <b>weights</b> ($w_1, w_2$) and <b>bias</b> ($b$). This phase is called <b>training</b>. Then we use the following formula to predict if the new point is red or blue. This phase is called <b>prediction</b> or <b>inference</b>.
 </p>
 
 <p class="equation">
@@ -97,23 +99,23 @@ we can predict the class using Equation \ref{eq:inference}.
 <div class="highlight"><pre><span></span><span class="n">sigmoid</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
 
 <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">6.33</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.22</span><span class="p">])</span> <span class="c1"># some magical W</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6</span><span class="p">])</span>   <span class="c1"># point we want to classify</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6</span><span class="p">])</span>   <span class="c1"># point we want to classify</span>
 <span class="n">b</span> <span class="o">=</span> <span class="mf">1.99</span>
 
-<span class="k">print</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
 </pre></div>
 <div class="code_stdout"><pre>0.999989716915
 </pre></div><p>
-Let's try another point, $X = \begin{bmatrix} -1.2 \\ 1.0 \end{bmatrix}$.
+Let's try another point, $x = \begin{bmatrix} -1.2 \\ 1.0 \end{bmatrix}$.
 </p>
 <div class="highlight"><pre><span></span><span class="n">sigmoid</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
 
 <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">6.33</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.22</span><span class="p">])</span> <span class="c1"># some magical W</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>   <span class="c1"># point we want to classify</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>   <span class="c1"># point we want to classify</span>
 
 <span class="n">b</span> <span class="o">=</span> <span class="mf">1.99</span>
 
-<span class="k">print</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
 </pre></div>
 <div class="code_stdout"><pre>5.40255201872e-05
 </pre></div><p>
@@ -126,13 +128,13 @@ it means our prediction is <b>red</b> and otherwise it is <b>blue</b>.
 Here is a visual representation of our model:
 </p>
 
-<img class="static_image" src="static_images/image000.png"/>
+<img class="static_image" src="../static_images/image000.png"/>
 
 <p>
 or alternatively we can visualize the same:
 </p>
 
-<img class="static_image" style="width: 500px;" src="static_images/image001.png"/>
+<img class="static_image" style="width: 500px;" src="../static_images/image001.png"/>
 
 <p>
 We typically see the first version of the computation graph visualization more than the second one in
@@ -170,7 +172,7 @@ $$ g(z) = \frac{1}{1+e^{-z}} $$
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="images/image001.png"/><h1>Maximum Likelihood Estimation</h1>
+<img class="generated_image" width="600" src="../images/image001.png"/><h1>Maximum Likelihood Estimation</h1>
 
 <p>
 In training, our goal is to <b>learn</b> three numbers: $w_1, w_2, b$ that best
@@ -180,6 +182,9 @@ In training, our goal is to <b>learn</b> three numbers: $w_1, w_2, b$ that best
 <p>
 We want to find $w_1, w_2, b$ that minimizes some definition of a <b>cost function</b>.
 Let's attempt to write a cost function for this problem.
+</p>
+
+<p>
 Let's say we have two points:
 </p>
 
@@ -271,7 +276,7 @@ $$J = - \sum log P(y|x) = - \sum \left ( ylog(\hat{y}) + (1-y)log(1-\hat{y}) \ri
 Here we use the notation $J$ for the quantity we want to minimize for <b>all samples</b>, and $L$ for <b>one sample</b>. Let's add these to our computation graph visualization:
 </p>
 
-<img class="static_image" style="width: 900px;" src="static_images/image002.png"/>
+<img class="static_image" style="width: 900px;" src="../static_images/image002.png"/>
 
 <h1>Gradient Descent</h1>
 
@@ -300,8 +305,8 @@ $$w_1 := w_1 - \alpha \frac{dL}{dw_1}, \quad w_2 := w_2 - \alpha \frac{dL}{dw_2}
 
 <p>
 Let's do some calculus:
-<img src="static_images/evil1.png" style="width:30px; height:30px;">
-<img src="static_images/evil2.png" style="width:30px; height:30px;">
+<img src="../static_images/evil1.png" style="width:30px; height:30px;">
+<img src="../static_images/evil2.png" style="width:30px; height:30px;">
 </p>
 
 $$ \frac{dL}{d\hat{y}} = \frac{d}{d\hat{y}} - \left(ylog(\hat{y}) + (1-y)log(1-\hat{y})\right) = \frac{d}{d\hat{y}} - ylog(\hat{y}) +  \frac{d}{d\hat{y}} - (1-y)log(1-\hat{y})
@@ -348,7 +353,7 @@ $$
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="images/image002.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far away than $0$ the <i>change</i>
+<img class="generated_image" width="600" src="../images/image002.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far away than $0$ the <i>change</i>
 gets slower.
 <h1>Applying Gradient Descent to Minimize Loss</h1>
 <div class="highlight"><pre><span></span><span class="n">ALPHA</span> <span class="o">=</span> <span class="mf">0.4</span> <span class="c1"># learning rate</span>
@@ -401,7 +406,7 @@ gets slower.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="images/image003.png"/><p>
+<img class="generated_image" width="600" src="../images/image003.png"/><p>
 It turns out we just trained a pretty good classifier for this problem. We achieved 100% accuracy. Let's try to visualize our <b>decision boundary</b>.
 
 <b>Remember:</b> if the value is smaller than 0.5,
@@ -454,7 +459,7 @@ Now, let's see what will be the value of $x_2$ when $x_1=-1.5$ and $x_1 =1.5$.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="images/image004.png"/><p>
+<img class="generated_image" width="600" src="../images/image004.png"/><p>
 We can do better. Now, let's see the decision boundary step by step as an <b>animation</b>.
 Everybody <i>loves</i> animations. Something everybody loves even more is that animations
 that you can see the source code as well.
@@ -493,7 +498,7 @@ that you can see the source code as well.
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
 <video class="generated_video" width="600" controls>
-<source src="animations/animation000.mp4" type="video/mp4">
+<source src="../animations/animation000.mp4" type="video/mp4">
 </video><p>
 Let's see the decision boundary in a more <b>lazy</b> setting. Here, we simply classify
 every single point in the grid and then give the predictions to a <b>contour plot</b>. Comparing
@@ -530,7 +535,7 @@ parameters step by step through the gradient descent iterations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="images/image005.png"/><p>
+<img class="generated_image" width="600" src="../images/image005.png"/><p>
 Here, background <b>blue</b> means our prediction is very close to $0$ which means it is confidently
 classified as <b>red</b>. And conversely, background <b>red</b> means our prediction is very close to
 $1$ which means it is confidently classified as <b>blue</b>.
@@ -595,7 +600,7 @@ has an interesting property of being <b>convex</b>.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="900" src="images/image006.png"/><p>
+<img class="generated_image" width="900" src="../images/image006.png"/><p>
 Let's see the parameters step by step through the iterations of <b>gradient descent</b>.
 We start from a random initial point and keep iterating to refine our parameters.
 </p>
@@ -650,7 +655,7 @@ We start from a random initial point and keep iterating to refine our parameters
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
 <video class="generated_video" width="900" controls>
-<source src="animations/animation001.mp4" type="video/mp4">
+<source src="../animations/animation001.mp4" type="video/mp4">
 </video><h1> Applying Logistic Regression using low-level Tensorflow APIs</h1>
 
 <p>
@@ -704,7 +709,7 @@ using low-level TensorFlow API:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="images/image007.png"/><h1> References </h1>
+<img class="generated_image" width="600" src="../images/image007.png"/><h1> References </h1>
 
 <ol>
   <li> Andrew Ng Coursera Machine Learning course. </li>
