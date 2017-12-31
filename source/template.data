@@ -7,6 +7,7 @@ MathJax.Hub.Config({
     TeX: {
        equationNumbers: { autoNumber: "AMS" },
        TagSide: "right"
+
     }
   });
 </script>

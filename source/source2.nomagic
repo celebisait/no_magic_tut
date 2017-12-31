@@ -17,12 +17,14 @@ and <b>green</b> points in 2-dimensional space:
 {'type': 'image', 'width': 600}
 import numpy as np
 import matplotlib.pyplot as plt
+np.set_printoptions(precision=3, suppress=True)
 
 X = np.array([[-0.1, -0.5, 1.3, -0.6, -1.5, 0.2, -0.3,  0.7,  1.1, -1.0,
                -0.5, -1.3,  -1.4, -0.9, 0.4 , -0.4, 0.3, -1.6, -0.5, -1.0],
               [1.4,  -0.1, 0.9,  0.4,  0.4, 0.2, -0.4, -0.8, -1.5,  0.9,
                1.5, -0.45, -1.2, -0.7, -1.3, 0.6, -0.5, -0.7, -1.4, -1.4]])
 Y = np.array([[0, 0, 1, 0, 2, 1, 1, 1, 1, 0, 0, 2, 2, 2, 1, 0, 1, 2, 2, 2]])
+Y_one_hot = np.eye(3)[Y[0]].T
 colormap = np.array(['r', 'b', 'g'])
 
 def plot_scatter(X, Y, colormap, path):
@@ -44,7 +46,8 @@ plt.cla()
 # HTML
 {}
 <p>
-In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>, <b>blue</b> or <b>green</b>.
+In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
+<b>blue</b> or <b>green</b>.
 </p>
 
 <p>
@@ -69,17 +72,11 @@ $\begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$.
 Here is a visual representation of our model:
 </p>
 
-<img class="static_image" style="width: 900px;" src="../static_images/image003.png"/>
+<img class="static_image" style="width: 800px;" src="../static_images/image003.png"/>
 
 <p>
 and simply pick the biggest $a_i$ to do the <b>final prediction</b>.
 </p>
-
-<p>
-We use sigmoid function as $g(z)$:
-</p>
-
-$$ g(z) = \frac{1}{1+e^{-z}} $$
 
 <h1>Feed-forward Phase</h1>
 
@@ -160,72 +157,19 @@ As you may realized, the summation here is called <b>broadcasting</b>.
 </p>
 
 <p>
-After getting $Z$, we want to calculate $Z'$:
+After getting $Z$, we apply softmax function over $Z$:
 </p>
 
-$$
-Z' = g(Z)
-$$
-
-<p>
-Here we can see it visually:
-</p>
-
-$$
-\begin{bmatrix}
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
-\end{bmatrix}_{3 \times M}
-=
-g\left(
-\begin{bmatrix}
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
-\end{bmatrix}_{3 \times M}
-\right)
-$$
-
-<p>
-As you may realized, taking sigmoid here of a matrix mean taking the sigmoid of each
-value in the matrix seperately.
+<p class="equation">
+\begin{equation} \label{eq:softmax}
+a_i = \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
+\end{equation}
 </p>
 
 <p>
-Now, we need to get $a$ using $Z'$. Naively, we can do something like:
-</p>
-
-$$
-A = \frac{e^{Z'}}{ \text{Sum over the rows of } e^{Z'} }
-$$
-
-Or visually:
-
-$$
-\begin{bmatrix}
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
-\end{bmatrix}_{3 \times M}
-=
-\frac{
-e^{\begin{bmatrix}
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
-\end{bmatrix}_{3 \times M}}
-}
-{
-\begin{bmatrix}
-    0   &  0   & \dots &  0 \\
-\end{bmatrix}_{1 \times M}
-}
-$$
-
-<p>
-However, this <b>numerically unstable</b>. Because $e^x$ easily overflows 64bit (even 128bit).
-We need to approach it differently.
+However, this may be problematic to compute for big values of $z_i$. We call this phenomena
+<b>numerically unstable</b>. Because $e^{z_i}$ easily overflows 64bit (even 128bit).
+We need to approach it slightly differently.
 </p>
 
 <h1>Numerical Stability of Softmax function</h1>
@@ -233,12 +177,6 @@ We need to approach it differently.
 <p>
 The Softmax function takes an N-dimensional vector of real values and
 returns a new N-dimensional vector that sums up to $1$. The exact formula is (Softmax equation):
-</p>
-
-<p class="equation">
-\begin{equation} \label{eq:softmax}
-a_i = \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}}
-\end{equation}
 </p>
 
 <p>
@@ -289,12 +227,12 @@ print(np.exp(1000))
 Instead, we can approach it differently:
 
 $$
-a_i = \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}} = \frac{e^{z'_i}e^K}{\sum_{j=1}^N e^{z'_j} e^K}
-    = \frac{e^{z'_i + K}}{\sum_{j=1}^N e^{z'_j + K}}
+a_i = \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}} = \frac{e^{z_i}e^K}{\sum_{j=1}^N e^{z_j} e^K}
+    = \frac{e^{z_i + K}}{\sum_{j=1}^N e^{z_j + K}}
 $$
 
 <p>
-for some fixed $K$. And we can pick $K = - max(z'_1, z'_2, \dots, z'_N)$.
+for some fixed $K$. And we can pick $K = - max(z_1, z_2, \dots, z_N)$.
 </p>
 
 <p>
@@ -323,62 +261,47 @@ So, to wrap-up the Feed-Forward phase, we can finalize the forward propagation s
 </p>
 
 # CODE
-{}
-sigmoid = lambda x: 1/(1+np.exp(-x))
-
-def stable_softmax(Z_hat):
-  return np.exp(Z_hat - Z_hat.max(axis = 0)) / np.sum(np.exp(Z_hat - Z_hat.max(axis = 0)), axis = 0)
-
-# this simple implementation is numerically unstable, because:
-# np.log() returns -inf for small inputs very close to 0
-def get_loss(A, Y_one_hot):
-  loss = -1 * np.sum(Y_one_hot * np.log(A) +
-                     (1-Y_one_hot) * np.log(1-A))
-  return loss
-
-# semantically same with above function, and numerically stable.
-def get_loss_numerically_stable(Z_hat, Y_one_hot):
-  loss = -1 * np.sum(Y_one_hot * ( (Z_hat - Z_hat.max(axis = 0)) -
-                                    np.log(np.sum(np.exp(Z_hat - Z_hat.max(axis = 0)), axis = 0))
-				 ) +
-                     (1-Y_one_hot) * ( np.log(np.sum(np.exp(Z_hat - Z_hat.max(axis = 0)), axis = 0) -
-		                       np.exp(Z_hat - Z_hat.max(axis = 0))) -
-		                       np.log(np.sum(np.exp(Z_hat - Z_hat.max(axis = 0)), axis = 0))
-				     )
-		    )
-  return loss
+{'width': 600}
+def stable_softmax(Z):
+  return np.exp(Z - Z.max(axis = 0)) / np.sum(np.exp(Z - Z.max(axis = 0)), axis = 0)
 
 def forward_propagate(X, Y_one_hot, W, b):
   Z = np.matmul(W, X) + b
-  Z_hat = sigmoid(Z)
-  A = stable_softmax(Z_hat)
-  L1 = get_loss(A, Y_one_hot)
-  L2 = get_loss_numerically_stable(Z_hat, Y_one_hot)
+  A = stable_softmax(Z)
 
-  dA = (-Y / A) + (1-Y) / (1-A)
-  print(A.shape)
+  return Z, A
 
-  print(dA)
+W = np.array([[ 0.31, 3.95],
+              [ 7.07, -0.23],
+              [-6.27, -2.35]])
 
-  print(L1)
-  print(L2)
+b = np.array([[ 1.2  ],
+              [ 2.93 ],
+              [-4.14 ]])
 
-Y_one_hot = np.eye(3)[Y[0]].T
-W = np.random.rand(3, 2)
-b = np.random.rand(3, 1)
-forward_propagate(X, Y_one_hot, W, b)
+Z, A = forward_propagate(X, Y_one_hot, W, b)
+print(Y_one_hot[:,0:10])
+print(A[:,0:10])
 
 # HTML
 {}
-<h1>Maximum Likelihood Estimation</h1>
+<p>
+Above we print the first 10 predictions, and they look pretty good. In fact, we have 100% accuracy.
+So, given the weights, and bias, it is pretty straight-forward to calculate the final predictions.
+The tricky part is to <i>learn</i> those weights properly.
+</p>
+
+# HTML
+{}
+<h1>Defining Loss function (Maximum Likelihood Estimation)</h1>
 
 <p>
-In training, our goal is to <b>learn</b> a matrix $W$ of size $(3 \times 2)$  and a $b$ of size $(3 \times 1)$
+In training, our goal is to <b>learn</b> a matrix $W$ of size $(3 \times 2)$  and a $\mathbf{b}$ of size $(3 \times 1)$
 that best <b>discriminates</b> red, blue and green points.
 </p>
 
 <p>
-We want to find $W$ and $b$ that minimizes some definition of a <b>cost function</b>.
+We want to find $W$ and $\mathbf{b}$ that minimizes some definition of a <b>cost function</b>.
 Let's attempt to write a cost function for this problem.
 </p>
 
@@ -386,52 +309,56 @@ Let's attempt to write a cost function for this problem.
 Let's say we have three points:
 </p>
 
-$$x = \begin{bmatrix} -0.1 \\ 1.4 \end{bmatrix}, y=0$$
+$$\mathbf{x} = \begin{bmatrix} -0.1 \\ 1.4 \end{bmatrix}, y=0$$
 
-$$x = \begin{bmatrix} 1.3  \\ 0.9 \end{bmatrix}, y=1$$
+$$\mathbf{x} = \begin{bmatrix} 1.3  \\ 0.9 \end{bmatrix}, y=1$$
 
 <p>
 and similarly,
 </p>
 
-$$x = \begin{bmatrix} -1.4  \\ -1.1 \end{bmatrix}, y=2$$
+$$\mathbf{x} = \begin{bmatrix} -1.4  \\ -1.1 \end{bmatrix}, y=2$$
 
 <p>
-Now, let's list these $y$ as a <b>one hot vector</b> and, their corresponding $a$ values:
+Now, let's list these $y$ as a <b>one hot vector</b> and, their corresponding <i>imaginary</i> $\mathbf{a}$ values:
 </p>
 
-$$y = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, a = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix} $$
+$$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix} $$
 
-$$y = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, a = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix} $$
+$$\mathbf{y} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix} $$
 
-$$y = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, a = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix} $$
+$$\mathbf{y} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix} $$
 
 <p>
-Intuitively, we want a classifier that produces <b>similar</b> looking $a$ and $y$. This means, if
-$y = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$, then, for example, having
-$a = \begin{bmatrix} 0.8 \\ 0.1 \\ 0.1 \end{bmatrix}$ is <b>more desirable</b> than having
-$a = \begin{bmatrix} 0.6 \\ 0.2 \\ 0.2 \end{bmatrix}$.
+Intuitively, we want a classifier that produces <b>similar</b> looking $\mathbf{a}$ and $\mathbf{y}$.
+This means, if
+$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$, then, for example, having
+$\mathbf{a} = \begin{bmatrix} 0.8 \\ 0.1 \\ 0.1 \end{bmatrix}$ is <b>more desirable</b> than having
+$\mathbf{a} = \begin{bmatrix} 0.6 \\ 0.2 \\ 0.2 \end{bmatrix}$.
 
 <p>
 In other words, we want to <b>maximize</b>:
 </p>
 
-$$P(y|x) = \prod_{j=1}^{3} {a_j^{y_j} (1-a_j)^{(1-y_j)} }$$
+$$P(\mathbf{y}|\mathbf{x}) = \prod_{j=1}^{3} a_j^{y_j} $$
 
 <p>
-Here, $a_j$ represents the jth item in the vector $a$, and similarly $y_j$ represents the jth value in $y$.
-For example, when $a = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix}$, then, $a_1 = 0.9, a_2 = 0.1$ and
+Here, $a_j$ represents the jth item in the vector $\mathbf{a}$, and similarly $y_j$ represents the jth value in $\mathbf{y}$.
+For example, when $\mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix}$, then, $a_1 = 0.9, a_2 = 0.1$ and
 $a_3 = 0.0$.
 </p>
 
-$$y = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, a = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix}, P(y|x) = 0.9 \times 0.9 \times 1.0 = 0.810 $$
+$$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, a = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix},
+  P(\mathbf{y}|\mathbf{x}) = 0.9 \times 1 \times 1 = 0.9 $$
 
-$$y = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, a = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix}, P(y|x) = 0.9 \times 0.8 \times 0.9 = 0.648 $$
+$$\mathbf{y} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, a = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix},
+  P(\mathbf{y}|\mathbf{x}) = 1 \times 0.8 \times 1 = 0.8 $$
 
-$$y = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, a = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix}, P(y|x) = 0.9 \times 0.8 \times 0.7 = 0.504 $$
+$$\mathbf{y} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, a = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix},
+  P(\mathbf{y}|\mathbf{x}) = 1 \times 1 \times 0.7 = 0.7 $$
 
 <p>
-<b>Bigger</b> the $P(y|x)$ is the <b>better</b>.
+<b>Bigger</b> the $P(\mathbf{y}|\mathbf{x})$ is the <b>better</b>.
 </p>
 
 <p>
@@ -445,50 +372,68 @@ $$J = \prod_{i=1}^{M} P(y^{(i)}|x^{(i)}) $$
 here, $y^{(i)}$, $x^{(i)}$ and $a^{(i)}$ corresponds to ith sample in the training set out of $M$ training samples. We can rewrite it as:
 </p>
 
-$$J = \prod_{i=1}^{M} \prod_{j=1}^{3}  (a_j^{(i)}) ^ {y_j^{(i)}} (1-a_j^{(i)})^{(1-y_j^{(i)})} $$
+$$J = \prod_{i=1}^{M} \prod_{j=1}^{3}  (a_j^{(i)}) ^ {y_j^{(i)}} $$
 
 <p>
 Maximizing above is equal to maximizing:
 </p>
 
-$$J = log \left( \prod_{i=1}^{M} \prod_{j=1}^{3} (a_j^{(i)}) ^ {y_j^{(i)}} (1-a_j^{(i)})^{(1-y_j^{(i)})} \right ) $$
+$$J = log \left( \prod_{i=1}^{M} \prod_{j=1}^{3} (a_j^{(i)}) ^ {y_j^{(i)}} \right ) $$
 
 <p>
-with more math:
+we can write it as:
 </p>
 
-$$J = \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} log(a_j^{(i)}) (1-y_j^{(i)}) log(1-a_j^{(i)}) $$
+$$J = \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} log(a_j^{(i)}) $$
 
 <p>
 since we like to <b>minimize</b> things instead of <b>maximizing</b>:
 </p>
 
-
-$$J = - \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} log(a_j^{(i)}) (1-y_j^{(i)}) log(1-a_j^{(i)}) $$
+$$J = - \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} log(a_j^{(i)}) $$
 
 <p>
 If we add our <b>Log Loss</b> to our computation graph:
 </p>
 
-<img class="static_image" style="width: 800px;" src="../static_images/image004.png"/>
-
+<img class="static_image" style="width: 900px;" src="../static_images/image004.png"/>
 
 <h1>Gradient Descent</h1>
 
 <p>
-Let's see what happens if we change $w_{2, 1}$ in the network, step by step:
+Ideally, we want to start with <b>random</b> parameters and make our parameters
+better and better gradually as an iterative manner. Gradient descent is simply:
 </p>
 
-<img class="static_image" style="width: 900px;" src="../static_images/image005.gif"/>
+$$
+W = W - \alpha \frac{dL}{dW} \quad \mathbf{b} = \mathbf{b} - \alpha \frac{dL}{d \mathbf{b}}
+$$
+
+<p>
+The tricky part here is to compute $\frac{dL}{dW}$ and $\frac{dL}{d \mathbf{b}}$. We need
+to do a small scale <b>back propagation</b> of derivatives here.
+</p>
+
+<p>
+But first, let's see what happens if we change $w_{2, 1}$ in the network, step by step:
+</p>
+
+<p>
+<center>
+UPDATED ANIMATION COMES HERE. <br/>
+UPDATED ANIMATION COMES HERE. <br/>
+UPDATED ANIMATION COMES HERE. <br/>
+</center>
+</p>
 
 <p>
 In order to do gradient descent, we need the derivatives:
 </p>
 
 $$
-\frac{dL}{dw_{m,n}} = \sum_{i=1}^3 \left (\frac{dL}{da_i} \right) \left (\frac{da_i}{dz'_m} \right)  \left (\frac{dz'_m}{dz_m} \right ) \left(\frac{dz_m}{dw_{m,n}} \right ), \quad
+\frac{dL}{dw_{m,n}} = \sum_{i=1}^3 \left (\frac{dL}{da_i} \right) \left (\frac{da_i}{dz_m} \right) \left(\frac{dz_m}{dw_{m,n}} \right ), \quad
 
-\frac{dL}{db_m} = \sum_{i=1}^3 \left (\frac{dL}{da_i} \right) \left (\frac{da_i}{dz'_m} \right)  \left (\frac{dz'_m}{dz_m} \right ) \left(\frac{dz_m}{b_m} \right )
+\frac{dL}{db_m} = \sum_{i=1}^3 \left (\frac{dL}{da_i} \right) \left (\frac{da_i}{dz_m} \right) \left(\frac{dz_m}{b_m} \right )
 $$
 
 <p>
@@ -498,9 +443,13 @@ Let's do some calculus:
 </p>
 
 $$
-\frac{dL}{da_i} =  \frac{d}{da_i} \left ( - \sum_{j=1}^3 y_j log(a_j) + (1-y_j) log(1-a_j) \right ) =
-\frac{d}{da_i} \left ( - y_i log(a_i) \right ) + \frac{d}{da_i} \left ( - (1-y_i) log(1-a_i) \right ) =
-\frac{-y_i}{a_i} + \frac{(1-y_i)}{1-a_i}
+\frac{dL}{da_i} =  \frac{d}{da_i} \left ( - \sum_{j=1}^3 y_j log(a_j) \right ) =
+\frac{d}{da_i} \left ( - y_i log(a_i) \right ) = \frac{-y_i}{a_i}
+$$
+
+$$
+\frac{dz_m}{dw_{m,n}} = x_n, \quad
+\frac{dz_m}{b_m} = 1
 $$
 
 <h1>Derivative of Softmax Function</h1>
@@ -523,15 +472,15 @@ For example,
 </p>
 
 $$
-\frac{d}{d z'_2} a_1
+\frac{d}{d z_2} a_1
 $$
 
 <p>
-refers to how much $a_1$ will change if play with $z'_2$.
+refers to how much $a_1$ will change if play with $z_2$.
 </p>
 
 <p>
-Using the same logic for each element for $a_i$ and $z'_j$ would produce us $N \times N$ matrix of derivatives.
+Using the same logic for each element for $a_i$ and $z_j$ would produce us $N \times N$ matrix of derivatives.
 </p>
 
 <p>
@@ -539,7 +488,7 @@ Let's try to take derivative for <b>one particular element</b>:
 </p>
 
 $$
-\frac{d}{d z'_m} a_i = \frac{d}{d z'_m} \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}}
+\frac{d}{d z_m} a_i = \frac{d}{d z_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
 $$
 
 <p>
@@ -555,7 +504,7 @@ In our case:
 </p>
 
 $$
-f(x) = e^{z'_i}, \quad g(x) = \sum_{j=1}^N e^{z'_j}
+f(x) = e^{z_i}, \quad g(x) = \sum_{j=1}^N e^{z_j}
 $$
 
 <p>
@@ -563,10 +512,10 @@ Let's apply <b>Quotient Rule</b>, if $i=m$:
 </p>
 
 $$
-\frac{d}{d z'_m} a_i = \frac{d}{d z'_m} \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}} =
-\frac{ (e^{z'_i})' \sum_{j=1}^N e^{z'_j}  - (\sum_{j=1}^N e^{z'_j})' e^{z'_i} }{ [\sum_{j=1}^N e^{z'_j}] ^ 2 } =
-\frac{ e^{z'_i} \sum_{j=1}^N e^{z'_j} - e^{z'_m} e^{z'_i} }{ [\sum_{j=1}^N e^{z'_j}] ^ 2 } =
-\frac{ e^{z'_i} } { \sum_{j=1}^N e^{z'_j} }  \frac{ \sum_{j=1}^N e^{z'_j} - e^{z'_m} } { \sum_{j=1}^N e^{z'_j} } = (a_i)(1-a_m)
+\frac{d}{d z_m} a_i = \frac{d}{d z_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}} =
+\frac{ (e^{z_i})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } =
+\frac{ e^{z_i} \sum_{j=1}^N e^{z_j} - e^{z_m} e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } =
+\frac{ e^{z_i} } { \sum_{j=1}^N e^{z_j} }  \frac{ \sum_{j=1}^N e^{z_j} - e^{z_m} } { \sum_{j=1}^N e^{z_j} } = (a_i)(1-a_m)
 $$
 
 <p>
@@ -578,9 +527,9 @@ Similarly, if $i \neq m$:
 </p>
 
 $$
-\frac{d}{d z'_m} a_i = \frac{d}{d z'_m} \frac{e^{z'_i}}{\sum_{j=1}^N e^{z'_j}} =
-\frac{ (e^{z'_i})' \sum_{j=1}^N e^{z'_j}  - (\sum_{j=1}^N e^{z'_j})' e^{z'_i} }{ [\sum_{j=1}^N e^{z'_j}] ^ 2 } =
-\frac{ 0 - e^{z'_m} e^{z'_i} }{ [\sum_{j=1}^N e^{z'_j}] ^ 2 } = -\frac{ e^{z'_m} } { \sum_{j=1}^N e^{z'_j} } \frac{ e^{z'_i} }{ \sum_{j=1}^N e^{z'_j} }
+\frac{d}{d z_m} a_i = \frac{d}{d z_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}} =
+\frac{ (e^{z_i})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } =
+\frac{ 0 - e^{z_m} e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } = -\frac{ e^{z_m} } { \sum_{j=1}^N e^{z_j} } \frac{ e^{z_i} }{ \sum_{j=1}^N e^{z_j} }
 = - (a_m) (a_i)
 $$
 
@@ -589,7 +538,7 @@ More succintly, we can summarize all above:
 </p>
 
 $$
-\frac{d}{d z'_m} a_i =
+\frac{d}{d z_m} a_i =
   \begin{cases}
     (a_i)(1-a_m),  & \text{if}\ \quad  i = m \\
     - (a_m) (a_i), & \text{if}\ \quad  i \neq m
@@ -601,7 +550,7 @@ or equally:
 </p>
 
 $$
-\frac{d}{d z'_m} a_i = (a_i)(\delta_{i,m} - a_m)
+\frac{d}{d z_m} a_i = (a_i)(\delta_{i,m} - a_m)
 $$
 
 <p>
@@ -614,51 +563,233 @@ execute the above using matrix operations like:
 </p>
 
 $$
-\mathbf{a} \mathbf{e^T} \circ (\mathbf{I} - \mathbf{e} \mathbf{a^T})
+\frac{d}{dz} a = \mathbf{a} \mathbf{e^T} \circ (\mathbf{I} - \mathbf{e} \mathbf{a^T})
 $$
 
 <p>
 where $\mathbf{e}$ is a vector of $1$'s of size $K\times1$ for a suitable $K$ and $\circ$ represents Hadamard product,
-in other words element-wise product of matrices.
+in other words element-wise product of matrices. And it is of size $(3 \times 3)$. We plug this below:
 </p>
 
 $$
-\begin{bmatrix} \frac{da_1}{dz'_1} \frac{da_2}{dz'_1} \frac{da_3}{dz'_1} \\
-                \frac{da_1}{dz'_2} \frac{da_2}{dz'_2} \frac{da_3}{dz'_2} \\
-                \frac{da_1}{dz'_3} \frac{da_2}{dz'_3} \frac{da_3}{dz'_3}
-\end{bmatrix}
+\begin{bmatrix} \frac{da_1}{dz_1} \frac{da_2}{dz_1} \frac{da_3}{dz_1} \\
+                \frac{da_1}{dz_2} \frac{da_2}{dz_2} \frac{da_3}{dz_2} \\
+                \frac{da_1}{dz_3} \frac{da_2}{dz_3} \frac{da_3}{dz_3}
+\end{bmatrix}_{3 \times 3}
 \begin{bmatrix} \frac{dL}{da_1} \\
                 \frac{dL}{da_2} \\
                 \frac{dL}{da_3}
-\end{bmatrix}
+\end{bmatrix}_{3 \times 1}
 =
-\begin{bmatrix} \frac{dL}{dz'_1} \\
-                \frac{dL}{dz'_2} \\
-                \frac{dL}{dz'_3}
-\end{bmatrix}
+\begin{bmatrix} \frac{dL}{dz_1} \\
+                \frac{dL}{dz_2} \\
+                \frac{dL}{dz_3}
+\end{bmatrix}_{3 \times 1}
 $$
 
 <p>
-We know the derivative of sigmoid function from the previous lecture:
+This is exactly what we are going to do. However, this is defined for only one sample. We don't want
+to loop over each sample and compute this sequantially. Ideally, we want to do everything using
+matrix operations including this step. So, let's attempt to convert this to matrix operations.
+</p>
+
+<h1> Calculation using Matrix Operations </h1>
+
+<p>
+Now, instead of $\mathbf{a}$, we have $A$:
 </p>
 
 $$
-\frac{dz'}{dz} = g(z)(1-g(z))
+A =
+\left[
+\begin{array}{c|c|c|c}
+a_1 & a_2 & \dots & a_{20} \\
+\end{array}
+\right]_{3 \times 20}
 $$
 
 <p>
-Similarly, we also calculated (and easy to see):
+and we want to do:
 </p>
 
 $$
-\frac{dz}{dw_{m,n}} = x_n, \quad \frac{dz}{db_i} = 1
+\left[
+\begin{array}{c|c|c|c}
+\mathcal{A}_1 & \mathcal{A}_2 & \dots & \mathcal{A}_{20} \\
+\end{array}
+\right]_{3 \times (3 \times 20)}
+\left[
+\begin{array}{c|c|c|c}
+\frac{dL}{da^{(1)}} & 0                 & \dots  & 0                  \\ \hline
+0                 & \frac{dL}{da^{(2)}} & \dots  & 0                  \\ \hline
+\vdots            & \vdots            & \vdots & \vdots             \\ \hline
+0                 & 0                 & \dots  & \frac{dL}{da^{(20)}} \\
+\end{array}
+\right]_{(3 \times 20) \times 20}
+=
+\left[
+\begin{array}{c|c|c|c}
+\frac{dL}{dz^{(1)}} & \frac{dL}{dz^{(2)}} & \dots & \frac{dL}{dz^{(20)}}
+\end{array}
+\right]_{3 \times 20}
 $$
 
 <p>
-Now, let's combine these:
+where each $\mathcal{A}_i$ of size $(3 \times 3)$ and each $\frac{dL}{da^{(i)}}$ of size $(3 \times 1)$.
+And finally we define:
+</p>
+
+$$
+\mathcal{A}_{3 \times (3 \times 20)} =
+\left[
+\begin{array}{c|c|c|c}
+a_1 & a_2 & \dots & a_{20} \\
+\end{array}
+\right]_{3 \times 20}
+\left[
+\begin{array}{c|c|c|c|c}
+e & 0 & 0 & \dots & 0 \\ \hline
+0 & e & 0 & \dots & 0 \\ \hline
+\vdots & \vdots & \vdots & \vdots & \vdots \\ \hline
+0 & 0 & 0 & \dots & e \\
+\end{array}
+\right]_{20 \times (3 \times 20)}
+$$
+
+<p>
+where all $e$ of size $(1 \times 3)$.
 </p>
 
 
+
+<h1> Back propagation Phase </h1>
+
+<p>
+We will <i>learn</i> the weights using <b>Back Propagation</b>.
+</p>
+
+# CODE
+{'width': 600}
+
+ALPHA = 1.0 # learning rate
+
+# this simple implementation is numerically unstable, because:
+# np.log() returns -inf for small inputs very close to 0
+def get_loss(A, Y_one_hot):
+  loss = -1 * np.sum(Y_one_hot * np.log(A))
+  return loss
+
+# semantically same with above function, and numerically stable.
+def get_loss_numerically_stable(Z, Y_one_hot):
+  loss = -1 * np.sum(Y_one_hot * ( (Z - Z.max(axis = 0)) -
+                                    np.log(np.sum(np.exp(Z - Z.max(axis = 0)), axis = 0))
+				 ))
+  return loss
+
+def get_gradients(Y_one_hot, Z, A):
+  L = (1.0 / 20) * get_loss_numerically_stable(Z, Y_one_hot)
+
+  dA = (-Y_one_hot / A)
+  dZ = np.zeros((3, 20))
+  for i in range(20):
+    a = A[:, [i]]
+    da = dA[:, [i]]
+    temp = np.matmul(a, np.ones((1, 3))) * (np.identity(3) - np.matmul(np.ones((3, 1)), a.T))
+    dZ[:, [i]] = np.matmul(temp, da)
+
+  dW = np.zeros((3,2))
+  db = np.zeros((3,1))
+  for i in range(20):
+    x = X[:, [i]].T
+    dz = dZ[:, [i]]
+    dw = dz * np.concatenate((x,x,x), axis=0)
+    dW += dw
+    db += dz
+
+  dW = dW * (1.0/20)
+  db = db * (1.0/20)
+
+  return dW, db, L
+
+def gradient_descent(W, b, dW, db, alpha):
+  W = W - alpha * dW
+  b = b - alpha * db
+  return W, b
+
+# initialization
+Y_one_hot = np.eye(3)[Y[0]].T * 1.0
+W = np.random.rand(3, 2)
+b = np.zeros((3, 1))
+
+losses = []
+for i in range(100):
+  Z, A = forward_propagate(X, Y_one_hot, W, b)
+  dW, db, L = get_gradients(Y_one_hot, Z, A)
+  W, b = gradient_descent(W, b, dW, db, ALPHA)
+  losses.append(L)
+
+plt.grid()
+plt.title('Loss', size=18)
+plt.xlabel('Number of iterations', size=15)
+plt.ylabel('Loss', size=15)
+plt.plot(losses)
+
+plt.savefig('image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+<h1> Applying Softmax Regression using low-level Tensorflow APIs </h1>
+
+<p>
+Here is how to train the same classifier for the above red, blue, and green points using low-level TensorFlow API:
+</p>
+
+# CODE
+{'width': 600}
+
+import tensorflow as tf
+
+t_X = tf.placeholder(tf.float32, [None, 2])
+t_Y = tf.placeholder(tf.float32, [None, 3])
+
+t_W = tf.Variable(tf.random_uniform((2, 3)))
+t_b = tf.Variable(tf.zeros((1, 3)))
+
+t_logits = tf.matmul(t_X, t_W) + t_b
+t_Softmax = tf.nn.softmax(t_logits)
+t_Accuracy = tf.contrib.metrics.accuracy(labels = tf.argmax(t_Y, axis=1),
+                                         predictions = tf.argmax(t_Softmax, axis=1))
+
+t_Loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
+                         labels=t_Y, logits=t_logits))
+
+train = tf.train.GradientDescentOptimizer(1.0).minimize(t_Loss)
+init = tf.global_variables_initializer()
+
+losses = []
+accs = []
+with tf.Session() as session:
+   session.run(init)
+   for i in range(500):
+      ttrain, loss, acc = session.run([train, t_Loss, t_Accuracy], feed_dict={t_X:X.T, t_Y:Y_one_hot.T})
+      losses.append(loss)
+      accs.append(acc)
+
+plt.grid()
+plt.title('Loss', size=18)
+plt.xlabel('Number of iterations', size=15)
+plt.ylabel('Loss', size=15)
+plt.plot(losses)
+
+plt.savefig('image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
 
 # HTML
 {}
