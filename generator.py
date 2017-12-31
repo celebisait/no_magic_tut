@@ -25,7 +25,6 @@ TAGS = {HTML_TAG, CODE_TAG}
 Part = collections.namedtuple('Part', ['tag', 'content', 'info'])
 FORMATTER = HtmlFormatter(style='friendly')
 
-
 def partition(template, source_lines):
   parts = []
   buffer_lines = []
@@ -108,16 +107,7 @@ def generate_html(template, source_lines):
   return template.replace('$BODY', body)
 
 
-def main():
-  input_file = 'source/source2.nomagic'
-  output_file = 'output/part2.html'
-  # title = 'Part1: Logistic Regression'
-  title = 'Part2: Softmax Regression'
-
-  # write CSS file
-  with open('pygments.css', 'w') as f:
-    f.write(FORMATTER.get_style_defs('.highlight'))
-
+def write_one_file(input_file, output_file, title):
   with open('source/template.data') as f:
     template = f.read()
     template = template.replace('$TITLE', title)
@@ -130,5 +120,20 @@ def main():
   with open(output_file, 'w') as f:
     f.write(output)
 
+def main():
+  with open('pygments.css', 'w') as f:
+    f.write(FORMATTER.get_style_defs('.highlight'))
+
+  input_file = 'source/source1.nomagic'
+  output_file = 'output/part1.html'
+  title = 'Part1: Logistic Regression'
+
+  # write_one_file(input_file, output_file, title)
+
+  input_file = 'source/source2.nomagic'
+  output_file = 'output/part2.html'
+  title = 'Part2: Softmax Regression'
+
+  write_one_file(input_file, output_file, title)
 
 main()

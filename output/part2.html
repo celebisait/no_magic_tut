@@ -66,7 +66,7 @@ and <b>green</b> points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image000.png"/><p>
+<img class="generated_image" width="600" src="../images/image008.png"/><p>
 In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
 <b>blue</b> or <b>green</b>.
 </p>
@@ -424,13 +424,7 @@ to do a small scale <b>back propagation</b> of derivatives here.
 But first, let's see what happens if we change $w_{2, 1}$ in the network, step by step:
 </p>
 
-<p>
-<center>
-UPDATED ANIMATION COMES HERE. <br/>
-UPDATED ANIMATION COMES HERE. <br/>
-UPDATED ANIMATION COMES HERE. <br/>
-</center>
-</p>
+<img class="static_image" style="width: 900px;" src="../static_images/animation001.gif"/>
 
 <p>
 In order to do gradient descent, we need the derivatives:
@@ -596,10 +590,83 @@ $$
 <p>
 This is exactly what we are going to do. However, this is defined for only one sample. We don't want
 to loop over each sample and compute this sequantially. Ideally, we want to do everything using
-matrix operations including this step. So, let's attempt to convert this to matrix operations.
+matrix operations including this step. However, it is a bit trickier. So, first let's see if this
+approach works using loops. After, we will see how to convert this to fully matrix operations.
 </p>
 
-<h1> Calculation using Matrix Operations </h1>
+<h1> Back propagation Phase </h1>
+
+<p>
+We will <i>learn</i> the weights using <b>Back Propagation</b>.
+</p>
+<div class="highlight"><pre><span></span><span class="n">ALPHA</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c1"># learning rate</span>
+
+<span class="c1"># this simple implementation is numerically unstable, because:</span>
+<span class="c1"># np.log() returns -inf for small inputs very close to 0</span>
+<span class="k">def</span> <span class="nf">get_loss</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">):</span>
+  <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Y_one_hot</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">loss</span>
+
+<span class="c1"># semantically same with above function, and numerically stable.</span>
+<span class="k">def</span> <span class="nf">get_loss_numerically_stable</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">):</span>
+  <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Y_one_hot</span> <span class="o">*</span> <span class="p">(</span> <span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span> <span class="o">-</span>
+                                    <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span>
+				 <span class="p">))</span>
+  <span class="k">return</span> <span class="n">loss</span>
+
+<span class="k">def</span> <span class="nf">get_gradients</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>
+  <span class="n">dA</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">Y_one_hot</span> <span class="o">/</span> <span class="n">A</span><span class="p">)</span>
+  <span class="n">dZ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">da</span> <span class="o">=</span> <span class="n">dA</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+    <span class="n">dZ</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">da</span><span class="p">)</span>
+
+  <span class="n">dW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+  <span class="n">db</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">dZ</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">dw</span> <span class="o">=</span> <span class="n">dz</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">dW</span> <span class="o">+=</span> <span class="n">dw</span>
+    <span class="n">db</span> <span class="o">+=</span> <span class="n">dz</span>
+
+  <span class="n">dW</span> <span class="o">=</span> <span class="n">dW</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span>
+  <span class="n">db</span> <span class="o">=</span> <span class="n">db</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span>
+
+  <span class="k">return</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span>
+
+<span class="k">def</span> <span class="nf">gradient_descent</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+  <span class="n">W</span> <span class="o">=</span> <span class="n">W</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dW</span>
+  <span class="n">b</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">db</span>
+  <span class="k">return</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span>
+
+<span class="c1"># random initialization</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="n">losses</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+  <span class="n">Z</span><span class="p">,</span> <span class="n">A</span> <span class="o">=</span> <span class="n">forward_propagate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+  <span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">get_loss_numerically_stable</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">)</span>
+  <span class="n">dW</span><span class="p">,</span> <span class="n">db</span> <span class="o">=</span> <span class="n">get_gradients</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
+  <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">ALPHA</span><span class="p">)</span>
+  <span class="n">losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Number of iterations&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">losses</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
+</pre></div>
+<img class="generated_image" width="600" src="../images/image009.png"/><h1> Calculating Derivatives using Matrix Operations </h1>
 
 <p>
 Now, instead of $\mathbf{a}$, we have $A$:
@@ -665,84 +732,7 @@ $$
 <p>
 where all $e$ of size $(1 \times 3)$.
 </p>
-
-
-
-<h1> Back propagation Phase </h1>
-
-<p>
-We will <i>learn</i> the weights using <b>Back Propagation</b>.
-</p>
-<div class="highlight"><pre><span></span><span class="n">ALPHA</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c1"># learning rate</span>
-
-<span class="c1"># this simple implementation is numerically unstable, because:</span>
-<span class="c1"># np.log() returns -inf for small inputs very close to 0</span>
-<span class="k">def</span> <span class="nf">get_loss</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">):</span>
-  <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Y_one_hot</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">loss</span>
-
-<span class="c1"># semantically same with above function, and numerically stable.</span>
-<span class="k">def</span> <span class="nf">get_loss_numerically_stable</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">):</span>
-  <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Y_one_hot</span> <span class="o">*</span> <span class="p">(</span> <span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span> <span class="o">-</span>
-                                    <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span>
-				 <span class="p">))</span>
-  <span class="k">return</span> <span class="n">loss</span>
-
-<span class="k">def</span> <span class="nf">get_gradients</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>
-  <span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">get_loss_numerically_stable</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">)</span>
-
-  <span class="n">dA</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">Y_one_hot</span> <span class="o">/</span> <span class="n">A</span><span class="p">)</span>
-  <span class="n">dZ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
-    <span class="n">da</span> <span class="o">=</span> <span class="n">dA</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
-    <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
-    <span class="n">dZ</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">da</span><span class="p">)</span>
-
-  <span class="n">dW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
-  <span class="n">db</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span>
-    <span class="n">dz</span> <span class="o">=</span> <span class="n">dZ</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
-    <span class="n">dw</span> <span class="o">=</span> <span class="n">dz</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">dW</span> <span class="o">+=</span> <span class="n">dw</span>
-    <span class="n">db</span> <span class="o">+=</span> <span class="n">dz</span>
-
-  <span class="n">dW</span> <span class="o">=</span> <span class="n">dW</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span>
-  <span class="n">db</span> <span class="o">=</span> <span class="n">db</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span>
-
-  <span class="k">return</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">L</span>
-
-<span class="k">def</span> <span class="nf">gradient_descent</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
-  <span class="n">W</span> <span class="o">=</span> <span class="n">W</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dW</span>
-  <span class="n">b</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">db</span>
-  <span class="k">return</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span>
-
-<span class="c1"># initialization</span>
-<span class="n">Y_one_hot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="mf">1.0</span>
-<span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-
-<span class="n">losses</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-  <span class="n">Z</span><span class="p">,</span> <span class="n">A</span> <span class="o">=</span> <span class="n">forward_propagate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-  <span class="n">dW</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">L</span> <span class="o">=</span> <span class="n">get_gradients</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
-  <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">ALPHA</span><span class="p">)</span>
-  <span class="n">losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Number of iterations&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">losses</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-</pre></div>
-<img class="generated_image" width="600" src="../images/image001.png"/><h1> Applying Softmax Regression using low-level Tensorflow APIs </h1>
+<h1> Applying Softmax Regression using low-level Tensorflow APIs </h1>
 
 <p>
 Here is how to train the same classifier for the above red, blue, and green points using low-level TensorFlow API:
@@ -770,7 +760,7 @@ Here is how to train the same classifier for the above red, blue, and green poin
 <span class="n">accs</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init</span><span class="p">)</span>
-   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">500</span><span class="p">):</span>
+   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
       <span class="n">ttrain</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">acc</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">train</span><span class="p">,</span> <span class="n">t_Loss</span><span class="p">,</span> <span class="n">t_Accuracy</span><span class="p">],</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="n">t_X</span><span class="p">:</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">t_Y</span><span class="p">:</span><span class="n">Y_one_hot</span><span class="o">.</span><span class="n">T</span><span class="p">})</span>
       <span class="n">losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
       <span class="n">accs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
@@ -787,7 +777,7 @@ Here is how to train the same classifier for the above red, blue, and green poin
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image002.png"/><h1>References</h1>
+<img class="generated_image" width="600" src="../images/image010.png"/><h1>References</h1>
 
 <ul>
   <li> http://ufldl.stanford.edu/tutorial/supervised/SoftmaxRegression/

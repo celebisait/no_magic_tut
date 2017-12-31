@@ -418,13 +418,7 @@ to do a small scale <b>back propagation</b> of derivatives here.
 But first, let's see what happens if we change $w_{2, 1}$ in the network, step by step:
 </p>
 
-<p>
-<center>
-UPDATED ANIMATION COMES HERE. <br/>
-UPDATED ANIMATION COMES HERE. <br/>
-UPDATED ANIMATION COMES HERE. <br/>
-</center>
-</p>
+<img class="static_image" style="width: 900px;" src="../static_images/animation001.gif"/>
 
 <p>
 In order to do gradient descent, we need the derivatives:
@@ -590,10 +584,89 @@ $$
 <p>
 This is exactly what we are going to do. However, this is defined for only one sample. We don't want
 to loop over each sample and compute this sequantially. Ideally, we want to do everything using
-matrix operations including this step. So, let's attempt to convert this to matrix operations.
+matrix operations including this step. However, it is a bit trickier. So, first let's see if this
+approach works using loops. After, we will see how to convert this to fully matrix operations.
 </p>
 
-<h1> Calculation using Matrix Operations </h1>
+<h1> Back propagation Phase </h1>
+
+<p>
+We will <i>learn</i> the weights using <b>Back Propagation</b>.
+</p>
+
+# CODE
+{'width': 600}
+
+ALPHA = 1.0 # learning rate
+
+# this simple implementation is numerically unstable, because:
+# np.log() returns -inf for small inputs very close to 0
+def get_loss(A, Y_one_hot):
+  loss = -1 * np.sum(Y_one_hot * np.log(A))
+  return loss
+
+# semantically same with above function, and numerically stable.
+def get_loss_numerically_stable(Z, Y_one_hot):
+  loss = -1 * np.sum(Y_one_hot * ( (Z - Z.max(axis = 0)) -
+                                    np.log(np.sum(np.exp(Z - Z.max(axis = 0)), axis = 0))
+				 ))
+  return loss
+
+def get_gradients(Y_one_hot, Z, A):
+  dA = (-Y_one_hot / A)
+  dZ = np.zeros((3, 20))
+  for i in range(20):
+    a = A[:, [i]]
+    da = dA[:, [i]]
+    matrix = np.matmul(a, np.ones((1, 3))) * (np.identity(3) - np.matmul(np.ones((3, 1)), a.T))
+    dZ[:, [i]] = np.matmul(matrix, da)
+
+  dW = np.zeros((3,2))
+  db = np.zeros((3,1))
+  for i in range(20):
+    x = X[:, [i]].T
+    dz = dZ[:, [i]]
+    dw = dz * np.concatenate((x,x,x), axis=0)
+    dW += dw
+    db += dz
+
+  dW = dW * (1.0/20)
+  db = db * (1.0/20)
+
+  return dW, db
+
+def gradient_descent(W, b, dW, db, alpha):
+  W = W - alpha * dW
+  b = b - alpha * db
+  return W, b
+
+# random initialization
+W = np.random.rand(3, 2)
+b = np.zeros((3, 1))
+
+losses = []
+for i in range(100):
+  Z, A = forward_propagate(X, Y_one_hot, W, b)
+  L = (1.0 / 20) * get_loss_numerically_stable(Z, Y_one_hot)
+  dW, db = get_gradients(Y_one_hot, Z, A)
+  W, b = gradient_descent(W, b, dW, db, ALPHA)
+  losses.append(L)
+
+plt.grid()
+plt.title('Loss', size=18)
+plt.xlabel('Number of iterations', size=15)
+plt.ylabel('Loss', size=15)
+plt.plot(losses)
+
+plt.savefig('image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+<h1> Calculating Derivatives using Matrix Operations </h1>
 
 <p>
 Now, instead of $\mathbf{a}$, we have $A$:
@@ -660,86 +733,6 @@ $$
 where all $e$ of size $(1 \times 3)$.
 </p>
 
-
-
-<h1> Back propagation Phase </h1>
-
-<p>
-We will <i>learn</i> the weights using <b>Back Propagation</b>.
-</p>
-
-# CODE
-{'width': 600}
-
-ALPHA = 1.0 # learning rate
-
-# this simple implementation is numerically unstable, because:
-# np.log() returns -inf for small inputs very close to 0
-def get_loss(A, Y_one_hot):
-  loss = -1 * np.sum(Y_one_hot * np.log(A))
-  return loss
-
-# semantically same with above function, and numerically stable.
-def get_loss_numerically_stable(Z, Y_one_hot):
-  loss = -1 * np.sum(Y_one_hot * ( (Z - Z.max(axis = 0)) -
-                                    np.log(np.sum(np.exp(Z - Z.max(axis = 0)), axis = 0))
-				 ))
-  return loss
-
-def get_gradients(Y_one_hot, Z, A):
-  L = (1.0 / 20) * get_loss_numerically_stable(Z, Y_one_hot)
-
-  dA = (-Y_one_hot / A)
-  dZ = np.zeros((3, 20))
-  for i in range(20):
-    a = A[:, [i]]
-    da = dA[:, [i]]
-    temp = np.matmul(a, np.ones((1, 3))) * (np.identity(3) - np.matmul(np.ones((3, 1)), a.T))
-    dZ[:, [i]] = np.matmul(temp, da)
-
-  dW = np.zeros((3,2))
-  db = np.zeros((3,1))
-  for i in range(20):
-    x = X[:, [i]].T
-    dz = dZ[:, [i]]
-    dw = dz * np.concatenate((x,x,x), axis=0)
-    dW += dw
-    db += dz
-
-  dW = dW * (1.0/20)
-  db = db * (1.0/20)
-
-  return dW, db, L
-
-def gradient_descent(W, b, dW, db, alpha):
-  W = W - alpha * dW
-  b = b - alpha * db
-  return W, b
-
-# initialization
-Y_one_hot = np.eye(3)[Y[0]].T * 1.0
-W = np.random.rand(3, 2)
-b = np.zeros((3, 1))
-
-losses = []
-for i in range(100):
-  Z, A = forward_propagate(X, Y_one_hot, W, b)
-  dW, db, L = get_gradients(Y_one_hot, Z, A)
-  W, b = gradient_descent(W, b, dW, db, ALPHA)
-  losses.append(L)
-
-plt.grid()
-plt.title('Loss', size=18)
-plt.xlabel('Number of iterations', size=15)
-plt.ylabel('Loss', size=15)
-plt.plot(losses)
-
-plt.savefig('image.png')
-
-plt.close()
-plt.clf()
-plt.cla()
-
 # HTML
 {}
 <h1> Applying Softmax Regression using low-level Tensorflow APIs </h1>
@@ -774,7 +767,7 @@ losses = []
 accs = []
 with tf.Session() as session:
    session.run(init)
-   for i in range(500):
+   for i in range(100):
       ttrain, loss, acc = session.run([train, t_Loss, t_Accuracy], feed_dict={t_X:X.T, t_Y:Y_one_hot.T})
       losses.append(loss)
       accs.append(acc)

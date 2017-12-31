@@ -481,7 +481,7 @@ plt.cla()
 We can do better. Now, let's see the decision boundary step by step as an <b>animation</b>.
 Everybody <i>loves</i> animations. Something everybody loves even more is that animations
 that you can see the source code as well.
-<img src="static_images/heart.png" style="width:30px; height:30px;">
+<img src="../static_images/heart.png" style="width:30px; height:30px;">
 </p>
 
 # CODE
