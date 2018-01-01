@@ -25,7 +25,7 @@ X = np.array([[-0.1, -0.5, 1.3, -0.6, -1.5, 0.2, -0.3,  0.7,  1.1, -1.0,
                1.5, -0.45, -1.2, -0.7, -1.3, 0.6, -0.5, -0.7, -1.4, -1.4]])
 Y = np.array([[0, 0, 1, 0, 2, 1, 1, 1, 1, 0, 0, 2, 2, 2, 1, 0, 1, 2, 2, 2]])
 Y_one_hot = np.eye(3)[Y[0]].T
-colormap = np.array(['r', 'b', 'g'])
+colormap = np.array(['r', 'g', 'b'])
 
 def plot_scatter(X, Y, colormap, path):
    plt.grid()
@@ -265,7 +265,7 @@ So, to wrap-up the Feed-Forward phase, we can finalize the forward propagation s
 def stable_softmax(Z):
   return np.exp(Z - Z.max(axis = 0)) / np.sum(np.exp(Z - Z.max(axis = 0)), axis = 0)
 
-def forward_propagate(X, Y_one_hot, W, b):
+def forward_propagate(X, W, b):
   Z = np.matmul(W, X) + b
   A = stable_softmax(Z)
 
@@ -279,7 +279,7 @@ b = np.array([[ 1.2  ],
               [ 2.93 ],
               [-4.14 ]])
 
-Z, A = forward_propagate(X, Y_one_hot, W, b)
+Z, A = forward_propagate(X, W, b)
 print(Y_one_hot[:,0:10])
 print(A[:,0:10])
 
@@ -521,9 +521,10 @@ Similarly, if $i \neq m$:
 </p>
 
 $$
-\frac{d}{d z_m} a_i = \frac{d}{d z_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}} =
-\frac{ (e^{z_i})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } =
-\frac{ 0 - e^{z_m} e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } = -\frac{ e^{z_m} } { \sum_{j=1}^N e^{z_j} } \frac{ e^{z_i} }{ \sum_{j=1}^N e^{z_j} }
+\frac{d}{d z_m} a_i = \frac{d}{d z_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
+= \frac{ (e^{z_i})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 }
+= \frac{ 0 - e^{z_m} e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 }
+= -\frac{ e^{z_m} } { \sum_{j=1}^N e^{z_j} } \frac{ e^{z_i} }{ \sum_{j=1}^N e^{z_j} }
 = - (a_m) (a_i)
 $$
 
@@ -597,7 +598,7 @@ We will <i>learn</i> the weights using <b>Back Propagation</b>.
 # CODE
 {'width': 600}
 
-ALPHA = 1.0 # learning rate
+ALPHA = 2.0 # learning rate
 
 # this simple implementation is numerically unstable, because:
 # np.log() returns -inf for small inputs very close to 0
@@ -644,12 +645,18 @@ def gradient_descent(W, b, dW, db, alpha):
 W = np.random.rand(3, 2)
 b = np.zeros((3, 1))
 
+W_cache = [W]
+b_cache = [b]
+
 losses = []
-for i in range(100):
-  Z, A = forward_propagate(X, Y_one_hot, W, b)
+for i in range(40):
+  Z, A = forward_propagate(X, W, b)
   L = (1.0 / 20) * get_loss_numerically_stable(Z, Y_one_hot)
   dW, db = get_gradients(Y_one_hot, Z, A)
   W, b = gradient_descent(W, b, dW, db, ALPHA)
+
+  W_cache.append(W)
+  b_cache.append(b)
   losses.append(L)
 
 plt.grid()
@@ -659,6 +666,167 @@ plt.ylabel('Loss', size=15)
 plt.plot(losses)
 
 plt.savefig('image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+<h1> Decision Boundary </h1>
+
+<p>
+So, essentially, we have 3 equations:
+</p>
+
+$$
+\text{Equation A.} \quad w_{1,1} x_1 + w_{1,2} x_2 + b_1 = z_1 \\
+\text{Equation B.} \quad w_{2,1} x_1 + w_{2,2} x_2 + b_2 = z_2 \\
+\text{Equation C.} \quad w_{3,1} x_1 + w_{3,2} x_2 + b_3 = z_3
+$$
+
+<p>
+We have 3 boundaries between all 3 choose 2 of above:
+
+<ul>
+  <li> Equation A - Equation B </li>
+  <li> Equation A - Equation C </li>
+  <li> Equation B - Equation C </li>
+</ul>
+
+If we focus on Equation A - Equation B:
+</p>
+
+$$
+w_{1,1} x_1 + w_{1,2} x_2 + b_1 = w_{2,1} x_1 + w_{2,2} x_2 + b_2 \\
+w_{1,1} x_1 - w_{2,1} x_1 + w_{1,2} x_2 - w_{2,2} x_2 = b_2 - b_1 \\
+(w_{1,1} - w_{2,1}) x_1 + (w_{1,2} - w_{2,2}) x_2 = b_2 - b_1 \\
+$$
+
+<p>
+If we plot these three lines:
+</p>
+
+# CODE
+{'type': 'image', 'width': 600}
+
+def plot_decision_boundary(X, Y, W, b, path):
+   plt.grid()
+   plt.xlim([-2.0, 2.0])
+   plt.ylim([-2.0, 2.0])
+   plt.xlabel('$x_1$', size=20)
+   plt.ylabel('$x_2$', size=20)
+   plt.title('Decision boundary', size = 18)
+
+   plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+
+   xs = np.array([-2.0, 2.0])
+   ys1 = ((b[1, 0] - b[0, 0]) - (W[0, 0] - W[1, 0]) * xs) / (W[0, 1] - W[1, 1])
+   ys2 = ((b[2, 0] - b[0, 0]) - (W[0, 0] - W[2, 0]) * xs) / (W[0, 1] - W[2, 1])
+   ys3 = ((b[2, 0] - b[1, 0]) - (W[1, 0] - W[2, 0]) * xs) / (W[1, 1] - W[2, 1])
+
+   plt.plot(xs, ys1, c='black')
+   plt.plot(xs, ys2, c='black')
+   plt.plot(xs, ys3, c='black')
+
+   plt.savefig(path)
+
+plot_decision_boundary(X, Y, W, b, 'image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
+
+
+# HTML
+{}
+<p>
+Animation:
+</p>
+
+# CODE
+{'width': 600}
+import matplotlib.animation as animation
+
+fig = plt.figure()
+
+ax = fig.add_subplot(111)
+ax.set_xlim([-2.0, 2.0])
+ax.set_ylim([-2.0, 2.0])
+ax.set_xlabel('$x_1$', size=20)
+ax.set_ylabel('$x_2$', size=20)
+
+ax.set_title('Decision boundary - Animated', size = 18)
+
+def animate(i):
+  xs = np.array([-2.0, 2.0])
+  W = W_cache[i]
+  b = b_cache[i]
+
+  ys1 = ((b[1, 0] - b[0, 0]) - (W[0, 0] - W[1, 0]) * xs) / (W[0, 1] - W[1, 1])
+  ys2 = ((b[2, 0] - b[0, 0]) - (W[0, 0] - W[2, 0]) * xs) / (W[0, 1] - W[2, 1])
+  ys3 = ((b[2, 0] - b[1, 0]) - (W[1, 0] - W[2, 0]) * xs) / (W[1, 1] - W[2, 1])
+
+  lines1.set_data(xs, ys1)
+  lines2.set_data(xs, ys2)
+  lines3.set_data(xs, ys3)
+
+  text_box.set_text('Iteration: {}'.format(i))
+  return lines1, lines2, lines3, text_box
+
+lines1, = ax.plot([], [], c='black')
+lines2, = ax.plot([], [], c='black')
+lines3, = ax.plot([], [], c='black')
+
+ax.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+text_box = ax.text(1.1, 1.6, 'Iteration 0', size = 16)
+
+anim = animation.FuncAnimation(fig, animate, len(W_cache), blit=True, interval=500)
+anim.save('animation.mp4', writer='avconv', fps=6, codec="libx264")
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+<p>
+Note that <b>why the fuck all three lines always intersect at one point</b> is still a mystery to me.
+</p>
+
+<p>
+Let's see the decision boundary in a more lazy setting. Here, we simply classify every single point
+in the grid and then give the predictions to a contour plot. Comparing to the previous animation,
+contour plot shows the prediction of every single point in the grid in the final version of the
+classifiers parameters. On the other hand, the previous animation shows the parameters step by
+step through the gradient descent iterations.
+</p>
+
+# CODE
+{'width': 600}
+NX = 100
+NY = 100
+
+def plot_decision_boundary_lazy(X, Y, W, b, counter_param):
+  plt.grid()
+  plt.xlim([-2.0, 2.0])
+  plt.ylim([-2.0, 2.0])
+  plt.xlabel('$x_1$', size=20)
+  plt.ylabel('$x_2$', size=20)
+  plt.title('Decision boundary - Contour plot', size = 18)
+
+  xs = np.linspace(-2.0, 2.0, NX)
+  ys = np.linspace(2.0, -2.0, NY)
+  xv, yv = np.meshgrid(xs, ys)
+  X_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
+  _, predictions = forward_propagate(X_fake, W, b)
+
+  plt.imshow(predictions.T.reshape(NX, NY, 3), extent=[-2.0, 2.0, -2.0, 2.0])
+  plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+
+  plt.savefig('image.png')
+
+plot_decision_boundary_lazy(X, Y, W_cache[-1], b_cache[-1], 50)
 
 plt.close()
 plt.clf()
@@ -760,14 +928,14 @@ t_Accuracy = tf.contrib.metrics.accuracy(labels = tf.argmax(t_Y, axis=1),
 t_Loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
                          labels=t_Y, logits=t_logits))
 
-train = tf.train.GradientDescentOptimizer(1.0).minimize(t_Loss)
+train = tf.train.GradientDescentOptimizer(2.0).minimize(t_Loss)
 init = tf.global_variables_initializer()
 
 losses = []
 accs = []
 with tf.Session() as session:
    session.run(init)
-   for i in range(100):
+   for i in range(40):
       ttrain, loss, acc = session.run([train, t_Loss, t_Accuracy], feed_dict={t_X:X.T, t_Y:Y_one_hot.T})
       losses.append(loss)
       accs.append(acc)
