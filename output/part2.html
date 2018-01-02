@@ -29,7 +29,7 @@ MathJax.Hub.Config({
 <center><h1>Part 2: Softmax Regression <span style="color: red">[Draft]</span></h1></center>
 
 <p>
-What I cannot create, I do not understand.
+"What I cannot create, I do not understand."
 -- Richard Feynman
 </p>
 
@@ -68,7 +68,7 @@ and <b>blue</b> points in 2-dimensional space:
 </pre></div>
 <img class="generated_image" width="600" src="../images/image008.png"/><p>
 In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
-<b>blue</b> or <b>green</b>.
+<b>green</b> or <b>blue</b>.
 </p>
 
 <p>
@@ -114,26 +114,26 @@ as a one hot vector. $W$ has the weights. $b$ has the bias:
 $$
 X =
 \begin{bmatrix}
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
 \end{bmatrix}_{2 \times M}, \quad
 Y =
 \begin{bmatrix}
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
 \end{bmatrix}_{3 \times M}, \quad
 W =
 \begin{bmatrix}
-    0   &  0   \\
-    0   &  0   \\
-    0   &  0   \\
+0   &  0   \\
+0   &  0   \\
+0   &  0   \\
 \end{bmatrix}_{3 \times 2}
 b =
 \begin{bmatrix}
-    0  \\
-    0  \\
-    0  \\
+0  \\
+0  \\
+0  \\
 \end{bmatrix}_{3 \times 1}
 $$
 
@@ -151,25 +151,25 @@ Here we can see it visually:
 
 $$
 \begin{bmatrix}
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
 \end{bmatrix}_{3 \times M}
 =
 \begin{bmatrix}
-    0   &  0   \\
-    0   &  0   \\
-    0   &  0   \\
+0   &  0   \\
+0   &  0   \\
+0   &  0   \\
 \end{bmatrix}_{3 \times 2}
 \begin{bmatrix}
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
 \end{bmatrix}_{2 \times M}
 +
 \begin{bmatrix}
-    0  \\
-    0  \\
-    0  \\
+0  \\
+0  \\
+0  \\
 \end{bmatrix}_{3 \times 1}
 $$
 
@@ -239,7 +239,7 @@ Simply because:
 
 $$
 a_i = \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}} = \frac{e^{z_i}e^K}{\sum_{j=1}^N e^{z_j} e^K}
-    = \frac{e^{z_i + K}}{\sum_{j=1}^N e^{z_j + K}}
+= \frac{e^{z_i + K}}{\sum_{j=1}^N e^{z_j + K}}
 $$
 
 <p>
@@ -277,12 +277,12 @@ So, to wrap-up the Feed-Forward phase, we can finalize the forward propagation s
   <span class="k">return</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span>
 
 <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mf">0.31</span><span class="p">,</span> <span class="mf">3.95</span><span class="p">],</span>
-              <span class="p">[</span> <span class="mf">7.07</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.23</span><span class="p">],</span>
-              <span class="p">[</span><span class="o">-</span><span class="mf">6.27</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.35</span><span class="p">]])</span>
+      <span class="p">[</span> <span class="mf">7.07</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.23</span><span class="p">],</span>
+      <span class="p">[</span><span class="o">-</span><span class="mf">6.27</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.35</span><span class="p">]])</span>
 
 <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mf">1.2</span>  <span class="p">],</span>
-              <span class="p">[</span> <span class="mf">2.93</span> <span class="p">],</span>
-              <span class="p">[</span><span class="o">-</span><span class="mf">4.14</span> <span class="p">]])</span>
+      <span class="p">[</span> <span class="mf">2.93</span> <span class="p">],</span>
+      <span class="p">[</span><span class="o">-</span><span class="mf">4.14</span> <span class="p">]])</span>
 
 <span class="n">Z</span><span class="p">,</span> <span class="n">A</span> <span class="o">=</span> <span class="n">forward_propagate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
@@ -355,13 +355,13 @@ $a_3 = 0.0$.
 </p>
 
 $$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix},
-  P(\mathbf{y}|\mathbf{x}) = 0.9 \times 1 \times 1 = 0.9 $$
+P(\mathbf{y}|\mathbf{x}) = 0.9 \times 1 \times 1 = 0.9 $$
 
 $$\mathbf{y} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix},
-  P(\mathbf{y}|\mathbf{x}) = 1 \times 0.8 \times 1 = 0.8 $$
+P(\mathbf{y}|\mathbf{x}) = 1 \times 0.8 \times 1 = 0.8 $$
 
 $$\mathbf{y} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix},
-  P(\mathbf{y}|\mathbf{x}) = 1 \times 1 \times 0.7 = 0.7 $$
+P(\mathbf{y}|\mathbf{x}) = 1 \times 1 \times 0.7 = 0.7 $$
 
 <p>
 <b>Bigger</b> the $P(\mathbf{y}|\mathbf{x})$ is the <b>better</b>.
@@ -544,10 +544,10 @@ More succintly, we can summarize all above:
 
 $$
 \frac{d}{d z_m} a_i =
-  \begin{cases}
-    (a_i)(1-a_m),  & \text{if}\ \quad  i = m \\
-    - (a_m) (a_i), & \text{if}\ \quad  i \neq m
-  \end{cases}
+\begin{cases}
+(a_i)(1-a_m),  & \text{if}\ \quad  i = m \\
+- (a_m) (a_i), & \text{if}\ \quad  i \neq m
+\end{cases}
 $$
 
 <p>
@@ -578,17 +578,17 @@ in other words element-wise product of matrices. And it is of size $(3 \times 3)
 
 $$
 \begin{bmatrix} \frac{da_1}{dz_1} \frac{da_2}{dz_1} \frac{da_3}{dz_1} \\
-                \frac{da_1}{dz_2} \frac{da_2}{dz_2} \frac{da_3}{dz_2} \\
-                \frac{da_1}{dz_3} \frac{da_2}{dz_3} \frac{da_3}{dz_3}
+	\frac{da_1}{dz_2} \frac{da_2}{dz_2} \frac{da_3}{dz_2} \\
+	\frac{da_1}{dz_3} \frac{da_2}{dz_3} \frac{da_3}{dz_3}
 \end{bmatrix}_{3 \times 3}
 \begin{bmatrix} \frac{dL}{da_1} \\
-                \frac{dL}{da_2} \\
-                \frac{dL}{da_3}
+	\frac{dL}{da_2} \\
+	\frac{dL}{da_3}
 \end{bmatrix}_{3 \times 1}
 =
 \begin{bmatrix} \frac{dL}{dz_1} \\
-                \frac{dL}{dz_2} \\
-                \frac{dL}{dz_3}
+	\frac{dL}{dz_2} \\
+	\frac{dL}{dz_3}
 \end{bmatrix}_{3 \times 1}
 $$
 
@@ -615,8 +615,8 @@ We will <i>learn</i> the weights using <b>Back Propagation</b>.
 <span class="c1"># semantically same with above function, and numerically stable.</span>
 <span class="k">def</span> <span class="nf">get_loss_numerically_stable</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">):</span>
   <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Y_one_hot</span> <span class="o">*</span> <span class="p">(</span> <span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span> <span class="o">-</span>
-                                    <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span>
-				 <span class="p">))</span>
+			    <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span>
+			 <span class="p">))</span>
   <span class="k">return</span> <span class="n">loss</span>
 
 <span class="k">def</span> <span class="nf">get_gradients</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>
@@ -665,7 +665,6 @@ We will <i>learn</i> the weights using <b>Back Propagation</b>.
   <span class="n">dW</span><span class="p">,</span> <span class="n">db</span> <span class="o">=</span> <span class="n">get_gradients</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
   <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">ALPHA</span><span class="p">)</span>
 
-
 <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Number of iterations&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
@@ -694,9 +693,9 @@ $$
 We have 3 boundaries between all 3 choose 2 of above:
 
 <ul>
-  <li> Equation A - Equation B </li>
-  <li> Equation A - Equation C </li>
-  <li> Equation B - Equation C </li>
+<li> Equation A - Equation B </li>
+<li> Equation A - Equation C </li>
+<li> Equation B - Equation C </li>
 </ul>
 
 If we focus on Equation A - Equation B:
@@ -712,25 +711,25 @@ $$
 If we plot these three lines:
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_decision_boundary</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Decision boundary&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Decision boundary&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
 
-   <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
 
-   <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-   <span class="n">ys1</span> <span class="o">=</span> <span class="p">((</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">xs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-   <span class="n">ys2</span> <span class="o">=</span> <span class="p">((</span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">xs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-   <span class="n">ys3</span> <span class="o">=</span> <span class="p">((</span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">xs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+  <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+  <span class="n">ys1</span> <span class="o">=</span> <span class="p">((</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">xs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+  <span class="n">ys2</span> <span class="o">=</span> <span class="p">((</span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">xs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+  <span class="n">ys3</span> <span class="o">=</span> <span class="p">((</span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">xs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 
-   <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys3</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys3</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
 
-   <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
 <span class="n">plot_decision_boundary</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
 
@@ -850,7 +849,7 @@ step through the gradient descent iterations.
 <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Parameter Values&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
 
 <span class="n">xlabels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;$w_{1,1}$&#39;</span><span class="p">,</span> <span class="s1">&#39;$w_{1,2}$&#39;</span><span class="p">,</span> <span class="s1">&#39;$w_{2,1}$&#39;</span><span class="p">,</span> <span class="s1">&#39;$w_{2,2}$&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;$w_{3,1}$&#39;</span><span class="p">,</span> <span class="s1">&#39;$w_{3,2}$&#39;</span><span class="p">,</span> <span class="s1">&#39;$b_1$&#39;</span><span class="p">,</span> <span class="s1">&#39;$b_2$&#39;</span><span class="p">,</span> <span class="s1">&#39;$b_3$&#39;</span><span class="p">]</span>
+   <span class="s1">&#39;$w_{3,1}$&#39;</span><span class="p">,</span> <span class="s1">&#39;$w_{3,2}$&#39;</span><span class="p">,</span> <span class="s1">&#39;$b_1$&#39;</span><span class="p">,</span> <span class="s1">&#39;$b_2$&#39;</span><span class="p">,</span> <span class="s1">&#39;$b_3$&#39;</span><span class="p">]</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">))</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">xlabels</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 

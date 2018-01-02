@@ -3,7 +3,7 @@
 <center><h1>Part 2: Softmax Regression <span style="color: red">[Draft]</span></h1></center>
 
 <p>
-What I cannot create, I do not understand.
+"What I cannot create, I do not understand."
 -- Richard Feynman
 </p>
 
@@ -47,7 +47,7 @@ plt.cla()
 {}
 <p>
 In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
-<b>blue</b> or <b>green</b>.
+<b>green</b> or <b>blue</b>.
 </p>
 
 <p>
@@ -93,26 +93,26 @@ as a one hot vector. $W$ has the weights. $b$ has the bias:
 $$
 X =
 \begin{bmatrix}
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
 \end{bmatrix}_{2 \times M}, \quad
 Y =
 \begin{bmatrix}
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
 \end{bmatrix}_{3 \times M}, \quad
 W =
 \begin{bmatrix}
-    0   &  0   \\
-    0   &  0   \\
-    0   &  0   \\
+0   &  0   \\
+0   &  0   \\
+0   &  0   \\
 \end{bmatrix}_{3 \times 2}
 b =
 \begin{bmatrix}
-    0  \\
-    0  \\
-    0  \\
+0  \\
+0  \\
+0  \\
 \end{bmatrix}_{3 \times 1}
 $$
 
@@ -130,25 +130,25 @@ Here we can see it visually:
 
 $$
 \begin{bmatrix}
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
 \end{bmatrix}_{3 \times M}
 =
 \begin{bmatrix}
-    0   &  0   \\
-    0   &  0   \\
-    0   &  0   \\
+0   &  0   \\
+0   &  0   \\
+0   &  0   \\
 \end{bmatrix}_{3 \times 2}
 \begin{bmatrix}
-    0   &  0   & \dots &  0 \\
-    0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
+0   &  0   & \dots &  0 \\
 \end{bmatrix}_{2 \times M}
 +
 \begin{bmatrix}
-    0  \\
-    0  \\
-    0  \\
+0  \\
+0  \\
+0  \\
 \end{bmatrix}_{3 \times 1}
 $$
 
@@ -228,7 +228,7 @@ Instead, we can approach it differently:
 
 $$
 a_i = \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}} = \frac{e^{z_i}e^K}{\sum_{j=1}^N e^{z_j} e^K}
-    = \frac{e^{z_i + K}}{\sum_{j=1}^N e^{z_j + K}}
+= \frac{e^{z_i + K}}{\sum_{j=1}^N e^{z_j + K}}
 $$
 
 <p>
@@ -272,12 +272,12 @@ def forward_propagate(X, W, b):
   return Z, A
 
 W = np.array([[ 0.31, 3.95],
-              [ 7.07, -0.23],
-              [-6.27, -2.35]])
+      [ 7.07, -0.23],
+      [-6.27, -2.35]])
 
 b = np.array([[ 1.2  ],
-              [ 2.93 ],
-              [-4.14 ]])
+      [ 2.93 ],
+      [-4.14 ]])
 
 Z, A = forward_propagate(X, W, b)
 print(Y_one_hot[:,0:10])
@@ -349,13 +349,13 @@ $a_3 = 0.0$.
 </p>
 
 $$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix},
-  P(\mathbf{y}|\mathbf{x}) = 0.9 \times 1 \times 1 = 0.9 $$
+P(\mathbf{y}|\mathbf{x}) = 0.9 \times 1 \times 1 = 0.9 $$
 
 $$\mathbf{y} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix},
-  P(\mathbf{y}|\mathbf{x}) = 1 \times 0.8 \times 1 = 0.8 $$
+P(\mathbf{y}|\mathbf{x}) = 1 \times 0.8 \times 1 = 0.8 $$
 
 $$\mathbf{y} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix},
-  P(\mathbf{y}|\mathbf{x}) = 1 \times 1 \times 0.7 = 0.7 $$
+P(\mathbf{y}|\mathbf{x}) = 1 \times 1 \times 0.7 = 0.7 $$
 
 <p>
 <b>Bigger</b> the $P(\mathbf{y}|\mathbf{x})$ is the <b>better</b>.
@@ -538,10 +538,10 @@ More succintly, we can summarize all above:
 
 $$
 \frac{d}{d z_m} a_i =
-  \begin{cases}
-    (a_i)(1-a_m),  & \text{if}\ \quad  i = m \\
-    - (a_m) (a_i), & \text{if}\ \quad  i \neq m
-  \end{cases}
+\begin{cases}
+(a_i)(1-a_m),  & \text{if}\ \quad  i = m \\
+- (a_m) (a_i), & \text{if}\ \quad  i \neq m
+\end{cases}
 $$
 
 <p>
@@ -572,17 +572,17 @@ in other words element-wise product of matrices. And it is of size $(3 \times 3)
 
 $$
 \begin{bmatrix} \frac{da_1}{dz_1} \frac{da_2}{dz_1} \frac{da_3}{dz_1} \\
-                \frac{da_1}{dz_2} \frac{da_2}{dz_2} \frac{da_3}{dz_2} \\
-                \frac{da_1}{dz_3} \frac{da_2}{dz_3} \frac{da_3}{dz_3}
+	\frac{da_1}{dz_2} \frac{da_2}{dz_2} \frac{da_3}{dz_2} \\
+	\frac{da_1}{dz_3} \frac{da_2}{dz_3} \frac{da_3}{dz_3}
 \end{bmatrix}_{3 \times 3}
 \begin{bmatrix} \frac{dL}{da_1} \\
-                \frac{dL}{da_2} \\
-                \frac{dL}{da_3}
+	\frac{dL}{da_2} \\
+	\frac{dL}{da_3}
 \end{bmatrix}_{3 \times 1}
 =
 \begin{bmatrix} \frac{dL}{dz_1} \\
-                \frac{dL}{dz_2} \\
-                \frac{dL}{dz_3}
+	\frac{dL}{dz_2} \\
+	\frac{dL}{dz_3}
 \end{bmatrix}_{3 \times 1}
 $$
 
@@ -613,8 +613,8 @@ def get_loss(A, Y_one_hot):
 # semantically same with above function, and numerically stable.
 def get_loss_numerically_stable(Z, Y_one_hot):
   loss = -1 * np.sum(Y_one_hot * ( (Z - Z.max(axis = 0)) -
-                                    np.log(np.sum(np.exp(Z - Z.max(axis = 0)), axis = 0))
-				 ))
+			    np.log(np.sum(np.exp(Z - Z.max(axis = 0)), axis = 0))
+			 ))
   return loss
 
 def get_gradients(Y_one_hot, Z, A):
@@ -663,7 +663,6 @@ for i in range(40):
   dW, db = get_gradients(Y_one_hot, Z, A)
   W, b = gradient_descent(W, b, dW, db, ALPHA)
 
-
 plt.grid()
 plt.title('Loss', size=18)
 plt.xlabel('Number of iterations', size=15)
@@ -694,9 +693,9 @@ $$
 We have 3 boundaries between all 3 choose 2 of above:
 
 <ul>
-  <li> Equation A - Equation B </li>
-  <li> Equation A - Equation C </li>
-  <li> Equation B - Equation C </li>
+<li> Equation A - Equation B </li>
+<li> Equation A - Equation C </li>
+<li> Equation B - Equation C </li>
 </ul>
 
 If we focus on Equation A - Equation B:
@@ -716,25 +715,25 @@ If we plot these three lines:
 {'type': 'image', 'width': 600}
 
 def plot_decision_boundary(X, Y, W, b, path):
-   plt.grid()
-   plt.xlim([-2.0, 2.0])
-   plt.ylim([-2.0, 2.0])
-   plt.xlabel('$x_1$', size=20)
-   plt.ylabel('$x_2$', size=20)
-   plt.title('Decision boundary', size = 18)
+  plt.grid()
+  plt.xlim([-2.0, 2.0])
+  plt.ylim([-2.0, 2.0])
+  plt.xlabel('$x_1$', size=20)
+  plt.ylabel('$x_2$', size=20)
+  plt.title('Decision boundary', size = 18)
 
-   plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+  plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
 
-   xs = np.array([-2.0, 2.0])
-   ys1 = ((b[1, 0] - b[0, 0]) - (W[0, 0] - W[1, 0]) * xs) / (W[0, 1] - W[1, 1])
-   ys2 = ((b[2, 0] - b[0, 0]) - (W[0, 0] - W[2, 0]) * xs) / (W[0, 1] - W[2, 1])
-   ys3 = ((b[2, 0] - b[1, 0]) - (W[1, 0] - W[2, 0]) * xs) / (W[1, 1] - W[2, 1])
+  xs = np.array([-2.0, 2.0])
+  ys1 = ((b[1, 0] - b[0, 0]) - (W[0, 0] - W[1, 0]) * xs) / (W[0, 1] - W[1, 1])
+  ys2 = ((b[2, 0] - b[0, 0]) - (W[0, 0] - W[2, 0]) * xs) / (W[0, 1] - W[2, 1])
+  ys3 = ((b[2, 0] - b[1, 0]) - (W[1, 0] - W[2, 0]) * xs) / (W[1, 1] - W[2, 1])
 
-   plt.plot(xs, ys1, c='black')
-   plt.plot(xs, ys2, c='black')
-   plt.plot(xs, ys3, c='black')
+  plt.plot(xs, ys1, c='black')
+  plt.plot(xs, ys2, c='black')
+  plt.plot(xs, ys3, c='black')
 
-   plt.savefig(path)
+  plt.savefig(path)
 
 plot_decision_boundary(X, Y, W, b, 'image.png')
 
@@ -838,7 +837,7 @@ def plot_decision_boundary_lazy(X, Y, W, b, counter_param):
   xv, yv = np.meshgrid(xs, ys)
   X_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
   _, predictions = forward_propagate(X_fake, W, b)
-
+ 
   plt.imshow(predictions.T.reshape(NX, NY, 3), extent=[-2.0, 2.0, -2.0, 2.0])
   plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
 
@@ -865,7 +864,7 @@ ax1.set_ylabel('Value', size=20)
 ax1.set_title('Parameter Values', size = 18)
 
 xlabels = ['$w_{1,1}$', '$w_{1,2}$', '$w_{2,1}$', '$w_{2,2}$',
-           '$w_{3,1}$', '$w_{3,2}$', '$b_1$', '$b_2$', '$b_3$']
+   '$w_{3,1}$', '$w_{3,2}$', '$b_1$', '$b_2$', '$b_3$']
 ax1.set_xticks(range(9))
 ax1.set_xticklabels(xlabels, size=20)
 

@@ -2,6 +2,11 @@
 {}
 <center><h1>Part 1: Logistic Regression <span style="color: red">[Draft]</span></h1></center>
 
+<p>
+"If you can't explain it to a six year old, you don't understand it yourself."
+-- Albert Einstein
+</p>
+
 <h1>Introduction</h1>
 <p>
 Let's say we want to build a model to discriminate the following <b>red</b> and <b>blue</b>
