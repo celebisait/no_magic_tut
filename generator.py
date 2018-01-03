@@ -136,4 +136,10 @@ def main():
 
   write_one_file(input_file, output_file, title)
 
+  input_file = 'source/source3.nomagic'
+  output_file = 'output/part3.html'
+  title = 'Part3: Building a Simple Neural Network'
+
+  # write_one_file(input_file, output_file, title)
+
 main()

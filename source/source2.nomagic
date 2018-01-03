@@ -293,7 +293,7 @@ The tricky part is to <i>learn</i> those weights properly.
 
 # HTML
 {}
-<h1>Defining Loss function (Maximum Likelihood Estimation)</h1>
+<h1> Defining Loss function using Maximum Likelihood Estimation </h1>
 
 <p>
 In training, our goal is to <b>learn</b> a matrix $W$ of size $(3 \times 2)$  and a $\mathbf{b}$ of size $(3 \times 1)$
@@ -457,7 +457,6 @@ A nice property about the Softmax function that it produces a legit <b>Probabili
 In classification (or more generally in Machine Learning) we often want to assign prababilities to
 categories or classes. Softmax function is known to work well numereous applications/areas.
 </p>
-
 
 <p>
 Softmax is a vector function -- it takes a vector as an input and returns another vector. Therefore, we
@@ -808,10 +807,6 @@ After the learning is done, the final classifier is pretty good, in fact it has 
 </p>
 
 <p>
-Note that <b>why the fuck all three lines always intersect at one point</b> is still a mystery to me.
-</p>
-
-<p>
 Let's see the decision boundary in a more lazy setting. Here, we simply classify every single point
 in the grid and then give the predictions to a contour plot. Comparing to the previous animation,
 contour plot shows the prediction of every single point in the grid in the final version of the
@@ -837,7 +832,7 @@ def plot_decision_boundary_lazy(X, Y, W, b, counter_param):
   xv, yv = np.meshgrid(xs, ys)
   X_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
   _, predictions = forward_propagate(X_fake, W, b)
- 
+
   plt.imshow(predictions.T.reshape(NX, NY, 3), extent=[-2.0, 2.0, -2.0, 2.0])
   plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
 
@@ -848,6 +843,24 @@ plot_decision_boundary_lazy(X, Y, W_cache[-1], b_cache[-1], 50)
 plt.close()
 plt.clf()
 plt.cla()
+
+# HTML
+{}
+<p>
+Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
+is $\mathbf{a}$ and it is three dimensional. So, we simply convert that vector to RGB space. So, for example
+if the prediction is: $[0.98, 0.01, 0.01]$, it will be almost a perfect <b>red</b>, and so on.
+</p>
+
+<p>
+If you look closely, you will see some <b>purple color</b> between red and blue points. That is because
+the predictions in that region is something similar to $[0.45, 0.1, 0.45]$. And this means a mix of red
+and blue which gives us purple. Similar phenomena happens between other decision boundary intersections.
+</p>
+
+<h1> Gradient Descent Parameter Updates </h1>
+
+<p> Here we see the updates of parameters step by step in the gradient descent. </p>
 
 # CODE
 {'width': 1000}
@@ -901,15 +914,16 @@ plt.cla()
 # HTML
 {}
 <p>
-Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
-is $\mathbf{a}$ and it is three dimensional. So, we simply convert that vector to RGB space. So, for example
-if the prediction is: $[0.98, 0.01, 0.01]$, it will be almost a perfect <b>red</b>, and so on.
+This is a nice animation that shows the progress of our parameters $W$ and $\mathbf{b}$
+in each iteration of gradient descent along with the corresponding loss value using the
+given parameters.
 </p>
 
 <p>
-If you look closely, you will see some <b>purple color</b> between red and blue points. That is because
-the predictions in that region is something similar to $[0.45, 0.1, 0.45]$. And this means a mix of red
-and blue which gives us purple. Similar phenomena happens between other decision boundary intersections.
+We are starting with small random initial values for: $w_{1,1}, w_{1,2}, w_{2,1}, w_{2,2},
+w_{3,1}, w_{3,2}$. We start with all $0$ values for $b_1, b_2, b_3$. Then, we start applying
+gradient descent. Every step we take in the gradient descent is giving us a better set of parameters
+so that we see that the loss is decreasing.
 </p>
 
 # HTML
@@ -1036,10 +1050,31 @@ plt.cla()
 
 # HTML
 {}
+
+<h1>Exercises</h1>
+<ol>
+  <li>
+     If you look at the decision boundary, the three lines of the decision boundary always
+     intersects at one single point. Is this <i>always</i> the case? (i.e., is this an invariant
+     of some sort?) If this is an invariant, <i>why</i> this is the case?
+  </li>
+  <li>
+     Looking to the structure of our decision boundary, try to come up with a set of samples
+     including three classes (red, green and blue) that is linearly separable that our classifier
+     would not be able to successully discriminate all of them.
+  </li>
+  <li>
+     Assume we had four classes: red, green, blue and <b>orange</b> instead of only three classes.
+     How would the decision boundary look like? Try to guess its potential structure.
+     Is that boundary able to classify <i>any</i> linearly separable possible inputs containing
+     four classes?
+  </li>
+</ol>
+
 <h1>References</h1>
 
 <ul>
-  <li> http://ufldl.stanford.edu/tutorial/supervised/SoftmaxRegression/
+  <li> http://ufldl.stanford.edu/tutorial/supervised/SoftmaxRegression/ </li>
   <li> https://eli.thegreenplace.net/2016/the-softmax-function-and-its-derivative/ </li>
   <li> http://tutorial.math.lamar.edu/Classes/CalcI/ProductQuotientRule.aspx </li>
 </ul>
