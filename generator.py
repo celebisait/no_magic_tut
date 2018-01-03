@@ -128,7 +128,7 @@ def main():
   output_file = 'output/part1.html'
   title = 'Part1: Logistic Regression'
 
-  write_one_file(input_file, output_file, title)
+  # write_one_file(input_file, output_file, title)
 
   input_file = 'source/source2.nomagic'
   output_file = 'output/part2.html'

@@ -938,13 +938,34 @@ $$
 A =
 \left[
 \begin{array}{c|c|c|c}
-a_1 & a_2 & \dots & a_{20} \\
+\mathbf{a}^{(1)} & \mathbf{a}^{(2)} & \dots & \mathbf{a}^{(20)} \\
 \end{array}
 \right]_{3 \times 20}
 $$
 
 <p>
-and we want to do:
+where each $\mathbf{a}$ of size $(3 \times 1)$.
+</p>
+
+<p>
+Similarly, we also have:
+</p>
+
+$$
+\frac{dL}{dA} =
+\left[
+\begin{array}{c|c|c|c}
+\frac{dL}{d \mathbf{a}^{(1)}} & \frac{dL}{d \mathbf{a}^{(2)}} & \dots & \frac{dL}{d \mathbf{a}^{(20)}} \\
+\end{array}
+\right]_{3 \times 20}
+$$
+
+<p>
+again, each $\frac{dL}{d \mathbf{a}}$ of size $(3 \times 1)$.
+</p>
+
+<p>
+<b>Goal:</b> calculate $\frac{dL}{dZ}$ of size $(3 \times 20)$.
 </p>
 
 $$
@@ -955,32 +976,51 @@ $$
 \right]_{3 \times (3 \times 20)}
 \left[
 \begin{array}{c|c|c|c}
-\frac{dL}{da^{(1)}} & 0                 & \dots  & 0                  \\ \hline
-0                 & \frac{dL}{da^{(2)}} & \dots  & 0                  \\ \hline
+\frac{dL}{d\mathbf{a}^{(1)}} & 0                 & \dots  & 0                  \\ \hline
+0                 & \frac{dL}{d\mathbf{a}^{(2)}} & \dots  & 0                  \\ \hline
 \vdots            & \vdots            & \vdots & \vdots             \\ \hline
-0                 & 0                 & \dots  & \frac{dL}{da^{(20)}} \\
+0                 & 0                 & \dots  & \frac{dL}{d\mathbf{a}^{(20)}} \\
 \end{array}
 \right]_{(3 \times 20) \times 20}
 =
 \left[
 \begin{array}{c|c|c|c}
-\frac{dL}{dz^{(1)}} & \frac{dL}{dz^{(2)}} & \dots & \frac{dL}{dz^{(20)}}
+\frac{dL}{d\mathbf{z}^{(1)}} & \frac{dL}{d\mathbf{z}^{(2)}} & \dots & \frac{dL}{d\mathbf{z}^{(20)}}
 \end{array}
 \right]_{3 \times 20}
 $$
 
 <p>
-where each $\mathcal{A}_i$ of size $(3 \times 3)$ and each $\frac{dL}{da^{(i)}}$ of size $(3 \times 1)$.
-And finally we define:
+where each $\mathcal{A}_i$ of size $(3 \times 3)$ and each $\frac{dL}{d\mathbf{a}^{(i)}}$ of size $(3 \times 1)$.
+</p>
+
+<p>
+We are almost done, if we can define a proper $\mathcal{A}$. Here it comes: ($\mathcal{A}_{3 \times (3 \times 20)}$)
 </p>
 
 $$
-\mathcal{A}_{3 \times (3 \times 20)} =
+\left (
+A_{3 \times 20}
 \left[
-\begin{array}{c|c|c|c}
-a_1 & a_2 & \dots & a_{20} \\
+\begin{array}{c|c|c|c|c}
+e^T & 0 & 0 & \dots & 0 \\ \hline
+0 & e^T & 0 & \dots & 0 \\ \hline
+\vdots & \vdots & \vdots & \vdots & \vdots \\ \hline
+0 & 0 & 0 & \dots & e^T \\
 \end{array}
-\right]_{3 \times 20}
+\right]_{20 \times (3 \times 20)}
+\right )
+\circ
+\left (
+\left[
+\begin{array}{c}
+I_1 \\ \hline
+I_2 \\ \hline
+\vdots \\ \hline
+I_{20}
+\end{array}
+\right]_{(3 \times 20) \times 3}
+-
 \left[
 \begin{array}{c|c|c|c|c}
 e & 0 & 0 & \dots & 0 \\ \hline
@@ -988,11 +1028,15 @@ e & 0 & 0 & \dots & 0 \\ \hline
 \vdots & \vdots & \vdots & \vdots & \vdots \\ \hline
 0 & 0 & 0 & \dots & e \\
 \end{array}
-\right]_{20 \times (3 \times 20)}
+\right]_{(3 \times 20) \times 20}
+
+A^{T}_{20 \times 3}
+\right ) ^ T
 $$
 
 <p>
-where all $e$ of size $(1 \times 3)$.
+where all $e$ of size $(3 \times 1)$ containing all $1$s and all $I_{i}$ is of size ($3 \times 3$) identity
+matrix.
 </p>
 
 # HTML

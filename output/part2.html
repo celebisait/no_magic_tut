@@ -66,7 +66,7 @@ and <b>blue</b> points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image008.png"/><p>
+<img class="generated_image" width="600" src="../images/image000.png"/><p>
 In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
 <b>green</b> or <b>blue</b>.
 </p>
@@ -676,7 +676,7 @@ We will <i>learn</i> the weights using <b>Back Propagation</b>.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image009.png"/><h1> Decision Boundary </h1>
+<img class="generated_image" width="600" src="../images/image001.png"/><h1> Decision Boundary </h1>
 
 <p>
 So, essentially, we have 3 equations:
@@ -736,7 +736,7 @@ If we plot these three lines:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image010.png"/><p>
+<img class="generated_image" width="600" src="../images/image002.png"/><p>
 Above, we simply find the boundaries and plot them. The definition of the boundary is that
 the region in which the predictions are equally confident for both of the classifiers. Since
 we have three classes, there are 3 choose 2 = 3 boundaries.
@@ -789,7 +789,7 @@ As you may guess, it should start from a random point and get smarter in each st
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
 <video class="generated_video" width="600" controls>
-<source src="../animations/animation002.mp4" type="video/mp4">
+<source src="../animations/animation000.mp4" type="video/mp4">
 </video><p>
 As you can see, it starts from a random classifier that does not seem to be working well in the
 beginning. And the learning process figures out where to go next to find a better classifier.
@@ -831,7 +831,7 @@ step through the gradient descent iterations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image011.png"/><p>
+<img class="generated_image" width="600" src="../images/image003.png"/><p>
 Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
 is $\mathbf{a}$ and it is three dimensional. So, we simply convert that vector to RGB space. So, for example
 if the prediction is: $[0.98, 0.01, 0.01]$, it will be almost a perfect <b>red</b>, and so on.
@@ -894,7 +894,7 @@ and blue which gives us purple. Similar phenomena happens between other decision
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
 <video class="generated_video" width="1000" controls>
-<source src="../animations/animation003.mp4" type="video/mp4">
+<source src="../animations/animation001.mp4" type="video/mp4">
 </video><p>
 This is a nice animation that shows the progress of our parameters $W$ and $\mathbf{b}$
 in each iteration of gradient descent along with the corresponding loss value using the
@@ -917,13 +917,34 @@ $$
 A =
 \left[
 \begin{array}{c|c|c|c}
-a_1 & a_2 & \dots & a_{20} \\
+\mathbf{a}^{(1)} & \mathbf{a}^{(2)} & \dots & \mathbf{a}^{(20)} \\
 \end{array}
 \right]_{3 \times 20}
 $$
 
 <p>
-and we want to do:
+where each $\mathbf{a}$ of size $(3 \times 1)$.
+</p>
+
+<p>
+Similarly, we also have:
+</p>
+
+$$
+\frac{dL}{dA} =
+\left[
+\begin{array}{c|c|c|c}
+\frac{dL}{d \mathbf{a}^{(1)}} & \frac{dL}{d \mathbf{a}^{(2)}} & \dots & \frac{dL}{d \mathbf{a}^{(20)}} \\
+\end{array}
+\right]_{3 \times 20}
+$$
+
+<p>
+again, each $\frac{dL}{d \mathbf{a}}$ of size $(3 \times 1)$.
+</p>
+
+<p>
+<b>Goal:</b> calculate $\frac{dL}{dZ}$ of size $(3 \times 20)$.
 </p>
 
 $$
@@ -934,32 +955,51 @@ $$
 \right]_{3 \times (3 \times 20)}
 \left[
 \begin{array}{c|c|c|c}
-\frac{dL}{da^{(1)}} & 0                 & \dots  & 0                  \\ \hline
-0                 & \frac{dL}{da^{(2)}} & \dots  & 0                  \\ \hline
+\frac{dL}{d\mathbf{a}^{(1)}} & 0                 & \dots  & 0                  \\ \hline
+0                 & \frac{dL}{d\mathbf{a}^{(2)}} & \dots  & 0                  \\ \hline
 \vdots            & \vdots            & \vdots & \vdots             \\ \hline
-0                 & 0                 & \dots  & \frac{dL}{da^{(20)}} \\
+0                 & 0                 & \dots  & \frac{dL}{d\mathbf{a}^{(20)}} \\
 \end{array}
 \right]_{(3 \times 20) \times 20}
 =
 \left[
 \begin{array}{c|c|c|c}
-\frac{dL}{dz^{(1)}} & \frac{dL}{dz^{(2)}} & \dots & \frac{dL}{dz^{(20)}}
+\frac{dL}{d\mathbf{z}^{(1)}} & \frac{dL}{d\mathbf{z}^{(2)}} & \dots & \frac{dL}{d\mathbf{z}^{(20)}}
 \end{array}
 \right]_{3 \times 20}
 $$
 
 <p>
-where each $\mathcal{A}_i$ of size $(3 \times 3)$ and each $\frac{dL}{da^{(i)}}$ of size $(3 \times 1)$.
-And finally we define:
+where each $\mathcal{A}_i$ of size $(3 \times 3)$ and each $\frac{dL}{d\mathbf{a}^{(i)}}$ of size $(3 \times 1)$.
+</p>
+
+<p>
+We are almost done, if we can define a proper $\mathcal{A}$. Here it comes: ($\mathcal{A}_{3 \times (3 \times 20)}$)
 </p>
 
 $$
-\mathcal{A}_{3 \times (3 \times 20)} =
+\left (
+A_{3 \times 20}
 \left[
-\begin{array}{c|c|c|c}
-a_1 & a_2 & \dots & a_{20} \\
+\begin{array}{c|c|c|c|c}
+e^T & 0 & 0 & \dots & 0 \\ \hline
+0 & e^T & 0 & \dots & 0 \\ \hline
+\vdots & \vdots & \vdots & \vdots & \vdots \\ \hline
+0 & 0 & 0 & \dots & e^T \\
 \end{array}
-\right]_{3 \times 20}
+\right]_{20 \times (3 \times 20)}
+\right )
+\circ
+\left (
+\left[
+\begin{array}{c}
+I_1 \\ \hline
+I_2 \\ \hline
+\vdots \\ \hline
+I_{20}
+\end{array}
+\right]_{(3 \times 20) \times 3}
+-
 \left[
 \begin{array}{c|c|c|c|c}
 e & 0 & 0 & \dots & 0 \\ \hline
@@ -967,11 +1007,15 @@ e & 0 & 0 & \dots & 0 \\ \hline
 \vdots & \vdots & \vdots & \vdots & \vdots \\ \hline
 0 & 0 & 0 & \dots & e \\
 \end{array}
-\right]_{20 \times (3 \times 20)}
+\right]_{(3 \times 20) \times 20}
+
+A^{T}_{20 \times 3}
+\right ) ^ T
 $$
 
 <p>
-where all $e$ of size $(1 \times 3)$.
+where all $e$ of size $(3 \times 1)$ containing all $1$s and all $I_{i}$ is of size ($3 \times 3$) identity
+matrix.
 </p>
 <h1> Applying Softmax Regression using low-level Tensorflow APIs </h1>
 
@@ -1020,7 +1064,7 @@ because of the initial random start of both models. (Remember that $W$ is initia
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image012.png"/>
+<img class="generated_image" width="600" src="../images/image004.png"/>
 <h1>Exercises</h1>
 <ol>
   <li>
