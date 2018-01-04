@@ -601,6 +601,10 @@ We will <i>learn</i> the weights using <b>Back Propagation</b>.
 # CODE
 {'width': 600}
 
+import scipy.sparse
+import numpy.matlib as matlib
+import sys
+
 ALPHA = 2.0 # learning rate
 
 # this simple implementation is numerically unstable, because:
@@ -618,12 +622,30 @@ def get_loss_numerically_stable(Z, Y_one_hot):
 
 def get_gradients(Y_one_hot, Z, A):
   dA = (-Y_one_hot / A)
+
+  """
   dZ = np.zeros((3, 20))
   for i in range(20):
     a = A[:, [i]]
     da = dA[:, [i]]
     matrix = np.matmul(a, np.ones((1, 3))) * (np.identity(3) - np.matmul(np.ones((3, 1)), a.T))
     dZ[:, [i]] = np.matmul(matrix, da)
+  """
+
+  row_indices = np.arange(3 * 20)
+  col_indices = matlib.repmat(np.arange(20), 3, 1).T.flatten()
+  sparse_right = scipy.sparse.csr_matrix((dA.T.flatten(), (row_indices, col_indices)))
+
+  sparse_A = scipy.sparse.csr_matrix(A)
+  sparse_E_right = scipy.sparse.csr_matrix((np.ones(3 * 20), (row_indices, col_indices)))
+
+  row_indices = np.arange(3 * 20)
+  col_indices = matlib.repmat(np.arange(0, 3), 20, 1).flatten()
+  sparse_I = scipy.sparse.csr_matrix((np.ones(3 * 20), (row_indices, col_indices)))
+
+  sparse_left = (sparse_A * sparse_E_right.T).multiply( (sparse_I - (sparse_E_right * sparse_A.T)).T )
+  dZ = (sparse_left * sparse_right).toarray()
+  # print( np.absolute(dZ - dZ2).sum() )
 
   dW = np.zeros((3,2))
   db = np.zeros((3,1))
@@ -639,6 +661,31 @@ def get_gradients(Y_one_hot, Z, A):
 
   return dW, db
 
+def get_gradients_matrix_operations(Y_one_hot, Z, A):
+  dA = (-Y_one_hot / A)
+
+  row_indices = np.arange(3 * 20)
+  col_indices = matlib.repmat(np.arange(0, 20), 3, 1).T.flatten()
+  sparse_right = scipy.sparse.csr_matrix((dA.T.flatten(), (row_indices, col_indices)))
+
+  sparse_A = scipy.sparse.csr_matrix(A)
+  sparse_E_right = scipy.sparse.csr_matrix((np.ones(3 * 20), (row_indices, col_indices)))
+
+  row_indices = np.arange(3 * 20)
+  col_indices = matlib.repmat(np.arange(0, 3), 20, 1).flatten()
+  sparse_I = scipy.sparse.csr_matrix((np.ones(3 * 20), (row_indices, col_indices)))
+
+  dZ2 = (sparse_A * sparse_E_right.T).multiply( (sparse_I - (sparse_E_right * sparse_A.T)).T )
+
+  dW = 2
+  db = 3
+
+  dW = dW * (1.0/20)
+  db = db * (1.0/20)
+
+  return dW, db
+
+
 def gradient_descent(W, b, dW, db, alpha):
   W = W - alpha * dW
   b = b - alpha * db
@@ -651,6 +698,10 @@ b = np.zeros((3, 1))
 W_cache = []
 b_cache = []
 L_cache = []
+
+total_time = 0
+import time
+
 for i in range(40):
   Z, A = forward_propagate(X, W, b)
   L = (1.0 / 20) * get_loss_numerically_stable(Z, Y_one_hot)
@@ -659,8 +710,13 @@ for i in range(40):
   b_cache.append(b)
   L_cache.append(L)
 
+  a = time.time()
   dW, db = get_gradients(Y_one_hot, Z, A)
+  b = time.time()
+  total_time += (b-a)
   W, b = gradient_descent(W, b, dW, db, ALPHA)
+
+print(total_time)
 
 plt.grid()
 plt.title('Loss', size=18)
@@ -965,7 +1021,7 @@ again, each $\frac{dL}{d \mathbf{a}}$ of size $(3 \times 1)$.
 </p>
 
 <p>
-<b>Goal:</b> calculate $\frac{dL}{dZ}$ of size $(3 \times 20)$.
+<b>Goal:</b> calculate $\frac{dL}{dZ}$ of size $(3 \times 20)$ using only matrix operations.
 </p>
 
 $$
@@ -1038,6 +1094,31 @@ $$
 where all $e$ of size $(3 \times 1)$ containing all $1$s and all $I_{i}$ is of size ($3 \times 3$) identity
 matrix.
 </p>
+
+# HTML
+{}
+<p>
+Here is how to create sparse matrices using Python/Numpy/Scipy. A quick and useful demo:
+</p>
+
+# CODE
+{}
+import scipy.sparse
+import numpy.matlib as matlib
+
+data = np.arange(15).reshape(5,3).T
+print('data:')
+print(data)
+row_indices = np.arange(15)
+print('row indices:')
+print(row_indices)
+col_indices = matlib.repmat(np.arange(0,5), 3, 1).T.flatten()
+print('col_indices:')
+print(col_indices)
+
+sparse = scipy.sparse.csr_matrix((data.T.flatten(), (row_indices, col_indices)))
+print('sparse matrix:')
+print(sparse.toarray())
 
 # HTML
 {}
