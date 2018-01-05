@@ -636,16 +636,20 @@ def get_gradients(Y_one_hot, Z, A):
   col_indices = matlib.repmat(np.arange(20), 3, 1).T.flatten()
   sparse_right = scipy.sparse.csr_matrix((dA.T.flatten(), (row_indices, col_indices)))
 
-  sparse_A = scipy.sparse.csr_matrix(A)
-  sparse_E_right = scipy.sparse.csr_matrix((np.ones(3 * 20), (row_indices, col_indices)))
+  row_indices = np.tile( np.arange(3), 3 * 20 )
+  col_indices = np.tile( np.arange(3 * 20), (3,1) ).T.flatten()
+  sparse_bottom_left = scipy.sparse.csr_matrix( (np.tile(A.T, 3).flatten(), (row_indices, col_indices)) )
 
-  row_indices = np.arange(3 * 20)
-  col_indices = matlib.repmat(np.arange(0, 3), 20, 1).flatten()
-  sparse_I = scipy.sparse.csr_matrix((np.ones(3 * 20), (row_indices, col_indices)))
+  row_indices = np.tile( np.arange(3), 20 )
+  col_indices = np.arange(0, 3 * 20)
+  sparse_I = scipy.sparse.csr_matrix( (np.ones(3 * 20), (row_indices, col_indices)) )
 
-  sparse_left = (sparse_A * sparse_E_right.T).multiply( (sparse_I - (sparse_E_right * sparse_A.T)).T )
+  row_indices = np.tile( np.arange(3), (3 * 20, 1) ).T.flatten()
+  col_indices = np.tile( np.arange(3 * 20), 3)
+  sparse_bottom_right = scipy.sparse.csr_matrix( (np.tile( A.T.flatten(), 3 ), (row_indices, col_indices)) )
+
+  sparse_left = sparse_bottom_left.multiply( sparse_I - sparse_bottom_right )
   dZ = (sparse_left * sparse_right).toarray()
-  # print( np.absolute(dZ - dZ2).sum() )
 
   dW = np.zeros((3,2))
   db = np.zeros((3,1))
@@ -661,31 +665,6 @@ def get_gradients(Y_one_hot, Z, A):
 
   return dW, db
 
-def get_gradients_matrix_operations(Y_one_hot, Z, A):
-  dA = (-Y_one_hot / A)
-
-  row_indices = np.arange(3 * 20)
-  col_indices = matlib.repmat(np.arange(0, 20), 3, 1).T.flatten()
-  sparse_right = scipy.sparse.csr_matrix((dA.T.flatten(), (row_indices, col_indices)))
-
-  sparse_A = scipy.sparse.csr_matrix(A)
-  sparse_E_right = scipy.sparse.csr_matrix((np.ones(3 * 20), (row_indices, col_indices)))
-
-  row_indices = np.arange(3 * 20)
-  col_indices = matlib.repmat(np.arange(0, 3), 20, 1).flatten()
-  sparse_I = scipy.sparse.csr_matrix((np.ones(3 * 20), (row_indices, col_indices)))
-
-  dZ2 = (sparse_A * sparse_E_right.T).multiply( (sparse_I - (sparse_E_right * sparse_A.T)).T )
-
-  dW = 2
-  db = 3
-
-  dW = dW * (1.0/20)
-  db = db * (1.0/20)
-
-  return dW, db
-
-
 def gradient_descent(W, b, dW, db, alpha):
   W = W - alpha * dW
   b = b - alpha * db
@@ -699,9 +678,6 @@ W_cache = []
 b_cache = []
 L_cache = []
 
-total_time = 0
-import time
-
 for i in range(40):
   Z, A = forward_propagate(X, W, b)
   L = (1.0 / 20) * get_loss_numerically_stable(Z, Y_one_hot)
@@ -710,13 +686,8 @@ for i in range(40):
   b_cache.append(b)
   L_cache.append(L)
 
-  a = time.time()
   dW, db = get_gradients(Y_one_hot, Z, A)
-  b = time.time()
-  total_time += (b-a)
   W, b = gradient_descent(W, b, dW, db, ALPHA)
-
-print(total_time)
 
 plt.grid()
 plt.title('Loss', size=18)
@@ -987,6 +958,14 @@ so that we see that the loss is decreasing.
 <h1> Calculating Derivatives using Matrix Operations </h1>
 
 <p>
+Recall that we are trying to convert this to matrix operations:
+</p>
+
+$$
+\mathbf{a} \mathbf{e^T} \circ (\mathbf{I} - \mathbf{e} \mathbf{a^T})
+$$
+
+<p>
 Now, instead of $\mathbf{a}$, we have $A$:
 </p>
 
@@ -1069,31 +1048,59 @@ e^T & 0 & 0 & \dots & 0 \\ \hline
 \circ
 \left (
 \left[
-\begin{array}{c}
-I_1 \\ \hline
-I_2 \\ \hline
-\vdots \\ \hline
-I_{20}
+\begin{array}{c|c|c|c}
+I & I & \dots & I
 \end{array}
-\right]_{(3 \times 20) \times 3}
+\right]_{3 \times (3 \times 20)}
 -
+ee^T_{3 \times 20}
 \left[
 \begin{array}{c|c|c|c|c}
-e & 0 & 0 & \dots & 0 \\ \hline
-0 & e & 0 & \dots & 0 \\ \hline
+a_1^T & 0 & 0 & \dots & 0 \\ \hline
+0 & a_2^T & 0 & \dots & 0 \\ \hline
 \vdots & \vdots & \vdots & \vdots & \vdots \\ \hline
-0 & 0 & 0 & \dots & e \\
+0 & 0 & 0 & \dots & a_{20}^T \\
 \end{array}
-\right]_{(3 \times 20) \times 20}
-
-A^{T}_{20 \times 3}
-\right ) ^ T
+\right]_{20 \times (3 \times 20)}
+\right )
 $$
 
 <p>
-where all $e$ of size $(3 \times 1)$ containing all $1$s and all $I_{i}$ is of size ($3 \times 3$) identity
+where all $e$ of size $(K \times 1)$ containing all $1$s for a suitable $K$ and all $I$ is of size ($3 \times 3$) identity
 matrix.
 </p>
+
+<p>
+Or equivalently, we can write this as:
+</p>
+
+$$
+\left (
+\left[
+\begin{array}{c|c|c|c|c|c|c|c}
+a_1 & a_1 & a_1 & a_2 & a_2 & a_2 & \dots & a_{20}
+\end{array}
+\right]_{3 \times (3 \times 20)}
+\right )
+\circ
+\left (
+
+\left[
+\begin{array}{c|c|c|c}
+I & I & \dots & I
+\end{array}
+\right]_{3 \times (3 \times 20)}
+-
+\left[
+\begin{array}{c|c|c|c}
+a_1^T & a_2^T & \dots & a_{20}^T \\ \hline
+a_1^T & a_2^T & \dots & a_{20}^T \\ \hline
+a_1^T & a_2^T & \dots & a_{20}^T
+\end{array}
+\right]_{3 \times (3 \times 20)}
+\right )
+
+$$
 
 # HTML
 {}
@@ -1149,7 +1156,7 @@ t_Accuracy = tf.contrib.metrics.accuracy(labels = tf.argmax(t_Y, axis=1),
 t_Loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
                          labels=t_Y, logits=t_logits))
 
-train = tf.train.GradientDescentOptimizer(2.0).minimize(t_Loss)
+train = tf.train.GradientDescentOptimizer(ALPHA).minimize(t_Loss)
 init = tf.global_variables_initializer()
 
 losses = []

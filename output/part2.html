@@ -635,19 +635,23 @@ We will <i>learn</i> the weights using <b>Back Propagation</b>.
 <span class="sd">  &quot;&quot;&quot;</span>
 
   <span class="n">row_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span>
-  <span class="n">col_indices</span> <span class="o">=</span> <span class="n">matlib</span><span class="o">.</span><span class="n">repmat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+  <span class="n">col_indices</span> <span class="o">=</span> <span class="n">matlib</span><span class="o">.</span><span class="n">repmat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
   <span class="n">sparse_right</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">dA</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">)))</span>
 
-  <span class="n">sparse_A</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
-  <span class="n">sparse_E_right</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">)))</span>
+  <span class="n">row_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span> <span class="p">)</span>
+  <span class="n">col_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+  <span class="n">sparse_bottom_left</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">))</span> <span class="p">)</span>
 
-  <span class="n">row_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span>
-  <span class="n">col_indices</span> <span class="o">=</span> <span class="n">matlib</span><span class="o">.</span><span class="n">repmat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-  <span class="n">sparse_I</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">)))</span>
+  <span class="n">row_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="mi">20</span> <span class="p">)</span>
+  <span class="n">col_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span>
+  <span class="n">sparse_I</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">))</span> <span class="p">)</span>
 
-  <span class="n">sparse_left</span> <span class="o">=</span> <span class="p">(</span><span class="n">sparse_A</span> <span class="o">*</span> <span class="n">sparse_E_right</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span> <span class="p">(</span><span class="n">sparse_I</span> <span class="o">-</span> <span class="p">(</span><span class="n">sparse_E_right</span> <span class="o">*</span> <span class="n">sparse_A</span><span class="o">.</span><span class="n">T</span><span class="p">))</span><span class="o">.</span><span class="n">T</span> <span class="p">)</span>
+  <span class="n">row_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+  <span class="n">col_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+  <span class="n">sparse_bottom_right</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">A</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="mi">3</span> <span class="p">),</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">))</span> <span class="p">)</span>
+
+  <span class="n">sparse_left</span> <span class="o">=</span> <span class="n">sparse_bottom_left</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span> <span class="n">sparse_I</span> <span class="o">-</span> <span class="n">sparse_bottom_right</span> <span class="p">)</span>
   <span class="n">dZ</span> <span class="o">=</span> <span class="p">(</span><span class="n">sparse_left</span> <span class="o">*</span> <span class="n">sparse_right</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
-  <span class="c1"># print( np.absolute(dZ - dZ2).sum() )</span>
 
   <span class="n">dW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
   <span class="n">db</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
@@ -663,31 +667,6 @@ We will <i>learn</i> the weights using <b>Back Propagation</b>.
 
   <span class="k">return</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span>
 
-<span class="k">def</span> <span class="nf">get_gradients_matrix_operations</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>
-  <span class="n">dA</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">Y_one_hot</span> <span class="o">/</span> <span class="n">A</span><span class="p">)</span>
-
-  <span class="n">row_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span>
-  <span class="n">col_indices</span> <span class="o">=</span> <span class="n">matlib</span><span class="o">.</span><span class="n">repmat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-  <span class="n">sparse_right</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">dA</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">)))</span>
-
-  <span class="n">sparse_A</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
-  <span class="n">sparse_E_right</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">)))</span>
-
-  <span class="n">row_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span>
-  <span class="n">col_indices</span> <span class="o">=</span> <span class="n">matlib</span><span class="o">.</span><span class="n">repmat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-  <span class="n">sparse_I</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">)))</span>
-
-  <span class="n">dZ2</span> <span class="o">=</span> <span class="p">(</span><span class="n">sparse_A</span> <span class="o">*</span> <span class="n">sparse_E_right</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span> <span class="p">(</span><span class="n">sparse_I</span> <span class="o">-</span> <span class="p">(</span><span class="n">sparse_E_right</span> <span class="o">*</span> <span class="n">sparse_A</span><span class="o">.</span><span class="n">T</span><span class="p">))</span><span class="o">.</span><span class="n">T</span> <span class="p">)</span>
-
-  <span class="n">dW</span> <span class="o">=</span> <span class="mi">2</span>
-  <span class="n">db</span> <span class="o">=</span> <span class="mi">3</span>
-
-  <span class="n">dW</span> <span class="o">=</span> <span class="n">dW</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span>
-  <span class="n">db</span> <span class="o">=</span> <span class="n">db</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span>
-
-  <span class="k">return</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span>
-
-
 <span class="k">def</span> <span class="nf">gradient_descent</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
   <span class="n">W</span> <span class="o">=</span> <span class="n">W</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dW</span>
   <span class="n">b</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">db</span>
@@ -701,9 +680,6 @@ We will <i>learn</i> the weights using <b>Back Propagation</b>.
 <span class="n">b_cache</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">L_cache</span> <span class="o">=</span> <span class="p">[]</span>
 
-<span class="n">total_time</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="kn">import</span> <span class="nn">time</span>
-
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">40</span><span class="p">):</span>
   <span class="n">Z</span><span class="p">,</span> <span class="n">A</span> <span class="o">=</span> <span class="n">forward_propagate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
   <span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">get_loss_numerically_stable</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">)</span>
@@ -712,13 +688,8 @@ We will <i>learn</i> the weights using <b>Back Propagation</b>.
   <span class="n">b_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
   <span class="n">L_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
 
-  <span class="n">a</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
   <span class="n">dW</span><span class="p">,</span> <span class="n">db</span> <span class="o">=</span> <span class="n">get_gradients</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
-  <span class="n">b</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-  <span class="n">total_time</span> <span class="o">+=</span> <span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="n">a</span><span class="p">)</span>
   <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">ALPHA</span><span class="p">)</span>
-
-<span class="k">print</span><span class="p">(</span><span class="n">total_time</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
@@ -966,6 +937,14 @@ so that we see that the loss is decreasing.
 <h1> Calculating Derivatives using Matrix Operations </h1>
 
 <p>
+Recall that we are trying to convert this to matrix operations:
+</p>
+
+$$
+\mathbf{a} \mathbf{e^T} \circ (\mathbf{I} - \mathbf{e} \mathbf{a^T})
+$$
+
+<p>
 Now, instead of $\mathbf{a}$, we have $A$:
 </p>
 
@@ -1048,31 +1027,59 @@ e^T & 0 & 0 & \dots & 0 \\ \hline
 \circ
 \left (
 \left[
-\begin{array}{c}
-I_1 \\ \hline
-I_2 \\ \hline
-\vdots \\ \hline
-I_{20}
+\begin{array}{c|c|c|c}
+I & I & \dots & I
 \end{array}
-\right]_{(3 \times 20) \times 3}
+\right]_{3 \times (3 \times 20)}
 -
+ee^T_{3 \times 20}
 \left[
 \begin{array}{c|c|c|c|c}
-e & 0 & 0 & \dots & 0 \\ \hline
-0 & e & 0 & \dots & 0 \\ \hline
+a_1^T & 0 & 0 & \dots & 0 \\ \hline
+0 & a_2^T & 0 & \dots & 0 \\ \hline
 \vdots & \vdots & \vdots & \vdots & \vdots \\ \hline
-0 & 0 & 0 & \dots & e \\
+0 & 0 & 0 & \dots & a_{20}^T \\
 \end{array}
-\right]_{(3 \times 20) \times 20}
-
-A^{T}_{20 \times 3}
-\right ) ^ T
+\right]_{20 \times (3 \times 20)}
+\right )
 $$
 
 <p>
-where all $e$ of size $(3 \times 1)$ containing all $1$s and all $I_{i}$ is of size ($3 \times 3$) identity
+where all $e$ of size $(K \times 1)$ containing all $1$s for a suitable $K$ and all $I$ is of size ($3 \times 3$) identity
 matrix.
 </p>
+
+<p>
+Or equivalently, we can write this as:
+</p>
+
+$$
+\left (
+\left[
+\begin{array}{c|c|c|c|c|c|c|c}
+a_1 & a_1 & a_1 & a_2 & a_2 & a_2 & \dots & a_{20}
+\end{array}
+\right]_{3 \times (3 \times 20)}
+\right )
+\circ
+\left (
+
+\left[
+\begin{array}{c|c|c|c}
+I & I & \dots & I
+\end{array}
+\right]_{3 \times (3 \times 20)}
+-
+\left[
+\begin{array}{c|c|c|c}
+a_1^T & a_2^T & \dots & a_{20}^T \\ \hline
+a_1^T & a_2^T & \dots & a_{20}^T \\ \hline
+a_1^T & a_2^T & \dots & a_{20}^T
+\end{array}
+\right]_{3 \times (3 \times 20)}
+\right )
+
+$$
 <p>
 Here is how to create sparse matrices using Python/Numpy/Scipy. A quick and useful demo:
 </p>
@@ -1140,7 +1147,7 @@ because of the initial random start of both models. (Remember that $W$ is initia
 <span class="n">t_Loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax_cross_entropy_with_logits</span><span class="p">(</span>
                          <span class="n">labels</span><span class="o">=</span><span class="n">t_Y</span><span class="p">,</span> <span class="n">logits</span><span class="o">=</span><span class="n">t_logits</span><span class="p">))</span>
 
-<span class="n">train</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">GradientDescentOptimizer</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">t_Loss</span><span class="p">)</span>
+<span class="n">train</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">GradientDescentOptimizer</span><span class="p">(</span><span class="n">ALPHA</span><span class="p">)</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">t_Loss</span><span class="p">)</span>
 <span class="n">init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">()</span>
 
 <span class="n">losses</span> <span class="o">=</span> <span class="p">[]</span>
