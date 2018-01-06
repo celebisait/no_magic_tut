@@ -27,8 +27,8 @@ MathJax.Hub.Config({
 <div id="outer">
     <div id="inner">
 <center><h1>Part 2: Softmax Regression <span style="color: red">[Draft]</span></h1></center>
-
-<p>
+<center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
+<center>Last updated: January 06 2018</center><p>
 "What I cannot create, I do not understand."
 -- Richard Feynman
 </p>
@@ -66,7 +66,7 @@ and <b>blue</b> points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image000.png"/><p>
+<img class="generated_image" width="600" src="../images/image008.png"/><p>
 In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
 <b>green</b> or <b>blue</b>.
 </p>
@@ -603,11 +603,7 @@ approach works using loops. After, we will see how to convert this to fully matr
 <p>
 We will <i>learn</i> the weights using <b>Back Propagation</b>.
 </p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scipy.sparse</span>
-<span class="kn">import</span> <span class="nn">numpy.matlib</span> <span class="kn">as</span> <span class="nn">matlib</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-
-<span class="n">ALPHA</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="c1"># learning rate</span>
+<div class="highlight"><pre><span></span><span class="n">ALPHA</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="c1"># learning rate</span>
 
 <span class="c1"># this simple implementation is numerically unstable, because:</span>
 <span class="c1"># np.log() returns -inf for small inputs very close to 0</span>
@@ -625,47 +621,23 @@ We will <i>learn</i> the weights using <b>Back Propagation</b>.
 <span class="k">def</span> <span class="nf">get_gradients</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>
   <span class="n">dA</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">Y_one_hot</span> <span class="o">/</span> <span class="n">A</span><span class="p">)</span>
 
-  <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">  dZ = np.zeros((3, 20))</span>
-<span class="sd">  for i in range(20):</span>
-<span class="sd">    a = A[:, [i]]</span>
-<span class="sd">    da = dA[:, [i]]</span>
-<span class="sd">    matrix = np.matmul(a, np.ones((1, 3))) * (np.identity(3) - np.matmul(np.ones((3, 1)), a.T))</span>
-<span class="sd">    dZ[:, [i]] = np.matmul(matrix, da)</span>
-<span class="sd">  &quot;&quot;&quot;</span>
-
-  <span class="n">row_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span>
-  <span class="n">col_indices</span> <span class="o">=</span> <span class="n">matlib</span><span class="o">.</span><span class="n">repmat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-  <span class="n">sparse_right</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">dA</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">)))</span>
-
-  <span class="n">row_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span> <span class="p">)</span>
-  <span class="n">col_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-  <span class="n">sparse_bottom_left</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">))</span> <span class="p">)</span>
-
-  <span class="n">row_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="mi">20</span> <span class="p">)</span>
-  <span class="n">col_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span>
-  <span class="n">sparse_I</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">))</span> <span class="p">)</span>
-
-  <span class="n">row_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-  <span class="n">col_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">20</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
-  <span class="n">sparse_bottom_right</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">A</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="mi">3</span> <span class="p">),</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">))</span> <span class="p">)</span>
-
-  <span class="n">sparse_left</span> <span class="o">=</span> <span class="n">sparse_bottom_left</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span> <span class="n">sparse_I</span> <span class="o">-</span> <span class="n">sparse_bottom_right</span> <span class="p">)</span>
-  <span class="n">dZ</span> <span class="o">=</span> <span class="p">(</span><span class="n">sparse_left</span> <span class="o">*</span> <span class="n">sparse_right</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+  <span class="n">dZ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">da</span> <span class="o">=</span> <span class="n">dA</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+    <span class="n">dZ</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">da</span><span class="p">)</span>
 
   <span class="n">dW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
   <span class="n">db</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
     <span class="n">dz</span> <span class="o">=</span> <span class="n">dZ</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
-    <span class="n">dw</span> <span class="o">=</span> <span class="n">dz</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">dW</span> <span class="o">+=</span> <span class="n">dw</span>
-    <span class="n">db</span> <span class="o">+=</span> <span class="n">dz</span>
+    <span class="n">dw</span> <span class="o">=</span> <span class="n">dz</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">dW</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">dw</span>
+    <span class="n">db</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">dz</span>
 
-  <span class="n">dW</span> <span class="o">=</span> <span class="n">dW</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span>
-  <span class="n">db</span> <span class="o">=</span> <span class="n">db</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span>
-
-  <span class="k">return</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span>
+  <span class="k">return</span> <span class="n">dZ</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span>
 
 <span class="k">def</span> <span class="nf">gradient_descent</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
   <span class="n">W</span> <span class="o">=</span> <span class="n">W</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dW</span>
@@ -688,7 +660,7 @@ We will <i>learn</i> the weights using <b>Back Propagation</b>.
   <span class="n">b_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
   <span class="n">L_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
 
-  <span class="n">dW</span><span class="p">,</span> <span class="n">db</span> <span class="o">=</span> <span class="n">get_gradients</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
+  <span class="n">dZ</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span> <span class="o">=</span> <span class="n">get_gradients</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
   <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">ALPHA</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
@@ -703,7 +675,7 @@ We will <i>learn</i> the weights using <b>Back Propagation</b>.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image001.png"/><h1> Decision Boundary </h1>
+<img class="generated_image" width="600" src="../images/image009.png"/><h1> Decision Boundary </h1>
 
 <p>
 So, essentially, we have 3 equations:
@@ -763,7 +735,7 @@ If we plot these three lines:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image002.png"/><p>
+<img class="generated_image" width="600" src="../images/image010.png"/><p>
 Above, we simply find the boundaries and plot them. The definition of the boundary is that
 the region in which the predictions are equally confident for both of the classifiers. Since
 we have three classes, there are 3 choose 2 = 3 boundaries.
@@ -816,7 +788,7 @@ As you may guess, it should start from a random point and get smarter in each st
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
 <video class="generated_video" width="600" controls>
-<source src="../animations/animation000.mp4" type="video/mp4">
+<source src="../animations/animation002.mp4" type="video/mp4">
 </video><p>
 As you can see, it starts from a random classifier that does not seem to be working well in the
 beginning. And the learning process figures out where to go next to find a better classifier.
@@ -858,7 +830,7 @@ step through the gradient descent iterations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image003.png"/><p>
+<img class="generated_image" width="600" src="../images/image011.png"/><p>
 Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
 is $\mathbf{a}$ and it is three dimensional. So, we simply convert that vector to RGB space. So, for example
 if the prediction is: $[0.98, 0.01, 0.01]$, it will be almost a perfect <b>red</b>, and so on.
@@ -921,7 +893,7 @@ and blue which gives us purple. Similar phenomena happens between other decision
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
 <video class="generated_video" width="1000" controls>
-<source src="../animations/animation001.mp4" type="video/mp4">
+<source src="../animations/animation003.mp4" type="video/mp4">
 </video><p>
 This is a nice animation that shows the progress of our parameters $W$ and $\mathbf{b}$
 in each iteration of gradient descent along with the corresponding loss value using the
@@ -1009,7 +981,7 @@ where each $\mathcal{A}_i$ of size $(3 \times 3)$ and each $\frac{dL}{d\mathbf{a
 </p>
 
 <p>
-We are almost done, if we can define a proper $\mathcal{A}$. Here it comes: ($\mathcal{A}_{3 \times (3 \times 20)}$)
+We are almost done, if we can define a proper $\mathcal{A}$. Here it comes: $\mathcal{A}_{3 \times (3 \times 20)}$
 </p>
 
 $$
@@ -1081,50 +1053,24 @@ a_1^T & a_2^T & \dots & a_{20}^T
 
 $$
 <p>
-Here is how to create sparse matrices using Python/Numpy/Scipy. A quick and useful demo:
+Note that this calculates <b>exact same</b> gradients with the function <b>get_gradients()</b> which uses a for loop instead.
+The advantage of the matrix operations approach is being more parallelizable compared to the <b>for loop</b> approach.
 </p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scipy.sparse</span>
-<span class="kn">import</span> <span class="nn">numpy.matlib</span> <span class="kn">as</span> <span class="nn">matlib</span>
 
-<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
-<span class="k">print</span><span class="p">(</span><span class="s1">&#39;data:&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="n">row_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s1">&#39;row indices:&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">row_indices</span><span class="p">)</span>
-<span class="n">col_indices</span> <span class="o">=</span> <span class="n">matlib</span><span class="o">.</span><span class="n">repmat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-<span class="k">print</span><span class="p">(</span><span class="s1">&#39;col_indices:&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">col_indices</span><span class="p">)</span>
+<p>
+However, in order to be able to appreciate the speed of matrix approach, we should implement it carefully.
+This includes initializing <b>sparse matrices</b> without using any explicit for loops.
+Applying the above matrix operations using Numpy/Scipy carefully to make sure it is faster than the
+for loop approach is beyond the scope of this tutorial, so we leave this as an exercise to the reader.
+</p>
 
-<span class="n">sparse</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">)))</span>
-<span class="k">print</span><span class="p">(</span><span class="s1">&#39;sparse matrix:&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">sparse</span><span class="o">.</span><span class="n">toarray</span><span class="p">())</span>
-</pre></div>
-<div class="code_stdout"><pre>data:
-[[ 0  3  6  9 12]
- [ 1  4  7 10 13]
- [ 2  5  8 11 14]]
-row indices:
-[ 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14]
-col_indices:
-[0 0 0 1 1 1 2 2 2 3 3 3 4 4 4]
-sparse matrix:
-[[ 0  0  0  0  0]
- [ 1  0  0  0  0]
- [ 2  0  0  0  0]
- [ 0  3  0  0  0]
- [ 0  4  0  0  0]
- [ 0  5  0  0  0]
- [ 0  0  6  0  0]
- [ 0  0  7  0  0]
- [ 0  0  8  0  0]
- [ 0  0  0  9  0]
- [ 0  0  0 10  0]
- [ 0  0  0 11  0]
- [ 0  0  0  0 12]
- [ 0  0  0  0 13]
- [ 0  0  0  0 14]]
-</pre></div><h1> Applying Softmax Regression using low-level Tensorflow APIs </h1>
+<p>
+Also keep in mind that the speed advantage of the matrix operations may not be obvious in a small
+sample of $20$ elements. You may want to compare both approaches using more sample points and also
+a higher dimensional feature space.
+</p>
+
+<h1> Applying Softmax Regression using low-level Tensorflow APIs </h1>
 
 <p>
 Here is how to train the same classifier for the above red, green and blue points using low-level TensorFlow API.
@@ -1171,7 +1117,7 @@ because of the initial random start of both models. (Remember that $W$ is initia
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image004.png"/>
+<img class="generated_image" width="600" src="../images/image012.png"/>
 <h1>Exercises</h1>
 <ol>
   <li>

@@ -2,6 +2,8 @@ import sys
 import collections
 import StringIO
 import contextlib
+import datetime
+import time
 
 from pygments import highlight
 from pygments.lexers import PythonLexer
@@ -20,7 +22,8 @@ def stdoutIO(stdout=None):
 
 CODE_TAG = '# CODE'
 HTML_TAG = '# HTML'
-TAGS = {HTML_TAG, CODE_TAG}
+LAST_UPDATED_TAG = '# LAST_UPDATED'
+TAGS = {HTML_TAG, CODE_TAG, LAST_UPDATED_TAG}
 
 Part = collections.namedtuple('Part', ['tag', 'content', 'info'])
 FORMATTER = HtmlFormatter(style='friendly')
@@ -65,6 +68,10 @@ def add_animation(animation_name, width):
 <source src={} type="video/mp4">
 </video>""".format(width, animation_name)
 
+def add_last_updated():
+  dt = datetime.datetime.now()
+  return '<center>Last updated: {}</center>'.format(dt.strftime("%B %d %Y"))
+
 def add_stdout(text):
   return '<div class="code_stdout"><pre>{}</pre></div>'.format(text)
 
@@ -101,6 +108,8 @@ def generate_html(template, source_lines):
   for part in partition(template, source_lines):
     if part.tag == HTML_TAG:
       body += part.content
+    if part.tag == LAST_UPDATED_TAG:
+      body += add_last_updated()
     elif part.tag == CODE_TAG:
       body += generate_code_html(part.content.strip(), part.info)
 
@@ -128,7 +137,7 @@ def main():
   output_file = 'output/part1.html'
   title = 'Part1: Logistic Regression'
 
-  # write_one_file(input_file, output_file, title)
+  write_one_file(input_file, output_file, title)
 
   input_file = 'source/source2.nomagic'
   output_file = 'output/part2.html'
