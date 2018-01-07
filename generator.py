@@ -135,20 +135,20 @@ def main():
 
   input_file = 'source/source1.nomagic'
   output_file = 'output/part1.html'
-  title = 'Part1: Logistic Regression'
+  title = 'Part 1: Logistic Regression'
 
-  write_one_file(input_file, output_file, title)
+  # write_one_file(input_file, output_file, title)
 
   input_file = 'source/source2.nomagic'
   output_file = 'output/part2.html'
-  title = 'Part2: Softmax Regression'
+  title = 'Part 2: Softmax Regression'
 
-  write_one_file(input_file, output_file, title)
+  # write_one_file(input_file, output_file, title)
 
   input_file = 'source/source3.nomagic'
   output_file = 'output/part3.html'
-  title = 'Part3: Building a Simple Neural Network'
+  title = 'Part 3: Building a Simple Neural Network'
 
-  # write_one_file(input_file, output_file, title)
+  write_one_file(input_file, output_file, title)
 
 main()
