@@ -166,15 +166,18 @@ def forward_propagate(X, W1, b1, W2, b2, W3, b3):
 
   return Z1, A1, Z2, A2, Z3, A3
 
-W1 = np.random.rand(3, 2)
+W1_initial = np.random.rand(3, 2)
+W1 = W1_initial.copy()
 b1 = np.zeros((3, 1))
-W2 = np.random.rand(3, 3)
+W2_initial = np.random.rand(3, 3)
+W2 = W2_initial.copy()
 b2 = np.zeros((3, 1))
-W3 = np.random.rand(1, 3)
+W3_initial = np.random.rand(1, 3)
+W3 = W3_initial.copy()
 b3 = np.zeros((1, 1))
 
 Z1, A1, Z2, A2, Z3, A3 = forward_propagate(X, W1, b1, W2, b2, W3, b3)
-print(Y[0:10])
+print(Y[0][0:10])
 print(A3[:,0:10])
 
 # HTML
@@ -184,71 +187,80 @@ This is backprop.
 </p>
 
 # CODE
-{}
-ALPHA = 2.0 # learning rate
+{'width': 600}
+ALPHA = 0.3  # learning rate
 
 # this simple implementation is numerically unstable, because:
 # np.log() returns -inf for small inputs very close to 0
 def get_loss(Y, Y_hat):
   loss = -1 * np.sum(Y * np.log(Y_hat) +
-                      (1-Y) * np.log(1-Y_hat))
+                     (1-Y) * np.log(1-Y_hat))
   return loss
 
 # semantically same with above function, and numerically stable.
-def get_loss_numerically_stable(Y, A3):
-  loss = -1 * np.sum(Y * -1 * np.log(1 + np.exp(-A3)) +
-                      (1-Y) * (-A3 - np.log(1 + np.exp(-A3))))
+def get_loss_numerically_stable(Y, Z3):
+  loss = -1 * np.sum(Y * -1 * np.log(1 + np.exp(-Z3)) +
+                     (1-Y) * (-Z3 - np.log(1 + np.exp(-Z3))))
   return loss
 
-def get_gradients(Z1, A1, Z2, A2, Z3, A3):
-  dA = (-Y_one_hot / A)
+def get_gradients(Z1, A1, Z2, A2, Z3, A3, Y):
+  dZ3 = A3 - Y  # size (1x20)
 
-  dZ = np.zeros((3, 20))
-  for i in range(20):
-    a = A[:, [i]]
-    da = dA[:, [i]]
-    matrix = np.matmul(a, np.ones((1, 3))) * (np.identity(3) - np.matmul(np.ones((3, 1)), a.T))
-    dZ[:, [i]] = np.matmul(matrix, da)
+  dW3 = (1.0/Y.size) * np.sum( (dZ3 * A2).T, axis = 0, keepdims = True )  # size (1x3)
+  db3 = (1.0/Y.size) * np.sum( dZ3.T, axis = 0, keepdims = True )  # size (1x1)
 
-  dW = np.zeros((3,2))
-  db = np.zeros((3,1))
-  for i in range(20):
-    x = X[:, [i]]
-    dz = dZ[:, [i]]
-    dw = dz * np.tile(x, 3).T
-    dW += (1.0/20) * dw
-    db += (1.0/20) * dz
+  dA2 = W3.T * dZ3  # size (3x20)
+  dZ2 = dA2 * (A2 * (1-A2)) # size (3x20)
 
-  return dZ, dW, db
+  dW2 = (1.0/Y.size) * np.matmul(dZ2, A1.T)  # size (3x3)
+  db2 = (1.0/Y.size) * np.sum(dZ2, axis = 1, keepdims= True)  # size (3x1)
 
-def gradient_descent(W, b, dW, db, alpha):
-  W = W - alpha * dW
-  b = b - alpha * db
-  return W, b
+  dA1 = np.matmul(W2.T, dZ2)  # size (3x20)
+  dZ1 = dA1 * (A1 * (1 - A1))  # size (3x20)
 
-# random initialization
-W = np.random.rand(3, 2)
-b = np.zeros((3, 1))
+  dW1 = (1.0/Y.size) * np.matmul(dZ1, X.T)  # size (3x2)
+  db1 = (1.0/Y.size) * np.sum(dZ1, axis = 1, keepdims = True) # size (3x1)
 
-W_cache = []
-b_cache = []
+  return dW1, db1, dW2, db2, dW3, db3
+
+def gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, alpha):
+  W1 = W1 - alpha * dW1
+  W2 = W2 - alpha * dW2
+  W3 = W3 - alpha * dW3
+  b1 = b1 - alpha * db1
+  b2 = b2 - alpha * db2
+  b3 = b3 - alpha * db3
+
+  return W1, W2, W3, b1, b2, b3
+
 L_cache = []
 
-for i in range(1):
+for i in range(7000):
   Z1, A1, Z2, A2, Z3, A3 = forward_propagate(X, W1, b1, W2, b2, W3, b3)
-  # L = (1.0 / 20) * get_loss(Y, A3)
-  L = (1.0 / 20) * get_loss_numerically_stable(Y, A3)
 
-  dZ3 = A3 - Y
-  dW3 = dZ3 * A2
-  db3 = dZ3
+  L = (1.0 / 20) * get_loss_numerically_stable(Y, Z3)
 
-  dA2 = dZ3 * (A2 * (1-A2))
+  dW1, db1, dW2, db2, dW3, db3 = get_gradients(Z1, A1, Z2, A2, Z3, A3, Y)
 
-  print(dZ3.shape)
-  print(dZ3)
-  print(dW3.shape)
-  print(dW3)
+  W1, W2, W3, b1, b2, b3 = gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, ALPHA)
+
+  L_cache.append(L)
+
+
+plt.plot(L_cache)
+plt.savefig('image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# CODE
+{}
+Z1, A1, Z2, A2, Z3, A3 = forward_propagate(X, W1, b1, W2, b2, W3, b3)
+print(Y)
+print(A3)
+
+
 
 # HTML
 {}
@@ -439,71 +451,6 @@ $$
 \frac{dz_m}{b_m} = 1
 $$
 
-<h1>Derivative of Softmax Function</h1>
-
-$$
-\frac{d}{d z_m} a_i =
-\begin{cases}
-(a_i)(1-a_m),  & \text{if}\ \quad  i = m \\
-- (a_m) (a_i), & \text{if}\ \quad  i \neq m
-\end{cases}
-$$
-
-<p>
-or equally:
-</p>
-
-$$
-\frac{d}{d z_m} a_i = (a_i)(\delta_{i,m} - a_m)
-$$
-
-<p>
-where $\delta_{i,m} = 1$ if $i=m$, and $0$ otherwise.
-</p>
-
-<p>
-The reason we want to write it this way is that we don't want to use any <b>loops</b>. And we can
-execute the above using matrix operations like:
-</p>
-
-$$
-\frac{d}{dz} a = \mathbf{a} \mathbf{e^T} \circ (\mathbf{I} - \mathbf{e} \mathbf{a^T})
-$$
-
-<p>
-where $\mathbf{e}$ is a vector of $1$'s of size $K\times1$ for a suitable $K$ and $\circ$ represents Hadamard product,
-in other words element-wise product of matrices. And it is of size $(3 \times 3)$. We plug this below:
-</p>
-
-$$
-\begin{bmatrix} \frac{da_1}{dz_1} \frac{da_2}{dz_1} \frac{da_3}{dz_1} \\
-	\frac{da_1}{dz_2} \frac{da_2}{dz_2} \frac{da_3}{dz_2} \\
-	\frac{da_1}{dz_3} \frac{da_2}{dz_3} \frac{da_3}{dz_3}
-\end{bmatrix}_{3 \times 3}
-\begin{bmatrix} \frac{dL}{da_1} \\
-	\frac{dL}{da_2} \\
-	\frac{dL}{da_3}
-\end{bmatrix}_{3 \times 1}
-=
-\begin{bmatrix} \frac{dL}{dz_1} \\
-	\frac{dL}{dz_2} \\
-	\frac{dL}{dz_3}
-\end{bmatrix}_{3 \times 1}
-$$
-
-<p>
-This is exactly what we are going to do. However, this is defined for only one sample. We don't want
-to loop over each sample and compute this sequantially. Ideally, we want to do everything using
-matrix operations including this step. However, it is a bit trickier. So, first let's see if this
-approach works using loops. After, we will see how to convert this to fully matrix operations.
-</p>
-
-<h1> Back propagation Phase </h1>
-
-<p>
-We will <i>learn</i> the weights using <b>Back Propagation</b>.
-</p>
-
 # HTML
 {}
 <h1> Decision Boundary </h1>
@@ -602,7 +549,7 @@ gradient descent. Every step we take in the gradient descent is giving us a bett
 so that we see that the loss is decreasing.
 </p>
 
-<h1> Applying Softmax Regression using low-level Tensorflow APIs </h1>
+<h1> Applying Simple Neural Network using low-level Tensorflow APIs </h1>
 
 <p>
 Here is how to train the same classifier for the above red, green and blue points using low-level TensorFlow API.
@@ -610,6 +557,60 @@ It produces <b>almost exact</b> output with our own hand crafted model. Be aware
 because of the initial random start of both models. (Remember that $W$ is initialized with random values.)
 </p>
 
+# CODE
+{'width': 600}
+import tensorflow as tf
+
+t_X = tf.placeholder(tf.float32, [2, None])
+t_Y = tf.placeholder(tf.float32, [1, None])
+
+# t_W1 = tf.Variable(tf.random_uniform((3, 2)))
+t_W1 = tf.Variable(W1_initial.astype('f'))
+t_b1 = tf.Variable(tf.zeros([3, 1]))
+
+# t_W2 = tf.Variable(tf.random_uniform((3, 3)))
+t_W2 = tf.Variable(W2_initial.astype('f'))
+t_b2 = tf.Variable(tf.zeros([3, 1]))
+
+#t_W3 = tf.Variable(tf.random_uniform((1, 3)))
+t_W3 = tf.Variable(W3_initial.astype('f'))
+t_b3 = tf.Variable(tf.zeros([1]))
+
+t_Z1 = tf.matmul(t_W1, t_X) + t_b1
+t_A1 = tf.sigmoid(t_Z1)
+
+t_Z2 = tf.matmul(t_W2, t_A1) + t_b2
+t_A2 = tf.sigmoid(t_Z2)
+
+t_Z3 = tf.matmul(t_W3, t_A2) + t_b3
+t_A3 = tf.sigmoid(t_Z3)
+
+t_Loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits = t_Z3,  labels = t_Y))
+
+train = tf.train.GradientDescentOptimizer(0.3).minimize(t_Loss)
+init = tf.global_variables_initializer()
+
+with tf.Session() as session:
+   session.run(init)
+   losses = []
+   for i in range(7000):
+      ttrain, ttloss = session.run([train, t_Loss], feed_dict={t_X:X, t_Y:Y})
+      losses.append(ttloss)
+
+   print(session.run([t_A3], feed_dict={t_X:X, t_Y:Y})[0])
+   print(Y)
+
+
+plt.grid()
+plt.plot(losses)
+plt.title('Tensorflow Loss', size = 18)
+plt.xlabel('Number of iterations', size=15)
+plt.ylabel('Loss', size=15)
+plt.savefig('image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
 
 # HTML
 {}
@@ -629,4 +630,5 @@ because of the initial random start of both models. (Remember that $W$ is initia
 <ul>
   <li> http://karpathy.github.io/ </li>
   <li> http://colah.github.io/ </li>
+  <li> https://github.com/tensorflow/workshops </li>
 </ul>
