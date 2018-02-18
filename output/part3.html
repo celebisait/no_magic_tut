@@ -39,9 +39,9 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 3: Building a Simple Neural Network <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: January 21 2018</center><p>
-"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
--- Cicero
+<center>Last updated: February 18 2018</center><p>
+"Truth is ever to be found in the simplicity, and not in the multiplicity and confusion of things."
+-- Sir Isaac Newton
 </p>
 
 <h1>Introduction</h1>
@@ -53,14 +53,11 @@ points in 2-dimensional space:
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
-
-<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.23</span><span class="p">,</span> <span class="mf">0.052</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.282</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.282</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.052</span><span class="p">,</span>
-                <span class="mf">0.23</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.214</span><span class="p">,</span> <span class="mf">0.464</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.464</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.214</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.214</span><span class="p">,</span>
-	        <span class="o">-</span><span class="mf">0.464</span><span class="p">,</span>  <span class="mf">0.464</span><span class="p">,</span>  <span class="mf">1.214</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-	      <span class="p">[</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.193</span><span class="p">,</span> <span class="mf">0.295</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">,</span> <span class="mf">0.103</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.103</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.26</span> <span class="p">,</span> <span class="o">-</span><span class="mf">0.295</span><span class="p">,</span>
-	        <span class="o">-</span><span class="mf">0.193</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.882</span><span class="p">,</span> <span class="mf">1.427</span><span class="p">,</span> <span class="mf">1.427</span><span class="p">,</span> <span class="mf">0.882</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.882</span><span class="p">,</span>
-		<span class="o">-</span><span class="mf">1.427</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.427</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.882</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
-<span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.214</span><span class="p">,</span> <span class="mf">0.052</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.282</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.464</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.282</span><span class="p">,</span>  <span class="o">-</span><span class="mf">1.214</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.052</span><span class="p">,</span> <span class="mf">0.23</span><span class="p">,</span> <span class="mf">1.214</span><span class="p">,</span><span class="o">-</span><span class="mf">0.464</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.214</span><span class="p">,</span>  <span class="mf">0.464</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mf">0.23</span><span class="p">,</span> <span class="mf">0.464</span><span class="p">],</span>
+	      <span class="p">[</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.882</span><span class="p">,</span> <span class="mf">0.295</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">,</span> <span class="mf">0.103</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.427</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.103</span><span class="p">,</span> <span class="mf">0.882</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span>
+	        <span class="o">-</span><span class="mf">0.26</span> <span class="p">,</span> <span class="o">-</span><span class="mf">0.295</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.193</span><span class="p">,</span> <span class="mf">0.882</span><span class="p">,</span> <span class="mf">1.427</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.882</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.427</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.193</span><span class="p">,</span> <span class="mf">1.427</span><span class="p">]])</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
 <span class="n">colormap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">])</span>
 
 <span class="k">def</span> <span class="nf">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">colormap</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
@@ -87,7 +84,8 @@ or <b>green</b>.
 <p>
 We can build a simple Neural Network for this problem. Neural Networks are widely used
 for applications ranging from face recognition, machine translation, speech to text,
-self driving cars, etc.  This is probably the simplest neural networks you will see.
+self driving cars, etc.  This is a very simple neural network in terms of number of layers and
+number of neurons it contains.
 </p>
 
 <h1>Computation Graph</h1>
@@ -96,22 +94,21 @@ self driving cars, etc.  This is probably the simplest neural networks you will 
 Here is a visual representation of our model:
 </p>
 
-<img class="static_image" style="width: 800px;" src="../static_images/image003.png"/>
+<img class="static_image" style="width: 800px;" src="../static_images/image007.png"/>
 
 <p>
-and simply pick the biggest $a_i$ to do the <b>final prediction</b>.
+and decide if $A^{(3)} > 0.5$ four our <b>final prediction</b>.
 </p>
 
 <h1>Feed-forward Phase</h1>
 
 <p>
-Let's assume that we are given the weights and bias. How do we calculate the output?
+Let's assume that we are given the weights and biases. How do we calculate the output?
 </p>
 
 <p>
 We represent $X$ as a matrix. $X$ contains all the points. In our case $X$ contains $M=20$
-samples and for each sample we have $(x,y)$. $Y$ contains all the labels (red, green and blue)
-as a one hot vector. $W$ has the weights. $b$ has the bias:
+samples and for each sample we have $(x,y)$. $Y$ contains all the labels (red or green):
 </p>
 
 $$
@@ -123,16 +120,21 @@ X =
 Y =
 \begin{bmatrix}
 0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-\end{bmatrix}_{3 \times M}, \quad
-W =
+\end{bmatrix}_{1 \times M}, \quad
+$$
+
+<p>
+Here is the <b>parameters</b> of our model:
+</p>
+
+$$
+W^{(1)} =
 \begin{bmatrix}
 0   &  0   \\
 0   &  0   \\
 0   &  0   \\
-\end{bmatrix}_{3 \times 2}
-b =
+\end{bmatrix}_{3 \times 2}, \quad
+b^{(1)} =
 \begin{bmatrix}
 0  \\
 0  \\
@@ -140,40 +142,59 @@ b =
 \end{bmatrix}_{3 \times 1}
 $$
 
-<p>
-Feed-forward basically means given $X, Y, W$ and $b$, will produce us $a$ and $L$.
-</p>
-
 $$
-Z = W X + b
-$$
-
-<p>
-Here we can see it visually:
-</p>
-
-$$
+W^{(2)} =
 \begin{bmatrix}
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-\end{bmatrix}_{3 \times M}
-=
-\begin{bmatrix}
-0   &  0   \\
-0   &  0   \\
-0   &  0   \\
-\end{bmatrix}_{3 \times 2}
-\begin{bmatrix}
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-\end{bmatrix}_{2 \times M}
-+
+0   &  0  &   0  \\
+0   &  0  &   0  \\
+0   &  0  &   0  \\
+\end{bmatrix}_{3 \times 3}, \quad
+b^{(2)} =
 \begin{bmatrix}
 0  \\
 0  \\
 0  \\
 \end{bmatrix}_{3 \times 1}
+$$
+
+$$
+W^{(3)} =
+\begin{bmatrix}
+0  &  0  &   0   \\
+\end{bmatrix}_{1 \times 3}, \quad
+b^{(3)} =
+\begin{bmatrix}
+0  \\
+\end{bmatrix}_{1 \times 1}
+$$
+
+<p>
+Feed-forward basically means given $X, Y, W^{(1)}, W^{(2)}, W^{(3)}$ and $b^{(1)}, b^{(2)}, b^{(3)}$
+will produce us $A^{(3)}$. Here is step by step how we do the feed forward phase.
+</p>
+
+$$
+Z^{(1)} = W^{(1)} X + b^{(1)}
+$$
+
+$$
+A^{(1)} = g(Z^{(1)})
+$$
+
+$$
+Z^{(2)} = W^{(2)} A^{(1)} + b^{(2)}
+$$
+
+$$
+A^{(2)} = g(Z^{(2)})
+$$
+
+$$
+Z^{(3)} = W^{(3)} A^{(2)} + b^{(3)}
+$$
+
+$$
+A^{(3)} = g(Z^{(3)})
 $$
 <div class="highlight"><pre><span></span><span class="n">sigmoid</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
 
@@ -200,14 +221,108 @@ $$
 <span class="n">b3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
 <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">Z3</span><span class="p">,</span> <span class="n">A3</span> <span class="o">=</span> <span class="n">forward_propagate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">W3</span><span class="p">,</span> <span class="n">b3</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
-<span class="k">print</span><span class="p">(</span><span class="n">A3</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">A3</span><span class="p">)</span>
 </pre></div>
-<div class="code_stdout"><pre>[0 0 0 0 0 0 0 0 0 1]
-[[ 0.743  0.744  0.742  0.737  0.732  0.728  0.729  0.733  0.738  0.761]]
+<div class="code_stdout"><pre>[[0 1 0 1 0 0 1 0 1 1 0 0 0 1 1 1 1 0 0 1]]
+[[ 0.749  0.751  0.75   0.762  0.747  0.743  0.725  0.741  0.74   0.727
+   0.741  0.743  0.746  0.766  0.755  0.722  0.735  0.746  0.751  0.764]]
 </pre></div><p>
-This is backprop.
+Above we print the predictions for a random initial set of weights and bias. We are randomly
+initializing weights and bias and feeding $X$ to our random initial model. As you can see,
+our predictions are pretty random too, as expected. However, you can see that, given the weights,
+and bias, it is pretty straight-forward to calculate the final predictions.
+The tricky part is to <i>learn</i> those weights properly.
 </p>
+
+<h1> Cross Entropy Loss Function </h1>
+
+<p>
+In training, our goal is to <b>learn</b>: $W^{(1)}, W^{(2)}, W^{(3)}, b^{(1)}, b^{(2)}, b^{(3)}$ that best <b>discriminates</b>
+red and green points. These are called the <b>parameters</b> of our model.
+</p>
+
+<p>
+We want to find parameters that minimizes some definition of a <b>cost function</b>. We will use the same
+cost function we have derived before:
+</p>
+
+$$L = - \sum_{i=1}^{M} Y_{i} log( A^{(3)}_{i} ) + (1-Y_{i}) log( 1 - A^{(3)}_{i}  )$$
+
+<p>
+Please see previous lectures if you are interested understanding how we derived the cross entropy loss function.
+</p>
+
+<p>
+If we add our <b>Log Loss</b> to our computation graph:
+</p>
+
+<img class="static_image" style="width: 800px;" src="../static_images/image006.png"/>
+
+
+<h1>Backpropagation</h1>
+
+<p>
+We need Backpropagation to calculate derivates so that we can use <b>Gradient Descent</b>.
+In order to do gradient descent, we need to calculate the the derivate of loss w.r.t.
+each parameter in our model. i.e.,
+</p>
+
+$$
+\frac{dL}{dW^{(i)}}, \quad \frac{dL}{db^{(i)}}
+$$
+
+<p>
+We will need to use <b>chain rule</b> to get there. Let's go step by step.
+</p>
+
+<p>
+We remember that:
+</p>
+
+$$
+\frac{dL}{dZ^{(3)}} = A^{(3)} - Y
+$$
+
+<p>
+from the previous lectures.
+</p>
+
+<p>
+Let's try to go one step further and calculate $\frac{dL}{dW^{(3)}}$ by keeping in mind that
+we already know $\frac{dL}{dZ^{(3)}}$.
+</p>
+
+<p>
+In other words, we know how much $L$ changes if we play
+with $Z^{(3)}$ and we are trying to find out how much $L$ changes if we play with $W^{(3)}$.
+</p>
+
+<p>
+Let's look at how we calculate $Z^{(3)}$:
+</p>
+
+$$
+
+\begin{matrix}
+\begin{bmatrix} 0 & 0 & 0 \end{bmatrix}_{(1 \times 3)}
+\\
+\\
+\mbox{}
+\end{matrix}
+
+\begin{bmatrix}
+0  \\
+0  \\
+0  \\
+\end{bmatrix}_{(3 \times 1)}
+=
+\begin{bmatrix}
+0  \\
+\end{bmatrix}_{(1 \times 1)}
+
+$$
+
 <div class="highlight"><pre><span></span><span class="n">ALPHA</span> <span class="o">=</span> <span class="mf">0.3</span>  <span class="c1"># learning rate</span>
 
 <span class="c1"># this simple implementation is numerically unstable, because:</span>
@@ -266,8 +381,12 @@ This is backprop.
 
   <span class="n">L_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
 
-
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Number of iterations&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">L_cache</span><span class="p">)</span>
+
 <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -278,222 +397,11 @@ This is backprop.
 <span class="k">print</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">A3</span><span class="p">)</span>
 </pre></div>
-<div class="code_stdout"><pre>[[0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 0]]
-[[ 0.003  0.003  0.003  0.003  0.003  0.003  0.004  0.003  0.003  0.997  1.
-   0.998  0.997  0.998  0.999  0.997  0.997  0.999  0.997  0.002]]
-</pre></div><p>
-As you may realized, the summation here is called <b>broadcasting</b>.
-</p>
+<div class="code_stdout"><pre>[[0 1 0 1 0 0 1 0 1 1 0 0 0 1 1 1 1 0 0 1]]
+[[ 0.002  0.994  0.001  1.     0.     0.001  1.     0.011  0.993  1.     0.006
+   0.     0.     1.     0.994  1.     0.993  0.     0.012  1.   ]]
+</pre></div><h1> Decision Boundary </h1>
 
-<p>
-After getting $Z$, we apply softmax function over $Z$:
-</p>
-
-<p class="equation">
-\begin{equation} \label{eq:softmax}
-a_i = \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
-\end{equation}
-</p>
-
-<p>
-However, this may be problematic to compute for big values of $z_i$. We call this phenomena
-<b>numerically unstable</b>. Because $e^{z_i}$ easily overflows 64bit (even 128bit).
-We need to approach it slightly differently.
-</p>
-<p>
-Above we print the first 10 predictions, and they look pretty good. In fact, we have 100% accuracy.
-So, given the weights, and bias, it is pretty straight-forward to calculate the final predictions.
-The tricky part is to <i>learn</i> those weights properly.
-</p>
-<h1> Cross Entropy Loss Function </h1>
-
-<p>
-In training, our goal is to <b>learn</b> a matrix $W$ of size $(3 \times 2)$  and a $\mathbf{b}$ of size $(3 \times 1)$
-that best <b>discriminates</b> red, green and blue points.
-</p>
-
-<p>
-We want to find $W$ and $\mathbf{b}$ that minimizes some definition of a <b>cost function</b>.
-Let's attempt to write a cost function for this problem.
-</p>
-
-<p>
-Let's say we have three points:
-</p>
-
-$$\mathbf{x} = \begin{bmatrix} -0.1 \\ 1.4 \end{bmatrix}, y=0$$
-
-$$\mathbf{x} = \begin{bmatrix} 1.3  \\ 0.9 \end{bmatrix}, y=1$$
-
-<p>
-and similarly,
-</p>
-
-$$\mathbf{x} = \begin{bmatrix} -1.4  \\ -1.1 \end{bmatrix}, y=2$$
-
-<p>
-Now, let's list these $y$ as a <b>one hot vector</b> and, their corresponding <i>imaginary</i> $\mathbf{a}$ values:
-</p>
-
-$$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix} $$
-
-$$\mathbf{y} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix} $$
-
-$$\mathbf{y} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix} $$
-
-<p>
-Intuitively, we want a classifier that produces <b>similar</b> looking $\mathbf{a}$ and $\mathbf{y}$.
-This means, if
-$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$, then, for example, having
-$\mathbf{a} = \begin{bmatrix} 0.8 \\ 0.1 \\ 0.1 \end{bmatrix}$ is <b>more desirable</b> than having
-$\mathbf{a} = \begin{bmatrix} 0.6 \\ 0.2 \\ 0.2 \end{bmatrix}$.
-
-<p>
-In other words, we want to <b>maximize</b>:
-</p>
-
-$$P(\mathbf{y}|\mathbf{x}) = \prod_{j=1}^{3} a_j^{y_j} $$
-
-<p>
-Here, $a_j$ represents the jth item in the vector $\mathbf{a}$, and similarly $y_j$ represents the jth value in $\mathbf{y}$.
-For example, when $\mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix}$, then, $a_1 = 0.9, a_2 = 0.1$ and
-$a_3 = 0.0$.
-</p>
-
-$$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix},
-P(\mathbf{y}|\mathbf{x}) = 0.9 \times 1 \times 1 = 0.9 $$
-
-$$\mathbf{y} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix},
-P(\mathbf{y}|\mathbf{x}) = 1 \times 0.8 \times 1 = 0.8 $$
-
-$$\mathbf{y} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix},
-P(\mathbf{y}|\mathbf{x}) = 1 \times 1 \times 0.7 = 0.7 $$
-
-<p>
-<b>Bigger</b> the $P(\mathbf{y}|\mathbf{x})$ is the <b>better</b>.
-</p>
-
-<p>
-Similar to <b>Logistic Regression</b>, in order to define the <b>loss</b> for multiple samples, we will simply multiply
-each value for each sample (<b>Maximum Likelihood Estimation</b>):
-</p>
-
-$$J = \prod_{i=1}^{M} P(y^{(i)}|x^{(i)}) $$
-
-<p>
-here, $y^{(i)}$, $x^{(i)}$ and $a^{(i)}$ corresponds to ith sample in the training set out of $M$ training samples. We can rewrite it as:
-</p>
-
-$$J = \prod_{i=1}^{M} \prod_{j=1}^{3}  (a_j^{(i)}) ^ {y_j^{(i)}} $$
-
-<p>
-Maximizing above is equal to maximizing:
-</p>
-
-$$J = log \left( \prod_{i=1}^{M} \prod_{j=1}^{3} (a_j^{(i)}) ^ {y_j^{(i)}} \right ) $$
-
-<p>
-we can write it as:
-</p>
-
-$$J = \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} log(a_j^{(i)}) $$
-
-<p>
-since we like to <b>minimize</b> things instead of <b>maximizing</b>:
-</p>
-
-$$J = - \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} log(a_j^{(i)}) $$
-
-<p>
-If we add our <b>Log Loss</b> to our computation graph:
-</p>
-
-<img class="static_image" style="width: 900px;" src="../static_images/image004.png"/>
-
-<p>
-Also, this loss function is sometimes called <b>Cross Entropy Loss Function</b> in some contexts.
-</p>
-
-<h1>Gradient Descent</h1>
-
-<p>
-Ideally, we want to start with <b>random</b> parameters and make our parameters
-better and better gradually as an iterative manner. Gradient descent is simply:
-</p>
-
-$$
-W = W - \alpha \frac{dL}{dW} \quad \mathbf{b} = \mathbf{b} - \alpha \frac{dL}{d \mathbf{b}}
-$$
-
-<p>
-The tricky part here is to compute $\frac{dL}{dW}$ and $\frac{dL}{d \mathbf{b}}$. We need
-to do a small scale <b>back propagation</b> of derivatives here.
-</p>
-
-<p>
-But first, let's see what happens if we change $w_{2, 1}$ in the network, step by step:
-</p>
-
-<img class="static_image" style="width: 900px;" src="../static_images/animation001.gif"/>
-
-<p>
-In order to do gradient descent, we need the derivatives:
-</p>
-
-$$
-\frac{dL}{dw_{m,n}} = \sum_{i=1}^3 \left (\frac{dL}{da_i} \right) \left (\frac{da_i}{dz_m} \right) \left(\frac{dz_m}{dw_{m,n}} \right ), \quad
-
-\frac{dL}{db_m} = \sum_{i=1}^3 \left (\frac{dL}{da_i} \right) \left (\frac{da_i}{dz_m} \right) \left(\frac{dz_m}{b_m} \right )
-$$
-
-<p>
-Let's do some calculus:
-<img src="../static_images/evil1.png" style="width:30px; height:30px;">
-<img src="../static_images/evil2.png" style="width:30px; height:30px;">
-</p>
-
-$$
-\frac{dL}{da_i} =  \frac{d}{da_i} \left ( - \sum_{j=1}^3 y_j log(a_j) \right ) =
-\frac{d}{da_i} \left ( - y_i log(a_i) \right ) = \frac{-y_i}{a_i}
-$$
-
-$$
-\frac{dz_m}{dw_{m,n}} = x_n, \quad
-\frac{dz_m}{b_m} = 1
-$$
-<h1> Decision Boundary </h1>
-
-<p>
-So, essentially, we have 3 equations:
-</p>
-
-$$
-\text{Equation A.} \quad w_{1,1} x_1 + w_{1,2} x_2 + b_1 = z_1 \\
-\text{Equation B.} \quad w_{2,1} x_1 + w_{2,2} x_2 + b_2 = z_2 \\
-\text{Equation C.} \quad w_{3,1} x_1 + w_{3,2} x_2 + b_3 = z_3
-$$
-
-<p>
-We have 3 boundaries between all 3 choose 2 of above:
-
-<ul>
-<li> Equation A - Equation B </li>
-<li> Equation A - Equation C </li>
-<li> Equation B - Equation C </li>
-</ul>
-
-If we focus on Equation A - Equation B:
-</p>
-
-$$
-w_{1,1} x_1 + w_{1,2} x_2 + b_1 = w_{2,1} x_1 + w_{2,2} x_2 + b_2 \\
-w_{1,1} x_1 - w_{2,1} x_1 + w_{1,2} x_2 - w_{2,2} x_2 = b_2 - b_1 \\
-(w_{1,1} - w_{2,1}) x_1 + (w_{1,2} - w_{2,2}) x_2 = b_2 - b_1 \\
-$$
-
-<p>
-If we plot these three lines:
-</p>
 <p>
 Above, we simply find the boundaries and plot them. The definition of the boundary is that
 the region in which the predictions are equally confident for both of the classifiers. Since
@@ -527,22 +435,6 @@ if the prediction is: $[0.98, 0.01, 0.01]$, it will be almost a perfect <b>red</
 If you look closely, you will see some <b>purple color</b> between red and blue points. That is because
 the predictions in that region is something similar to $[0.45, 0.1, 0.45]$. And this means a mix of red
 and blue which gives us purple. Similar phenomena happens between other decision boundary intersections.
-</p>
-
-<h1> Gradient Descent Parameter Updates </h1>
-
-<p> Here we see the updates of parameters step by step in the gradient descent. </p>
-<p>
-This is a nice animation that shows the progress of our parameters $W$ and $\mathbf{b}$
-in each iteration of gradient descent along with the corresponding loss value using the
-given parameters.
-</p>
-
-<p>
-We are starting with small random initial values for: $w_{1,1}, w_{1,2}, w_{2,1}, w_{2,2},
-w_{3,1}, w_{3,2}$. We start with all $0$ values for $b_1, b_2, b_3$. Then, we start applying
-gradient descent. Every step we take in the gradient descent is giving us a better set of parameters
-so that we see that the loss is decreasing.
 </p>
 
 <h1> Applying Simple Neural Network using low-level Tensorflow APIs </h1>
