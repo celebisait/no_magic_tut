@@ -823,7 +823,7 @@ step through the gradient descent iterations.
 NX = 100
 NY = 100
 
-def plot_decision_boundary_lazy(X, Y, W, b, counter_param):
+def plot_decision_boundary_lazy(X, Y, W, b):
   plt.grid()
   plt.xlim([-2.0, 2.0])
   plt.ylim([-2.0, 2.0])
@@ -842,7 +842,7 @@ def plot_decision_boundary_lazy(X, Y, W, b, counter_param):
 
   plt.savefig('image.png')
 
-plot_decision_boundary_lazy(X, Y, W_cache[-1], b_cache[-1], 50)
+plot_decision_boundary_lazy(X, Y, W_cache[-1], b_cache[-1])
 
 plt.close()
 plt.clf()

@@ -470,13 +470,13 @@ def get_gradients(Z1, A1, Z2, A2, Z3, A3, Y):
 
 def gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, alpha):
   W1 = W1 - alpha * dW1
-  W2 = W2 - alpha * dW2
-  W3 = W3 - alpha * dW3
   b1 = b1 - alpha * db1
+  W2 = W2 - alpha * dW2
   b2 = b2 - alpha * db2
+  W3 = W3 - alpha * dW3
   b3 = b3 - alpha * db3
 
-  return W1, W2, W3, b1, b2, b3
+  return W1, b1, W2, b2, W3, b3
 
 L_cache = []
 
@@ -487,7 +487,7 @@ for i in range(10000):
 
   dW1, db1, dW2, db2, dW3, db3 = get_gradients(Z1, A1, Z2, A2, Z3, A3, Y)
 
-  W1, W2, W3, b1, b2, b3 = gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, ALPHA)
+  W1, b1, W2, b2, W3, b3 = gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, ALPHA)
 
   L_cache.append(L)
 
@@ -503,6 +503,12 @@ plt.close()
 plt.clf()
 plt.cla()
 
+# HTML
+{}
+<p>
+Let's see our <b>inferences</b> on the same points using our classifier.
+We are doing pretty good on inference (100%).
+</p>
 
 # CODE
 {}
@@ -524,7 +530,41 @@ were linear. However, the decision boundary of this lecture is not linear, for o
 Thanks to our non-linear sigmoid function. (Please see Exercise 1)
 </p>
 
+# CODE
+{'type': 'image', 'width': 600}
+NX = 100
+NY = 100
 
+def plot_decision_boundary_lazy(X, Y, W1, b1, W2, b2, W3, b3):
+  plt.grid()
+  plt.xlim([-2.0, 2.0])
+  plt.ylim([-2.0, 2.0])
+  plt.xlabel('$x_1$', size=20)
+  plt.ylabel('$x_2$', size=20)
+  plt.title('Decision boundary - Contour plot', size = 18)
+
+  xs = np.linspace(-2.0, 2.0, NX)
+  ys = np.linspace(2.0, -2.0, NY)
+  xv, yv = np.meshgrid(xs, ys)
+  X_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
+  _, _, _, _, _, predictions = forward_propagate(X_fake, W1, b1, W2, b2, W3, b3)
+
+  predictions = np.stack( (1.0 - predictions, predictions, np.zeros((1, NX * NY))) )
+
+  plt.imshow(predictions.T.reshape(NX, NY, 3), extent=[-2.0, 2.0, -2.0, 2.0])
+  plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+
+  plt.savefig('image.png')
+
+plot_decision_boundary_lazy(X, Y, W1, b1, W2, b2, W3, b3)
+
+plt.close()
+plt.clf()
+plt.cla()
+
+
+# HTML
+{}
 <p>
 Similarly, we can plot the same as our classifier progresses through the learning process.
 As you may guess, it should start from a random point and get smarter in each step.
@@ -534,14 +574,6 @@ As you may guess, it should start from a random point and get smarter in each st
 As you can see, it starts from a random classifier that does not seem to be working well in the
 beginning. And the learning process figures out where to go next to find a better classifier.
 After the learning is done, the final classifier is pretty good, in fact it has 100% accuracy.
-</p>
-
-<p>
-Let's see the decision boundary in a more lazy setting. Here, we simply classify every single point
-in the grid and then give the predictions to a contour plot. Comparing to the previous animation,
-contour plot shows the prediction of every single point in the grid in the final version of the
-classifiers parameters. On the other hand, the previous animation shows the parameters step by
-step through the gradient descent iterations.
 </p>
 
 # HTML

@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 3: Building a Simple Neural Network <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: February 18 2018</center><p>
+<center>Last updated: February 19 2018</center><p>
 "Truth is ever to be found in the simplicity, and not in the multiplicity and confusion of things."
 -- Sir Isaac Newton
 </p>
@@ -225,8 +225,8 @@ $$
 <span class="k">print</span><span class="p">(</span><span class="n">A3</span><span class="p">)</span>
 </pre></div>
 <div class="code_stdout"><pre>[[0 1 0 1 0 0 1 0 1 1 0 0 0 1 1 1 1 0 0 1]]
-[[ 0.808  0.8    0.811  0.82   0.808  0.803  0.767  0.798  0.808  0.786
-   0.797  0.798  0.803  0.83   0.825  0.77   0.778  0.804  0.811  0.832]]
+[[ 0.681  0.68   0.682  0.686  0.681  0.679  0.67   0.678  0.68   0.674
+   0.678  0.678  0.68   0.689  0.686  0.67   0.674  0.68   0.682  0.689]]
 </pre></div><p>
 Above we print the predictions for a random initial set of weights and bias. We are randomly
 initializing weights and bias and feeding $X$ to our random initial model. As you can see,
@@ -524,13 +524,17 @@ Let's apply altogether!
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image001.png"/><div class="highlight"><pre><span></span><span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">Z3</span><span class="p">,</span> <span class="n">A3</span> <span class="o">=</span> <span class="n">forward_propagate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">W3</span><span class="p">,</span> <span class="n">b3</span><span class="p">)</span>
+<img class="generated_image" width="600" src="../images/image001.png"/><p>
+Let's see our <b>inferences</b> on the same points using our classifier.
+We are doing pretty good on inference (100%).
+</p>
+<div class="highlight"><pre><span></span><span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">Z3</span><span class="p">,</span> <span class="n">A3</span> <span class="o">=</span> <span class="n">forward_propagate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">W3</span><span class="p">,</span> <span class="n">b3</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">A3</span><span class="p">)</span>
 </pre></div>
 <div class="code_stdout"><pre>[[0 1 0 1 0 0 1 0 1 1 0 0 0 1 1 1 1 0 0 1]]
-[[ 0.001  0.998  0.002  0.999  0.001  0.002  1.     0.002  0.998  0.998
-   0.002  0.002  0.002  0.999  1.     1.     0.998  0.001  0.002  0.999]]
+[[ 0.002  0.998  0.002  0.997  0.002  0.002  0.999  0.002  0.997  0.999
+   0.003  0.002  0.002  0.998  0.997  0.999  1.     0.002  0.002  0.999]]
 </pre></div><h1> Decision Boundary </h1>
 
 <p>
@@ -542,9 +546,37 @@ The decision boundaries of both <b>Logistic Regression</b> and <b>Softmax Regres
 were linear. However, the decision boundary of this lecture is not linear, for obvious reasons.
 Thanks to our non-linear sigmoid function. (Please see Exercise 1)
 </p>
+<div class="highlight"><pre><span></span><span class="n">NX</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">NY</span> <span class="o">=</span> <span class="mi">100</span>
 
+<span class="k">def</span> <span class="nf">plot_decision_boundary_lazy</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">W3</span><span class="p">,</span> <span class="n">b3</span><span class="p">):</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Decision boundary - Contour plot&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
 
-<p>
+  <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">NX</span><span class="p">)</span>
+  <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">NY</span><span class="p">)</span>
+  <span class="n">xv</span><span class="p">,</span> <span class="n">yv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+  <span class="n">X_fake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">xv</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">yv</span><span class="o">.</span><span class="n">flatten</span><span class="p">()),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+  <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">forward_propagate</span><span class="p">(</span><span class="n">X_fake</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">W3</span><span class="p">,</span> <span class="n">b3</span><span class="p">)</span>
+
+  <span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">NX</span> <span class="o">*</span> <span class="n">NY</span><span class="p">)))</span> <span class="p">)</span>
+
+  <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">predictions</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">NX</span><span class="p">,</span> <span class="n">NY</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+
+  <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+
+<span class="n">plot_decision_boundary_lazy</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">W3</span><span class="p">,</span> <span class="n">b3</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
+</pre></div>
+<img class="generated_image" width="600" src="../images/image002.png"/><p>
 Similarly, we can plot the same as our classifier progresses through the learning process.
 As you may guess, it should start from a random point and get smarter in each step.
 </p>
@@ -634,7 +666,7 @@ because of the initial random start of both models. (Remember that $W$ is initia
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image002.png"/>
+<img class="generated_image" width="600" src="../images/image003.png"/>
 <h1>Exercises</h1>
 <ol>
   <li> We claim that the decision boundary of the 3-layer simple neural network as it explained
