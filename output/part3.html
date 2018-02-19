@@ -94,7 +94,7 @@ number of neurons it contains.
 Here is a visual representation of our model:
 </p>
 
-<img class="static_image" style="width: 800px;" src="../static_images/image007.png"/>
+<img class="static_image" style="width: 800px;" src="../static_images/image006.png"/>
 
 <p>
 and decide if $A^{(3)} > 0.5$ four our <b>final prediction</b>.
@@ -225,8 +225,8 @@ $$
 <span class="k">print</span><span class="p">(</span><span class="n">A3</span><span class="p">)</span>
 </pre></div>
 <div class="code_stdout"><pre>[[0 1 0 1 0 0 1 0 1 1 0 0 0 1 1 1 1 0 0 1]]
-[[ 0.749  0.751  0.75   0.762  0.747  0.743  0.725  0.741  0.74   0.727
-   0.741  0.743  0.746  0.766  0.755  0.722  0.735  0.746  0.751  0.764]]
+[[ 0.808  0.8    0.811  0.82   0.808  0.803  0.767  0.798  0.808  0.786
+   0.797  0.798  0.803  0.83   0.825  0.77   0.778  0.804  0.811  0.832]]
 </pre></div><p>
 Above we print the predictions for a random initial set of weights and bias. We are randomly
 initializing weights and bias and feeding $X$ to our random initial model. As you can see,
@@ -257,8 +257,7 @@ Please see previous lectures if you are interested understanding how we derived 
 If we add our <b>Log Loss</b> to our computation graph:
 </p>
 
-<img class="static_image" style="width: 800px;" src="../static_images/image006.png"/>
-
+<img class="static_image" style="width: 800px;" src="../static_images/image007.png"/>
 
 <h1>Backpropagation</h1>
 
@@ -273,8 +272,11 @@ $$
 $$
 
 <p>
-We will need to use <b>chain rule</b> to get there. Let's go step by step.
+We will need to use <b>chain rule</b> to get there. The direction we apply chain rule will be
+the opposite direction to the feed forward case.
 </p>
+
+<img class="static_image" style="width: 800px;" src="../static_images/image008.png"/>
 
 <p>
 We remember that:
@@ -302,27 +304,156 @@ with $Z^{(3)}$ and we are trying to find out how much $L$ changes if we play wit
 Let's look at how we calculate $Z^{(3)}$:
 </p>
 
-$$
 
+$$
 \begin{matrix}
-\begin{bmatrix} 0 & 0 & 0 \end{bmatrix}_{(1 \times 3)}
+(W) \\
+\begin{bmatrix} 0 & 0 & 0 \end{bmatrix}
 \\
 \\
 \mbox{}
 \end{matrix}
 
+\begin{matrix}
+(A) \\
 \begin{bmatrix}
 0  \\
 0  \\
 0  \\
-\end{bmatrix}_{(3 \times 1)}
-=
-\begin{bmatrix}
-0  \\
-\end{bmatrix}_{(1 \times 1)}
+\end{bmatrix}
+\end{matrix}
 
++
+
+\begin{matrix}
+(b)
+\\
+\begin{bmatrix}
+0
+\end{bmatrix}
+\\
+\\
+\end{matrix}
+
+=
+
+\begin{matrix}
+(Z)
+\\
+\begin{bmatrix}
+0
+\end{bmatrix}
+\\
+\\
+\end{matrix}
 $$
 
+<p>
+Let's look this equation very carefully. Our question is, again: "How much $Z$ will be affected if we
+play with $W$?", i.e.,
+</p>
+
+$$
+\frac{dZ}{dW}
+$$
+
+<p>
+It seems obvious visually that if we change, say, $W_1$, $Z$ will change proportional to $A_1$. Notice that
+we are assuming that $A$ and $b$ is fixed and frozen. Using similar logic for the other items of $W$,
+we can conclude:
+</p>
+
+$$
+\frac{dZ}{dW} = A
+$$
+
+<p>
+Similarly, if we change $b$ a small amount, $Z$ will also change as same amount in the same direction, so:
+</p>
+
+$$
+\frac{dZ}{db} = 1
+$$
+
+<p>
+To calculate $\frac{dL}{dW}$, using <b>matrix operations</b>:
+</p>
+
+$$
+\begin{matrix}
+(A)\\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{3 \times 20}
+\end{matrix}
+
+\stackrel{\text{broadcasting}}{\circ}
+
+\begin{matrix}
+(\frac{dL}{dZ})\\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{1 \times 20}
+\end{matrix}
+
+=
+
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{3 \times 20}
+
+\stackrel{\text{average}}{\rightarrow}
+
+\begin{bmatrix}
+0  \\
+0  \\
+0  \\
+\end{bmatrix}_{3 \times 1}
+
+\stackrel{\text{transpose}}{\rightarrow}
+
+\begin{matrix}
+(\frac{dL}{dW}) \\
+\begin{bmatrix}
+0 & 0 & 0 \\
+\end{bmatrix}_{1 \times 3}
+\end{matrix}
+$$
+
+or in summary, and high-level view:
+
+$$
+\frac{dL}{dZ} \frac{dZ}{dW} = \frac{dL}{dW}
+$$
+
+and similarly for $\frac{dL}{db}$:
+
+$$
+\begin{matrix}
+(\frac{dL}{dZ}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{1 \times 20}
+\end{matrix}
+
+\stackrel{\text{average}}{\rightarrow}
+
+\begin{matrix}
+(\frac{dL}{db}) \\
+\begin{bmatrix}
+0  \\
+\end{bmatrix}_{1 \times 1}
+\end{matrix}
+$$
+
+
+<p>
+Let's apply altogether!
+</p>
 <div class="highlight"><pre><span></span><span class="n">ALPHA</span> <span class="o">=</span> <span class="mf">0.3</span>  <span class="c1"># learning rate</span>
 
 <span class="c1"># this simple implementation is numerically unstable, because:</span>
@@ -341,8 +472,8 @@ $$
 <span class="k">def</span> <span class="nf">get_gradients</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">Z3</span><span class="p">,</span> <span class="n">A3</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
   <span class="n">dZ3</span> <span class="o">=</span> <span class="n">A3</span> <span class="o">-</span> <span class="n">Y</span>  <span class="c1"># size (1x20)</span>
 
-  <span class="n">dW3</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">Y</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="p">(</span><span class="n">dZ3</span> <span class="o">*</span> <span class="n">A2</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="bp">True</span> <span class="p">)</span>  <span class="c1"># size (1x3)</span>
-  <span class="n">db3</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">Y</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">dZ3</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="bp">True</span> <span class="p">)</span>  <span class="c1"># size (1x1)</span>
+  <span class="n">dW3</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">Y</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dZ3</span> <span class="o">*</span> <span class="n">A2</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># size (1x3)</span>
+  <span class="n">db3</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">Y</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dZ3</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># size (1x1)</span>
 
   <span class="n">dA2</span> <span class="o">=</span> <span class="n">W3</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">dZ3</span>  <span class="c1"># size (3x20)</span>
   <span class="n">dZ2</span> <span class="o">=</span> <span class="n">dA2</span> <span class="o">*</span> <span class="p">(</span><span class="n">A2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">A2</span><span class="p">))</span> <span class="c1"># size (3x20)</span>
@@ -370,7 +501,7 @@ $$
 
 <span class="n">L_cache</span> <span class="o">=</span> <span class="p">[]</span>
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7000</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">):</span>
   <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">Z3</span><span class="p">,</span> <span class="n">A3</span> <span class="o">=</span> <span class="n">forward_propagate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">W3</span><span class="p">,</span> <span class="n">b3</span><span class="p">)</span>
 
   <span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">get_loss_numerically_stable</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">Z3</span><span class="p">)</span>
@@ -398,20 +529,26 @@ $$
 <span class="k">print</span><span class="p">(</span><span class="n">A3</span><span class="p">)</span>
 </pre></div>
 <div class="code_stdout"><pre>[[0 1 0 1 0 0 1 0 1 1 0 0 0 1 1 1 1 0 0 1]]
-[[ 0.002  0.994  0.001  1.     0.     0.001  1.     0.011  0.993  1.     0.006
-   0.     0.     1.     0.994  1.     0.993  0.     0.012  1.   ]]
+[[ 0.001  0.998  0.002  0.999  0.001  0.002  1.     0.002  0.998  0.998
+   0.002  0.002  0.002  0.999  1.     1.     0.998  0.001  0.002  0.999]]
 </pre></div><h1> Decision Boundary </h1>
 
 <p>
-Above, we simply find the boundaries and plot them. The definition of the boundary is that
-the region in which the predictions are equally confident for both of the classifiers. Since
-we have three classes, there are 3 choose 2 = 3 boundaries.
-</p
+Let's try to visualize the decision boundary that error final classifier learns.
+</p>
+
+<p>
+The decision boundaries of both <b>Logistic Regression</b> and <b>Softmax Regression</b>
+were linear. However, the decision boundary of this lecture is not linear, for obvious reasons.
+Thanks to our non-linear sigmoid function. (Please see Exercise 1)
+</p>
+
 
 <p>
 Similarly, we can plot the same as our classifier progresses through the learning process.
 As you may guess, it should start from a random point and get smarter in each step.
 </p>
+
 <p>
 As you can see, it starts from a random classifier that does not seem to be working well in the
 beginning. And the learning process figures out where to go next to find a better classifier.
@@ -478,7 +615,7 @@ because of the initial random start of both models. (Remember that $W$ is initia
 <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init</span><span class="p">)</span>
    <span class="n">losses</span> <span class="o">=</span> <span class="p">[]</span>
-   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7000</span><span class="p">):</span>
+   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">):</span>
       <span class="n">ttrain</span><span class="p">,</span> <span class="n">ttloss</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">train</span><span class="p">,</span> <span class="n">t_Loss</span><span class="p">],</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="n">t_X</span><span class="p">:</span><span class="n">X</span><span class="p">,</span> <span class="n">t_Y</span><span class="p">:</span><span class="n">Y</span><span class="p">})</span>
       <span class="n">losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ttloss</span><span class="p">)</span>
 
@@ -500,8 +637,13 @@ because of the initial random start of both models. (Remember that $W$ is initia
 <img class="generated_image" width="600" src="../images/image002.png"/>
 <h1>Exercises</h1>
 <ol>
-  <li>
-   1
+  <li> We claim that the decision boundary of the 3-layer simple neural network as it explained
+  in this chapter is not linear because using a non-linear activation function (sigmoid). However,
+  we have used the same sigmoid function in Logistic Regression as well, and the decision boundary
+  was linear. Also, softmax function doesn't look like linear at all. (Actually, what the heck is
+  the defition (or the test) of a linear function?) And also (assuming sigmoid is a non-linear
+  activation function) why we had a linear decision boundary on logistic regression but not the 3-layer
+  simple neural network?
   </li>
   <li>
    2

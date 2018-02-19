@@ -68,7 +68,7 @@ number of neurons it contains.
 Here is a visual representation of our model:
 </p>
 
-<img class="static_image" style="width: 800px;" src="../static_images/image007.png"/>
+<img class="static_image" style="width: 800px;" src="../static_images/image006.png"/>
 
 <p>
 and decide if $A^{(3)} > 0.5$ four our <b>final prediction</b>.
@@ -233,8 +233,7 @@ Please see previous lectures if you are interested understanding how we derived 
 If we add our <b>Log Loss</b> to our computation graph:
 </p>
 
-<img class="static_image" style="width: 800px;" src="../static_images/image006.png"/>
-
+<img class="static_image" style="width: 800px;" src="../static_images/image007.png"/>
 
 <h1>Backpropagation</h1>
 
@@ -249,8 +248,11 @@ $$
 $$
 
 <p>
-We will need to use <b>chain rule</b> to get there. Let's go step by step.
+We will need to use <b>chain rule</b> to get there. The direction we apply chain rule will be
+the opposite direction to the feed forward case.
 </p>
+
+<img class="static_image" style="width: 800px;" src="../static_images/image008.png"/>
 
 <p>
 We remember that:
@@ -278,27 +280,156 @@ with $Z^{(3)}$ and we are trying to find out how much $L$ changes if we play wit
 Let's look at how we calculate $Z^{(3)}$:
 </p>
 
-$$
 
+$$
 \begin{matrix}
-\begin{bmatrix} 0 & 0 & 0 \end{bmatrix}_{(1 \times 3)}
+(W) \\
+\begin{bmatrix} 0 & 0 & 0 \end{bmatrix}
 \\
 \\
 \mbox{}
 \end{matrix}
 
+\begin{matrix}
+(A) \\
 \begin{bmatrix}
 0  \\
 0  \\
 0  \\
-\end{bmatrix}_{(3 \times 1)}
-=
-\begin{bmatrix}
-0  \\
-\end{bmatrix}_{(1 \times 1)}
+\end{bmatrix}
+\end{matrix}
 
++
+
+\begin{matrix}
+(b)
+\\
+\begin{bmatrix}
+0
+\end{bmatrix}
+\\
+\\
+\end{matrix}
+
+=
+
+\begin{matrix}
+(Z)
+\\
+\begin{bmatrix}
+0
+\end{bmatrix}
+\\
+\\
+\end{matrix}
 $$
 
+<p>
+Let's look this equation very carefully. Our question is, again: "How much $Z$ will be affected if we
+play with $W$?", i.e.,
+</p>
+
+$$
+\frac{dZ}{dW}
+$$
+
+<p>
+It seems obvious visually that if we change, say, $W_1$, $Z$ will change proportional to $A_1$. Notice that
+we are assuming that $A$ and $b$ is fixed and frozen. Using similar logic for the other items of $W$,
+we can conclude:
+</p>
+
+$$
+\frac{dZ}{dW} = A
+$$
+
+<p>
+Similarly, if we change $b$ a small amount, $Z$ will also change as same amount in the same direction, so:
+</p>
+
+$$
+\frac{dZ}{db} = 1
+$$
+
+<p>
+To calculate $\frac{dL}{dW}$, using <b>matrix operations</b>:
+</p>
+
+$$
+\begin{matrix}
+(A)\\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{3 \times 20}
+\end{matrix}
+
+\stackrel{\text{broadcasting}}{\circ}
+
+\begin{matrix}
+(\frac{dL}{dZ})\\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{1 \times 20}
+\end{matrix}
+
+=
+
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{3 \times 20}
+
+\stackrel{\text{average}}{\rightarrow}
+
+\begin{bmatrix}
+0  \\
+0  \\
+0  \\
+\end{bmatrix}_{3 \times 1}
+
+\stackrel{\text{transpose}}{\rightarrow}
+
+\begin{matrix}
+(\frac{dL}{dW}) \\
+\begin{bmatrix}
+0 & 0 & 0 \\
+\end{bmatrix}_{1 \times 3}
+\end{matrix}
+$$
+
+or in summary, and high-level view:
+
+$$
+\frac{dL}{dZ} \frac{dZ}{dW} = \frac{dL}{dW}
+$$
+
+and similarly for $\frac{dL}{db}$:
+
+$$
+\begin{matrix}
+(\frac{dL}{dZ}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{1 \times 20}
+\end{matrix}
+
+\stackrel{\text{average}}{\rightarrow}
+
+\begin{matrix}
+(\frac{dL}{db}) \\
+\begin{bmatrix}
+0  \\
+\end{bmatrix}_{1 \times 1}
+\end{matrix}
+$$
+
+
+<p>
+Let's apply altogether!
+</p>
 
 # CODE
 {'width': 600}
@@ -320,8 +451,8 @@ def get_loss_numerically_stable(Y, Z3):
 def get_gradients(Z1, A1, Z2, A2, Z3, A3, Y):
   dZ3 = A3 - Y  # size (1x20)
 
-  dW3 = (1.0/Y.size) * np.sum( (dZ3 * A2).T, axis = 0, keepdims = True )  # size (1x3)
-  db3 = (1.0/Y.size) * np.sum( dZ3.T, axis = 0, keepdims = True )  # size (1x1)
+  dW3 = (1.0/Y.size) * np.sum(dZ3 * A2, axis = 1, keepdims = True).T  # size (1x3)
+  db3 = (1.0/Y.size) * np.sum(dZ3, axis = 1, keepdims = True).T  # size (1x1)
 
   dA2 = W3.T * dZ3  # size (3x20)
   dZ2 = dA2 * (A2 * (1-A2)) # size (3x20)
@@ -349,7 +480,7 @@ def gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, alpha
 
 L_cache = []
 
-for i in range(7000):
+for i in range(10000):
   Z1, A1, Z2, A2, Z3, A3 = forward_propagate(X, W1, b1, W2, b2, W3, b3)
 
   L = (1.0 / 20) * get_loss_numerically_stable(Y, Z3)
@@ -384,18 +515,21 @@ print(A3)
 <h1> Decision Boundary </h1>
 
 <p>
-Above, we simply find the boundaries and plot them. The definition of the boundary is that
-the region in which the predictions are equally confident for both of the classifiers. Since
-we have three classes, there are 3 choose 2 = 3 boundaries.
-</p
+Let's try to visualize the decision boundary that error final classifier learns.
+</p>
+
+<p>
+The decision boundaries of both <b>Logistic Regression</b> and <b>Softmax Regression</b>
+were linear. However, the decision boundary of this lecture is not linear, for obvious reasons.
+Thanks to our non-linear sigmoid function. (Please see Exercise 1)
+</p>
+
 
 <p>
 Similarly, we can plot the same as our classifier progresses through the learning process.
 As you may guess, it should start from a random point and get smarter in each step.
 </p>
 
-# HTML
-{}
 <p>
 As you can see, it starts from a random classifier that does not seem to be working well in the
 beginning. And the learning process figures out where to go next to find a better classifier.
@@ -468,7 +602,7 @@ init = tf.global_variables_initializer()
 with tf.Session() as session:
    session.run(init)
    losses = []
-   for i in range(7000):
+   for i in range(10000):
       ttrain, ttloss = session.run([train, t_Loss], feed_dict={t_X:X, t_Y:Y})
       losses.append(ttloss)
 
@@ -492,8 +626,13 @@ plt.cla()
 
 <h1>Exercises</h1>
 <ol>
-  <li>
-   1
+  <li> We claim that the decision boundary of the 3-layer simple neural network as it explained
+  in this chapter is not linear because using a non-linear activation function (sigmoid). However,
+  we have used the same sigmoid function in Logistic Regression as well, and the decision boundary
+  was linear. Also, softmax function doesn't look like linear at all. (Actually, what the heck is
+  the defition (or the test) of a linear function?) And also (assuming sigmoid is a non-linear
+  activation function) why we had a linear decision boundary on logistic regression but not the 3-layer
+  simple neural network?
   </li>
   <li>
    2
