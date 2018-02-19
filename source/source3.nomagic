@@ -23,6 +23,8 @@ points in 2-dimensional space:
 {'type': 'image', 'width': 600}
 import numpy as np
 import matplotlib.pyplot as plt
+import collections
+
 np.set_printoptions(precision=3, suppress=True)
 
 X = np.array([[ 0.3, 1.214, 0.052, 1.5, -0.15, -0.282, -0.464, -0.282,  -1.214, -1.5,
@@ -30,6 +32,14 @@ X = np.array([[ 0.3, 1.214, 0.052, 1.5, -0.15, -0.282, -0.464, -0.282,  -1.214, 
 	      [ 0.0, -0.882, 0.295, 0.0, 0.26, 0.103, -1.427, -0.103, 0.882, 0.0,
 	        -0.26 , -0.295, -0.193, 0.882, 1.427, -0.882, -1.427, 0, 0.193, 1.427]])
 Y = np.array([[0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1]])
+
+X = np.array([[ 0.65,  -0.,    -0.75,   1.299, -0.46,  -1.299, -0.,     0.46,   0.46,  -1.299,
+  -0.46,   0.,     0.75,   1.299, -0.65,   1.5,  -1.5,    0.75,  -0.75,   0.   ],
+ [ 0.,    -0.65,  -1.299,  0.75,  -0.46,  -0.75,  -1.5,  0.46,  -0.46,   0.75,
+   0.46,  0.65,  -1.299, -0.75,   0.,   0.,   0.,  1.299,  1.299,  1.5  ]])
+
+Y = np.array([[ 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1]])
+
 colormap = np.array(['r', 'g'])
 
 def plot_scatter(X, Y, colormap, path):
@@ -52,7 +62,7 @@ plt.cla()
 {}
 <p>
 In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
-or <b>green</b>.
+or <b>green</b>. (In this tutorial 0.0 means red and 1.0 means green.)
 </p>
 
 <p>
@@ -171,6 +181,14 @@ $$
 A^{(3)} = g(Z^{(3)})
 $$
 
+<p>
+We are using sigmoid function as the activation $g()$ function as we used before.
+</p>
+
+<p>
+Let's try to apply this using an <b>initial</b> random set of weights and bias.
+</p>
+
 # CODE
 {}
 sigmoid = lambda x: 1/(1+np.exp(-x))
@@ -204,8 +222,8 @@ print(A3)
 # HTML
 {}
 <p>
-Above we print the predictions for a random initial set of weights and bias. We are randomly
-initializing weights and bias and feeding $X$ to our random initial model. As you can see,
+Above we print the predictions for a random initial set of weights and bias. We are <b>randomly
+initializing</b> weights and bias and feeding $X$ to our random initial model. As you can see,
 our predictions are pretty random too, as expected. However, you can see that, given the weights,
 and bias, it is pretty straight-forward to calculate the final predictions.
 The tricky part is to <i>learn</i> those weights properly.
@@ -238,7 +256,7 @@ If we add our <b>Log Loss</b> to our computation graph:
 <h1>Backpropagation</h1>
 
 <p>
-We need Backpropagation to calculate derivates so that we can use <b>Gradient Descent</b>.
+We need Backpropagation to calculate derivatives so that we can use <b>Gradient Descent</b>.
 In order to do gradient descent, we need to calculate the the derivate of loss w.r.t.
 each parameter in our model. i.e.,
 </p>
@@ -279,7 +297,6 @@ with $Z^{(3)}$ and we are trying to find out how much $L$ changes if we play wit
 <p>
 Let's look at how we calculate $Z^{(3)}$:
 </p>
-
 
 $$
 \begin{matrix}
@@ -334,7 +351,7 @@ $$
 $$
 
 <p>
-It seems obvious visually that if we change, say, $W_1$, $Z$ will change proportional to $A_1$. Notice that
+It seems obvious <b>visually</b> that if we change, say, $W_1$, $Z$ will change proportional to $A_1$. Notice that
 we are assuming that $A$ and $b$ is fixed and frozen. Using similar logic for the other items of $W$,
 we can conclude:
 </p>
@@ -426,9 +443,8 @@ $$
 \end{matrix}
 $$
 
-
 <p>
-Let's apply altogether!
+Let's apply the <b>backprop</b> altogether!
 </p>
 
 # CODE
@@ -480,6 +496,9 @@ def gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, alpha
 
 L_cache = []
 
+Model = collections.namedtuple('Model', ['W1', 'b1', 'W2', 'b2', 'W3', 'b3'])
+models_cache = []
+
 for i in range(10000):
   Z1, A1, Z2, A2, Z3, A3 = forward_propagate(X, W1, b1, W2, b2, W3, b3)
 
@@ -488,8 +507,13 @@ for i in range(10000):
   dW1, db1, dW2, db2, dW3, db3 = get_gradients(Z1, A1, Z2, A2, Z3, A3, Y)
 
   W1, b1, W2, b2, W3, b3 = gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, ALPHA)
+  m = Model(W1, b1, W2, b2, W3, b3)
 
+  models_cache.append(m)
   L_cache.append(L)
+
+  if L < 0.02:
+    break
 
 plt.grid()
 plt.title('Loss', size=18)
@@ -562,40 +586,84 @@ plt.close()
 plt.clf()
 plt.cla()
 
-
 # HTML
 {}
+<p>
+Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
+is one dimensional and between $[0,1]$. If it is $0.0$ it means we are classifying the point confidently as
+red and if it is $1.0$ we are very confident on green.
+</p>
+
+<p>
+In order to create this figure, we simply convert our one dimensional prediction into three dimensions (RGB)
+using the following logic. R = prediction, G = 1 - prediction, B = 0. So, for example, if our final prediction
+is, say, 0.9, then the color on that point will be $[0.9, 0.1, 0]$ which is kind of dark green.
+</p>
+
 <p>
 Similarly, we can plot the same as our classifier progresses through the learning process.
 As you may guess, it should start from a random point and get smarter in each step.
 </p>
 
+# CODE
+{'width': 600}
+import matplotlib.animation as animation
+
+NX = 100
+NY = 100
+
+xs = np.linspace(-2.0, 2.0, NX)
+ys = np.linspace(2.0, -2.0, NY)
+xv, yv = np.meshgrid(xs, ys)
+X_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
+
+def get_predictions(X_fake, model):
+  _, _, _, _, _, predictions = forward_propagate(X_fake, *model)
+  predictions = np.stack( (1.0 - predictions, predictions, np.zeros((1, NX * NY))) )
+  return predictions.T.reshape(NX, NY, 3)
+
+fig = plt.figure()
+
+ax = fig.add_subplot(111)
+ax.set_xlim([-2.0, 2.0])
+ax.set_ylim([-2.0, 2.0])
+ax.set_xlabel('$x_1$', size=20)
+ax.set_ylabel('$x_2$', size=20)
+
+ax.set_title('Decision boundary - Animated', size = 18)
+
+def animate(i):
+  print(i*50)
+  im.set_array(get_predictions(X_fake, models_cache[i * 50]))
+  text_box.set_text('Iteration: {}'.format(i * 50))
+  return im, text_box
+
+im = ax.imshow(get_predictions(X_fake, models_cache[0]), extent=[-2.0, 2.0, -2.0, 2.0], animated = True)
+
+ax.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+text_box = ax.text(1.1, 1.6, 'Iteration 0', size = 16)
+
+anim = animation.FuncAnimation(fig, animate, len(models_cache) / 50, blit=True, interval=500)
+anim.save('animation.mp4', writer='avconv', fps=6, codec="libx264")
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
 <p>
 As you can see, it starts from a random classifier that does not seem to be working well in the
 beginning. And the learning process figures out where to go next to find a better classifier.
 After the learning is done, the final classifier is pretty good, in fact it has 100% accuracy.
 </p>
 
-# HTML
-{}
-<p>
-Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
-is $\mathbf{a}$ and it is three dimensional. So, we simply convert that vector to RGB space. So, for example
-if the prediction is: $[0.98, 0.01, 0.01]$, it will be almost a perfect <b>red</b>, and so on.
-</p>
-
-<p>
-If you look closely, you will see some <b>purple color</b> between red and blue points. That is because
-the predictions in that region is something similar to $[0.45, 0.1, 0.45]$. And this means a mix of red
-and blue which gives us purple. Similar phenomena happens between other decision boundary intersections.
-</p>
-
 <h1> Applying Simple Neural Network using low-level Tensorflow APIs </h1>
 
 <p>
-Here is how to train the same classifier for the above red, green and blue points using low-level TensorFlow API.
-It produces <b>almost exact</b> output with our own hand crafted model. Be aware that there may be small differences
-because of the initial random start of both models. (Remember that $W$ is initialized with random values.)
+Here is how to train the same classifier for the above red and green points using low-level TensorFlow API.
+It produces <b>exact</b> output with our own hand crafted model. Notice that it is because we start both
+models from the same initial random starting point (same $W$ and same $b$).
 </p>
 
 # CODE
@@ -638,6 +706,9 @@ with tf.Session() as session:
       ttrain, ttloss = session.run([train, t_Loss], feed_dict={t_X:X, t_Y:Y})
       losses.append(ttloss)
 
+      if ttloss < 0.02:
+        break
+
    print(session.run([t_A3], feed_dict={t_X:X, t_Y:Y})[0])
    print(Y)
 
@@ -665,9 +736,6 @@ plt.cla()
   the defition (or the test) of a linear function?) And also (assuming sigmoid is a non-linear
   activation function) why we had a linear decision boundary on logistic regression but not the 3-layer
   simple neural network?
-  </li>
-  <li>
-   2
   </li>
 </ol>
 
