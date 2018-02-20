@@ -27,17 +27,10 @@ import collections
 
 np.set_printoptions(precision=3, suppress=True)
 
-X = np.array([[ 0.3, 1.214, 0.052, 1.5, -0.15, -0.282, -0.464, -0.282,  -1.214, -1.5,
-                -0.15, 0.052, 0.23, 1.214,-0.464, -1.214,  0.464,  0, 0.23, 0.464],
-	      [ 0.0, -0.882, 0.295, 0.0, 0.26, 0.103, -1.427, -0.103, 0.882, 0.0,
-	        -0.26 , -0.295, -0.193, 0.882, 1.427, -0.882, -1.427, 0, 0.193, 1.427]])
-Y = np.array([[0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1]])
-
 X = np.array([[ 0.65,  -0.,    -0.75,   1.299, -0.46,  -1.299, -0.,     0.46,   0.46,  -1.299,
-  -0.46,   0.,     0.75,   1.299, -0.65,   1.5,  -1.5,    0.75,  -0.75,   0.   ],
- [ 0.,    -0.65,  -1.299,  0.75,  -0.46,  -0.75,  -1.5,  0.46,  -0.46,   0.75,
-   0.46,  0.65,  -1.299, -0.75,   0.,   0.,   0.,  1.299,  1.299,  1.5  ]])
-
+ 		 -0.46,   0.,     0.75,   1.299, -0.65,   1.5,  -1.5,    0.75,  -0.75,   0.   ],
+ 	      [ 0.,    -0.65,  -1.299,  0.75,  -0.46,  -0.75,  -1.5,  0.46,  -0.46,   0.75,
+  		 0.46,  0.65,  -1.299, -0.75,   0.,   0.,   0.,  1.299,  1.299,  1.5  ]])
 Y = np.array([[ 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1]])
 
 colormap = np.array(['r', 'g'])
@@ -300,7 +293,7 @@ Let's look at how we calculate $Z^{(3)}$:
 
 $$
 \begin{matrix}
-(W) \\
+(W^{(3)}) \\
 \begin{bmatrix} 0 & 0 & 0 \end{bmatrix}
 \\
 \\
@@ -308,7 +301,7 @@ $$
 \end{matrix}
 
 \begin{matrix}
-(A) \\
+(A^{(2)}) \\
 \begin{bmatrix}
 0  \\
 0  \\
@@ -319,7 +312,7 @@ $$
 +
 
 \begin{matrix}
-(b)
+(b^{(3)})
 \\
 \begin{bmatrix}
 0
@@ -331,7 +324,7 @@ $$
 =
 
 \begin{matrix}
-(Z)
+(Z^{(3)})
 \\
 \begin{bmatrix}
 0
@@ -342,39 +335,39 @@ $$
 $$
 
 <p>
-Let's look this equation very carefully. Our question is, again: "How much $Z$ will be affected if we
-play with $W$?", i.e.,
+Let's look this equation very carefully. Our question is, again: "How much $Z^{(3)}$ will be affected if we
+play with $W^{(3)}$?", i.e.,
 </p>
 
 $$
-\frac{dZ}{dW}
+\frac{dZ^{(3)}}{dW^{(3)}}
 $$
 
 <p>
-It seems obvious <b>visually</b> that if we change, say, $W_1$, $Z$ will change proportional to $A_1$. Notice that
-we are assuming that $A$ and $b$ is fixed and frozen. Using similar logic for the other items of $W$,
-we can conclude:
+It seems obvious <b>visually</b> that if we change, say, $W^{(3)}_1$, $Z^{(3)}$ will change proportional to $A^{(3)}_1$.
+Notice that we are assuming that $A^{(2)}$ and $b^{(3)}$ is fixed and frozen. Using similar logic for the other items
+of $W^{(3)}$, we can conclude:
 </p>
 
 $$
-\frac{dZ}{dW} = A
+\frac{dZ^{(3)}}{dW^{(3)}} = A^{(2)}
 $$
 
 <p>
-Similarly, if we change $b$ a small amount, $Z$ will also change as same amount in the same direction, so:
+Similarly, if we change $b^{(3)}$ a small amount, $Z^{(3)}$ will also change as same amount in the same direction, so:
 </p>
 
 $$
-\frac{dZ}{db} = 1
+\frac{dZ^{(3)}}{db^{(3)}} = 1
 $$
 
 <p>
-To calculate $\frac{dL}{dW}$, using <b>matrix operations</b>:
+To calculate $\frac{dL}{dW^{(3)}}$, using <b>matrix operations</b>:
 </p>
 
 $$
 \begin{matrix}
-(A)\\
+(A^{(2)})\\
 \begin{bmatrix}
 0   &  0  & ... &  0  \\
 0   &  0  & ... &  0  \\
@@ -385,7 +378,7 @@ $$
 \stackrel{\text{broadcasting}}{\circ}
 
 \begin{matrix}
-(\frac{dL}{dZ})\\
+(\frac{dL}{dZ^{(3)}})\\
 \begin{bmatrix}
 0   &  0  & ... &  0  \\
 \end{bmatrix}_{1 \times 20}
@@ -410,7 +403,7 @@ $$
 \stackrel{\text{transpose}}{\rightarrow}
 
 \begin{matrix}
-(\frac{dL}{dW}) \\
+(\frac{dL}{dW^{(3)}}) \\
 \begin{bmatrix}
 0 & 0 & 0 \\
 \end{bmatrix}_{1 \times 3}
@@ -420,14 +413,14 @@ $$
 or in summary, and high-level view:
 
 $$
-\frac{dL}{dZ} \frac{dZ}{dW} = \frac{dL}{dW}
+\frac{dL}{dZ^{(3)}} \frac{dZ^{(3)}}{dW^{(3)}} = \frac{dL}{dW^{(3)}}
 $$
 
-and similarly for $\frac{dL}{db}$:
+and similarly for $\frac{dL}{db^{(3)}}$:
 
 $$
 \begin{matrix}
-(\frac{dL}{dZ}) \\
+(\frac{dL}{dZ^{(3)}}) \\
 \begin{bmatrix}
 0   &  0  & ... &  0  \\
 \end{bmatrix}_{1 \times 20}
@@ -436,7 +429,7 @@ $$
 \stackrel{\text{average}}{\rightarrow}
 
 \begin{matrix}
-(\frac{dL}{db}) \\
+(\frac{dL}{db^{(3)}}) \\
 \begin{bmatrix}
 0  \\
 \end{bmatrix}_{1 \times 1}
@@ -444,12 +437,211 @@ $$
 $$
 
 <p>
+Nice.
+</p>
+
+<p>
+At this moment, we calculated $\frac{dL}{dW^{(3)}}$ and $\frac{dL}{db^{(3)}}$.
+Now, we want to calculate $\frac{dL}{dW^{(2)}}$ and $\frac{dL}{db^{(2)}}$.
+In order to calculate them, we need $\frac{dL}{dA^{(2)}}$ and $\frac{dL}{dZ^{(2)}}$.
+</p>
+
+<p>
+Looking to the same figure above visually, and using a similar logic, it looks obvious:
+</p>
+
+$$
+\frac{dZ^{(3)}}{dA^{(2)}} = W^{(3)}
+$$
+
+<p>
+Again, assuming $W^{(3)}$ and $b^{(3)}$ is fixed and frozen.
+</p>
+
+$$
+\begin{matrix}
+(W^{(3)}.T)\\
+\begin{bmatrix}
+0   \\
+0   \\
+0   \\
+\end{bmatrix}_{3 \times 1}
+\end{matrix}
+
+\begin{matrix}
+(\frac{dL}{dZ^{(3)}})\\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{1 \times 20}
+\end{matrix}
+
+=
+
+\begin{matrix}
+(\frac{dL}{dA^{(2)}}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{3 \times 20}
+\end{matrix}
+$$
+
+<p>
+Given $\frac{dL}{dA^{(2)}}$, it is easy to get $\frac{dL}{dZ^{(2)}}$. We just need to apply
+the gradient of <b>sigmoid</b> function.
+</p>
+
+$$
+\frac{dL}{dZ^{(2)}} = \frac{dL}{dA^{(2)}} \circ \left ( A^{(2)} \circ \left ( 1 - A^{(2)} \right ) \right )
+$$
+
+<p>
+Now, with knowing $\frac{dL}{dZ2}$, we are set to calculate $\frac{dL}{dW2}$ and $\frac{dL}{db2}$.
+</p>
+
+$$
+\begin{matrix}
+(W^{(2)}) \\
+\begin{bmatrix}
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+\end{bmatrix}
+\end{matrix}
+
+\begin{matrix}
+(A^{(1)}) \\
+\begin{bmatrix}
+0  \\
+0  \\
+0  \\
+\end{bmatrix}
+\end{matrix}
+
++
+
+\begin{matrix}
+(b^{(2)})
+\\
+\begin{bmatrix}
+0 \\
+0 \\
+0 \\
+\end{bmatrix}
+\end{matrix}
+
+=
+
+\begin{matrix}
+(Z^{(2)})
+\\
+\begin{bmatrix}
+0 \\
+0 \\
+0 \\
+\end{bmatrix}
+\end{matrix}
+$$
+
+<p>
+Now, we are interested to know:
+</p>
+
+$$
+
+\frac{dZ^{(2)}_{1}}{dW^{(2)}} =
+\begin{bmatrix}
+  & A^{(1)}.T & \\
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+\end{bmatrix},
+\quad
+\frac{dZ^{(2)}_{2}}{dW^{(2)}} =
+\begin{bmatrix}
+0 & 0 & 0 \\
+& A^{(1)}.T & \\
+0 & 0 & 0 \\
+\end{bmatrix},
+\quad
+\frac{dZ^{(2)}_{3}}{dW^{(2)}} =
+\begin{bmatrix}
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+& A^{(1)}.T & \\
+\end{bmatrix}
+
+$$
+
+<p>
+Now, I claim that for one element:
+</p>
+
+$$
+\frac{dL}{dW^{(2)}} =
+
+\begin{matrix}
+(\frac{dL}{dZ^{(2)}}.T) \\
+\begin{bmatrix}
+0 & 0 & 0
+\end{bmatrix}
+\\
+\\
+\\
+\mbox{}
+\end{matrix}
+
+\begin{bmatrix}
+& A^{(1)}.T & \\
+& A^{(1)}.T & \\
+& A^{(1)}.T & \\
+\end{bmatrix}
+
+$$
+
+<p>
+And, finally, using matrix operations:
+</p>
+
+$$
+\frac{dL}{dW2}
+=
+\begin{matrix}
+(\frac{dL}{dZ^{(2)}}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{3 \times 20}
+\end{matrix}
+
+\begin{matrix}
+(A1.T) \\
+\begin{bmatrix}
+0   &  0   &  0  \\
+0   &  0   &  0  \\
+\vdots   &  \vdots   &  \vdots  \\
+0   &  0   &  0  \\
+\end{bmatrix}_{20 \times 3}
+\end{matrix}
+$$
+
+<p>
+We are half-way there in terms of finishing the backprop.
+</p>
+
+<p>
+The rest of backprop derivation is left to the reader for exercise.
+</p>
+
+<p>
 Let's apply the <b>backprop</b> altogether!
 </p>
 
 # CODE
 {'width': 600}
-ALPHA = 0.3  # learning rate
+ALPHA = 0.3 # learning rate
+Model = collections.namedtuple('Model', ['W1', 'b1', 'W2', 'b2', 'W3', 'b3'])
 
 # this simple implementation is numerically unstable, because:
 # np.log() returns -inf for small inputs very close to 0
@@ -470,7 +662,7 @@ def get_gradients(Z1, A1, Z2, A2, Z3, A3, Y):
   dW3 = (1.0/Y.size) * np.sum(dZ3 * A2, axis = 1, keepdims = True).T  # size (1x3)
   db3 = (1.0/Y.size) * np.sum(dZ3, axis = 1, keepdims = True).T  # size (1x1)
 
-  dA2 = W3.T * dZ3  # size (3x20)
+  dA2 = np.matmul(W3.T, dZ3)  # size (3x20)
   dZ2 = dA2 * (A2 * (1-A2)) # size (3x20)
 
   dW2 = (1.0/Y.size) * np.matmul(dZ2, A1.T)  # size (3x3)
@@ -495,8 +687,6 @@ def gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, alpha
   return W1, b1, W2, b2, W3, b3
 
 L_cache = []
-
-Model = collections.namedtuple('Model', ['W1', 'b1', 'W2', 'b2', 'W3', 'b3'])
 models_cache = []
 
 for i in range(10000):
@@ -633,7 +823,6 @@ ax.set_ylabel('$x_2$', size=20)
 ax.set_title('Decision boundary - Animated', size = 18)
 
 def animate(i):
-  print(i*50)
   im.set_array(get_predictions(X_fake, models_cache[i * 50]))
   text_box.set_text('Iteration: {}'.format(i * 50))
   return im, text_box
@@ -641,7 +830,7 @@ def animate(i):
 im = ax.imshow(get_predictions(X_fake, models_cache[0]), extent=[-2.0, 2.0, -2.0, 2.0], animated = True)
 
 ax.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
-text_box = ax.text(1.1, 1.6, 'Iteration 0', size = 16)
+text_box = ax.text(0.6, 1.6, 'Iteration 0', size = 16)
 
 anim = animation.FuncAnimation(fig, animate, len(models_cache) / 50, blit=True, interval=500)
 anim.save('animation.mp4', writer='avconv', fps=6, codec="libx264")
@@ -662,8 +851,8 @@ After the learning is done, the final classifier is pretty good, in fact it has 
 
 <p>
 Here is how to train the same classifier for the above red and green points using low-level TensorFlow API.
-It produces <b>exact</b> output with our own hand crafted model. Notice that it is because we start both
-models from the same initial random starting point (same $W$ and same $b$).
+It produces <b>exact</b> same output with our own hand crafted model. Notice that it is because we start both
+models from the same initial random starting point (same $W$ and same $b$) using the same <b>learning rate</b>.
 </p>
 
 # CODE
@@ -696,7 +885,7 @@ t_A3 = tf.sigmoid(t_Z3)
 
 t_Loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits = t_Z3,  labels = t_Y))
 
-train = tf.train.GradientDescentOptimizer(0.3).minimize(t_Loss)
+train = tf.train.GradientDescentOptimizer(ALPHA).minimize(t_Loss)
 init = tf.global_variables_initializer()
 
 with tf.Session() as session:
@@ -708,10 +897,6 @@ with tf.Session() as session:
 
       if ttloss < 0.02:
         break
-
-   print(session.run([t_A3], feed_dict={t_X:X, t_Y:Y})[0])
-   print(Y)
-
 
 plt.grid()
 plt.plot(losses)
