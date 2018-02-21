@@ -27,11 +27,11 @@ import collections
 
 np.set_printoptions(precision=3, suppress=True)
 
-X = np.array([[ 0.65,  -0.,    -0.75,   1.299, -0.46,  -1.299, -0.,     0.46,   0.46,  -1.299,
- 		 -0.46,   0.,     0.75,   1.299, -0.65,   1.5,  -1.5,    0.75,  -0.75,   0.   ],
- 	      [ 0.,    -0.65,  -1.299,  0.75,  -0.46,  -0.75,  -1.5,  0.46,  -0.46,   0.75,
-  		 0.46,  0.65,  -1.299, -0.75,   0.,   0.,   0.,  1.299,  1.299,  1.5  ]])
-Y = np.array([[ 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1]])
+X = np.array([[0.65, 0, -0.75, 1.299, -0.46, -1.299, 0, 0.46, 0.46, -1.299,
+ 	       -0.46, 0,  0.75, 1.299, -0.65, 1.5, -1.5, 0.75, -0.75, 0],
+ 	      [0, -0.65, -1.299, 0.75, -0.46, -0.75, -1.5, 0.46, -0.46, 0.75,
+               0.46, 0.65, -1.299, -0.75, 0, 0, 0, 1.299, 1.299, 1.5]])
+Y = np.array([[0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1]])
 
 colormap = np.array(['r', 'g'])
 
@@ -65,16 +65,20 @@ self driving cars, etc.  This is a very simple neural network in terms of number
 number of neurons it contains.
 </p>
 
+<p>
+It's basically a Logistic Regression (or Softmax Regression) with <b>more layers</b>.
+</p>
+
 <h1>Computation Graph</h1>
 
 <p>
-Here is a visual representation of our model:
+Here is the visual representation of our model:
 </p>
 
 <img class="static_image" style="width: 800px;" src="../static_images/image006.png"/>
 
 <p>
-and decide if $A^{(3)} > 0.5$ four our <b>final prediction</b>.
+and decide if $A^{(3)} > 0.5$ for our <b>final prediction</b>.
 </p>
 
 <h1>Feed-forward Phase</h1>
@@ -179,7 +183,7 @@ We are using sigmoid function as the activation $g()$ function as we used before
 </p>
 
 <p>
-Let's try to apply this using an <b>initial</b> random set of weights and bias.
+Let's try to apply the above equations using an <b>initial</b> random set of weights and bias.
 </p>
 
 # CODE
@@ -231,7 +235,7 @@ red and green points. These are called the <b>parameters</b> of our model.
 
 <p>
 We want to find parameters that minimizes some definition of a <b>cost function</b>. We will use the same
-cost function we have derived before:
+cost function we have used before in Logistic Regression and Softmax Regression:
 </p>
 
 $$L = - \sum_{i=1}^{M} Y_{i} log( A^{(3)}_{i} ) + (1-Y_{i}) log( 1 - A^{(3)}_{i}  )$$
@@ -241,7 +245,7 @@ Please see previous lectures if you are interested understanding how we derived 
 </p>
 
 <p>
-If we add our <b>Log Loss</b> to our computation graph:
+If we add our <b>loss</b> to our computation graph:
 </p>
 
 <img class="static_image" style="width: 800px;" src="../static_images/image007.png"/>
@@ -249,24 +253,41 @@ If we add our <b>Log Loss</b> to our computation graph:
 <h1>Backpropagation</h1>
 
 <p>
-We need Backpropagation to calculate derivatives so that we can use <b>Gradient Descent</b>.
-In order to do gradient descent, we need to calculate the the derivate of loss w.r.t.
-each parameter in our model. i.e.,
+Now, we are going to have some <b>fun</b>.
 </p>
+
+<p>
+Backprop is probably one of the most <b>fundamental</b> algorithms/techniques in Deep Learning.
+In my opinion, mastering backprop is curicial to be able to
+(1) fully understand deep learing techniques and (2) to be able to contribute new approaches in the field.
+</p>
+
+<p>
+Backpropagation is simply calculating derivatives of loss w.r.t. each parameter in our model.
+We need this information because we need to feed the derivatives to <b>Gradient Descent</b>.
+The parameters of the model we want to compute with backprop is:
+</p>
+
 
 $$
 \frac{dL}{dW^{(i)}}, \quad \frac{dL}{db^{(i)}}
 $$
 
 <p>
-We will need to use <b>chain rule</b> to get there. The direction we apply chain rule will be
-the opposite direction to the feed forward case.
+We need to use <b>chain rule</b>, <b>iteratively</b>, to get there. The direction we apply chain rule will be
+the opposite direction to the feed forward direction. In fact the name backpropagation
+comes from the fact that we propagate the error (well actually the derivatives, really)
+through backwards (compared to the feed-forward direction) in a step by step manner.
+</p>
+
+<p>
+Here is our updated computation graph after we add the Backprop details.
 </p>
 
 <img class="static_image" style="width: 800px;" src="../static_images/image008.png"/>
 
 <p>
-We remember that:
+Recall that we already calculated the first step of derivatives:
 </p>
 
 $$
@@ -274,12 +295,13 @@ $$
 $$
 
 <p>
-from the previous lectures.
+in Logistic Regression tutorial. Notice that we are using <b>exactly</b> the same loss function.
+(Both Logistic Regression and the model discussed in this tutorial is a binary classification task.)
 </p>
 
 <p>
 Let's try to go one step further and calculate $\frac{dL}{dW^{(3)}}$ by keeping in mind that
-we already know $\frac{dL}{dZ^{(3)}}$.
+we already know $\frac{dL}{dZ^{(3)}}$. (This sentence mimicks why we need <b>Chain Rule</b>)
 </p>
 
 <p>
@@ -335,7 +357,7 @@ $$
 $$
 
 <p>
-Let's look this equation very carefully. Our question is, again: "How much $Z^{(3)}$ will be affected if we
+Let's look this equation very carefully. Our simpler task for now is: "How much $Z^{(3)}$ will be affected if we
 play with $W^{(3)}$?", i.e.,
 </p>
 
@@ -344,7 +366,11 @@ $$
 $$
 
 <p>
-It seems obvious <b>visually</b> that if we change, say, $W^{(3)}_1$, $Z^{(3)}$ will change proportional to $A^{(3)}_1$.
+After finding out what the above is, we will extend it and find: $\frac{dL}{dW^{(3)}}$ using the Chain Rule.
+</p>
+
+<p>
+It seems obvious <b>visually</b> that if we change, say, $W^{(3)}_1$, $Z^{(3)}$ will change proportional to $A^{(2)}_1$.
 Notice that we are assuming that $A^{(2)}$ and $b^{(3)}$ is fixed and frozen. Using similar logic for the other items
 of $W^{(3)}$, we can conclude:
 </p>
@@ -365,43 +391,27 @@ $$
 To calculate $\frac{dL}{dW^{(3)}}$, using <b>matrix operations</b>:
 </p>
 
+
 $$
+\frac{dL}{dW3}
+=
 \begin{matrix}
-(A^{(2)})\\
-\begin{bmatrix}
-0   &  0  & ... &  0  \\
-0   &  0  & ... &  0  \\
-0   &  0  & ... &  0  \\
-\end{bmatrix}_{3 \times 20}
-\end{matrix}
-
-\stackrel{\text{broadcasting}}{\circ}
-
-\begin{matrix}
-(\frac{dL}{dZ^{(3)}})\\
+(\frac{dL}{dZ^{(3)}}) \\
 \begin{bmatrix}
 0   &  0  & ... &  0  \\
 \end{bmatrix}_{1 \times 20}
 \end{matrix}
 
+\begin{matrix}
+(A^{(2)}.T) \\
+\begin{bmatrix}
+0   &  0   &  0  \\
+0   &  0   &  0  \\
+\vdots   &  \vdots   &  \vdots  \\
+0   &  0   &  0  \\
+\end{bmatrix}_{20 \times 3}
+\end{matrix}
 =
-
-\begin{bmatrix}
-0   &  0  & ... &  0  \\
-0   &  0  & ... &  0  \\
-0   &  0  & ... &  0  \\
-\end{bmatrix}_{3 \times 20}
-
-\stackrel{\text{average}}{\rightarrow}
-
-\begin{bmatrix}
-0  \\
-0  \\
-0  \\
-\end{bmatrix}_{3 \times 1}
-
-\stackrel{\text{transpose}}{\rightarrow}
-
 \begin{matrix}
 (\frac{dL}{dW^{(3)}}) \\
 \begin{bmatrix}
@@ -659,7 +669,7 @@ def get_loss_numerically_stable(Y, Z3):
 def get_gradients(Z1, A1, Z2, A2, Z3, A3, Y):
   dZ3 = A3 - Y  # size (1x20)
 
-  dW3 = (1.0/Y.size) * np.sum(dZ3 * A2, axis = 1, keepdims = True).T  # size (1x3)
+  dW3 = (1.0/Y.size) * np.matmul(dZ3, A2.T)  # size (1x3)
   db3 = (1.0/Y.size) * np.sum(dZ3, axis = 1, keepdims = True).T  # size (1x1)
 
   dA2 = np.matmul(W3.T, dZ3)  # size (3x20)
