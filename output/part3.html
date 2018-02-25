@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 3: Building a Simple Neural Network <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: February 20 2018</center><p>
+<center>Last updated: February 24 2018</center><p>
 "Truth is ever to be found in the simplicity, and not in the multiplicity and confusion of things."
 -- Sir Isaac Newton
 </p>
@@ -79,7 +79,7 @@ points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image000.png"/><p>
+<div class="executed_in">(Executed in 0.580 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
 In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
 or <b>green</b>. (In this tutorial 0.0 means red and 1.0 means green.)
 </p>
@@ -239,9 +239,9 @@ Let's try to apply the above equations using an <b>initial</b> random set of wei
 <span class="k">print</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">A3</span><span class="p">)</span>
 </pre></div>
-<div class="code_stdout"><pre>[[0 0 1 1 0 1 1 0 0 1 0 0 1 1 0 1 1 1 1 1]]
-[[ 0.784  0.77   0.756  0.795  0.767  0.756  0.762  0.787  0.778  0.77
-   0.776  0.784  0.773  0.784  0.769  0.792  0.76   0.795  0.781  0.79 ]]
+<div class="executed_in">(Executed in 0.003 seconds.)</div><div class="code_stdout"><pre>[[0 0 1 1 0 1 1 0 0 1 0 0 1 1 0 1 1 1 1 1]]
+[[ 0.728  0.712  0.697  0.742  0.71   0.698  0.701  0.732  0.72   0.718
+   0.723  0.73   0.712  0.725  0.714  0.736  0.705  0.743  0.731  0.739]]
 </pre></div><p>
 Above we print the predictions for a random initial set of weights and bias. We are <b>randomly
 initializing</b> weights and bias and feeding $X$ to our random initial model. As you can see,
@@ -400,7 +400,7 @@ of $W^{(3)}$, we can conclude:
 </p>
 
 $$
-\frac{dZ^{(3)}}{dW^{(3)}} = A^{(2)}
+\frac{dZ^{(3)}}{dW^{(3)}} = A^{(2)}.T
 $$
 
 <p>
@@ -412,62 +412,19 @@ $$
 $$
 
 <p>
-To calculate $\frac{dL}{dW^{(3)}}$, using <b>matrix operations</b>:
+To finalize the calculation of $\frac{dL}{dW^{(3)}}$, <b>for one sample</b>:
 </p>
 
-
 $$
-\frac{dL}{dW3}
-=
-\begin{matrix}
-(\frac{dL}{dZ^{(3)}}) \\
-\begin{bmatrix}
-0   &  0  & ... &  0  \\
-\end{bmatrix}_{1 \times 20}
-\end{matrix}
-
-\begin{matrix}
-(A^{(2)}.T) \\
-\begin{bmatrix}
-0   &  0   &  0  \\
-0   &  0   &  0  \\
-\vdots   &  \vdots   &  \vdots  \\
-0   &  0   &  0  \\
-\end{bmatrix}_{20 \times 3}
-\end{matrix}
-=
-\begin{matrix}
-(\frac{dL}{dW^{(3)}}) \\
-\begin{bmatrix}
-0 & 0 & 0 \\
-\end{bmatrix}_{1 \times 3}
-\end{matrix}
+\frac{dL}{dW^{(3)}} = \frac{dL}{dZ^{(3)}} \frac{dZ^{(3)}}{dW^{(3)}}
 $$
 
-or in summary, and high-level view:
-
-$$
-\frac{dL}{dZ^{(3)}} \frac{dZ^{(3)}}{dW^{(3)}} = \frac{dL}{dW^{(3)}}
-$$
-
+<p>
 and similarly for $\frac{dL}{db^{(3)}}$:
+</p>
 
 $$
-\begin{matrix}
-(\frac{dL}{dZ^{(3)}}) \\
-\begin{bmatrix}
-0   &  0  & ... &  0  \\
-\end{bmatrix}_{1 \times 20}
-\end{matrix}
-
-\stackrel{\text{average}}{\rightarrow}
-
-\begin{matrix}
-(\frac{dL}{db^{(3)}}) \\
-\begin{bmatrix}
-0  \\
-\end{bmatrix}_{1 \times 1}
-\end{matrix}
+\frac{dL}{db^{(3)}} = \frac{dL}{dZ^{(3)}}
 $$
 
 <p>
@@ -481,44 +438,19 @@ In order to calculate them, we need $\frac{dL}{dA^{(2)}}$ and $\frac{dL}{dZ^{(2)
 </p>
 
 <p>
-Looking to the same figure above visually, and using a similar logic, it looks obvious:
+Looking to the same figure above visually, and using a similar logic, it looks obvious <b>for one sample</b>:
 </p>
 
 $$
-\frac{dZ^{(3)}}{dA^{(2)}} = W^{(3)}
+\frac{dZ^{(3)}}{dA^{(2)}} = W^{(3)}.T
 $$
 
 <p>
-Again, assuming $W^{(3)}$ and $b^{(3)}$ is fixed and frozen.
+To finalize the calculation of $\frac{dL}{dA^{(2)}}$:
 </p>
 
 $$
-\begin{matrix}
-(W^{(3)}.T)\\
-\begin{bmatrix}
-0   \\
-0   \\
-0   \\
-\end{bmatrix}_{3 \times 1}
-\end{matrix}
-
-\begin{matrix}
-(\frac{dL}{dZ^{(3)}})\\
-\begin{bmatrix}
-0   &  0  & ... &  0  \\
-\end{bmatrix}_{1 \times 20}
-\end{matrix}
-
-=
-
-\begin{matrix}
-(\frac{dL}{dA^{(2)}}) \\
-\begin{bmatrix}
-0   &  0  & ... &  0  \\
-0   &  0  & ... &  0  \\
-0   &  0  & ... &  0  \\
-\end{bmatrix}_{3 \times 20}
-\end{matrix}
+\frac{dL}{dA^{(2)}} = \frac{dL}{dZ^{(3)}} \frac{dZ^{(3)}}{dA^{(2)}}
 $$
 
 <p>
@@ -532,6 +464,7 @@ $$
 
 <p>
 Now, with knowing $\frac{dL}{dZ2}$, we are set to calculate $\frac{dL}{dW2}$ and $\frac{dL}{db2}$.
+Here is how we compute $Z^{(2)}$:
 </p>
 
 $$
@@ -579,7 +512,7 @@ $$
 $$
 
 <p>
-Now, we are interested to know:
+It is easy to observe:
 </p>
 
 $$
@@ -608,56 +541,60 @@ $$
 $$
 
 <p>
-Now, I claim that for one element:
+Applying the chain rule, we should do something like:
+</p>
+
+$$
+\frac{dL}{dW^{(2)}} = \sum_{i=1}^{3} \frac{dL}{dZ^{(2)}_i} \frac{dZ^{(2)}_i}{dW^{(2)}}
+$$
+
+<p>
+which is a more fancy way of writing:
 </p>
 
 $$
 \frac{dL}{dW^{(2)}} =
 
-\begin{matrix}
-(\frac{dL}{dZ^{(2)}}.T) \\
+\frac{dL}{dZ^{(2)}_1}
 \begin{bmatrix}
-0 & 0 & 0
+  & A^{(1)}.T & \\
+0 & 0 & 0 \\
+0 & 0 & 0 \\
 \end{bmatrix}
-\\
-\\
-\\
-\mbox{}
-\end{matrix}
-
++
+\frac{dL}{dZ^{(2)}_2}
 \begin{bmatrix}
-& A^{(1)}.T & \\
-& A^{(1)}.T & \\
-& A^{(1)}.T & \\
+0 & 0 & 0 \\
+  & A^{(1)}.T & \\
+0 & 0 & 0 \\
+\end{bmatrix}
++
+\frac{dL}{dZ^{(2)}_3}
+\begin{bmatrix}
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+  & A^{(1)}.T & \\
 \end{bmatrix}
 
 $$
 
 <p>
-And, finally, using matrix operations:
+which is idential to:
 </p>
 
 $$
-\frac{dL}{dW2}
-=
-\begin{matrix}
-(\frac{dL}{dZ^{(2)}}) \\
-\begin{bmatrix}
-0   &  0  & ... &  0  \\
-0   &  0  & ... &  0  \\
-0   &  0  & ... &  0  \\
-\end{bmatrix}_{3 \times 20}
-\end{matrix}
+\frac{dL}{dW^{(2)}} =
 
-\begin{matrix}
-(A1.T) \\
 \begin{bmatrix}
-0   &  0   &  0  \\
-0   &  0   &  0  \\
-\vdots   &  \vdots   &  \vdots  \\
-0   &  0   &  0  \\
-\end{bmatrix}_{20 \times 3}
-\end{matrix}
+\\
+ \frac{dL}{dZ^{(2)}} \\
+\\
+\end{bmatrix}
+
+\begin{bmatrix}
+ A^{(1)}.T \\
+\end{bmatrix}
+
 $$
 
 <p>
@@ -687,11 +624,11 @@ Let's apply the <b>backprop</b> altogether!
                      <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">Z3</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">Z3</span><span class="p">))))</span>
   <span class="k">return</span> <span class="n">loss</span>
 
-<span class="k">def</span> <span class="nf">get_gradients</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">Z3</span><span class="p">,</span> <span class="n">A3</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_gradients_matrix_ops</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">Z3</span><span class="p">,</span> <span class="n">A3</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
   <span class="n">dZ3</span> <span class="o">=</span> <span class="n">A3</span> <span class="o">-</span> <span class="n">Y</span>  <span class="c1"># size (1x20)</span>
 
   <span class="n">dW3</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">Y</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">dZ3</span><span class="p">,</span> <span class="n">A2</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>  <span class="c1"># size (1x3)</span>
-  <span class="n">db3</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">Y</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dZ3</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># size (1x1)</span>
+  <span class="n">db3</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">Y</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dZ3</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>  <span class="c1"># size (1x1)</span>
 
   <span class="n">dA2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">W3</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">dZ3</span><span class="p">)</span>  <span class="c1"># size (3x20)</span>
   <span class="n">dZ2</span> <span class="o">=</span> <span class="n">dA2</span> <span class="o">*</span> <span class="p">(</span><span class="n">A2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">A2</span><span class="p">))</span> <span class="c1"># size (3x20)</span>
@@ -704,6 +641,52 @@ Let's apply the <b>backprop</b> altogether!
 
   <span class="n">dW1</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">Y</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">dZ1</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>  <span class="c1"># size (3x2)</span>
   <span class="n">db1</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">Y</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dZ1</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span> <span class="c1"># size (3x1)</span>
+
+  <span class="k">return</span> <span class="n">dW1</span><span class="p">,</span> <span class="n">db1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">db2</span><span class="p">,</span> <span class="n">dW3</span><span class="p">,</span> <span class="n">db3</span>
+
+<span class="k">def</span> <span class="nf">get_gradients_loops</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">Z3</span><span class="p">,</span> <span class="n">A3</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+  <span class="n">dZ3</span> <span class="o">=</span> <span class="n">A3</span> <span class="o">-</span> <span class="n">Y</span>  <span class="c1"># size (1x20)</span>
+
+  <span class="n">dW3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+  <span class="n">db3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="n">A2</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">dz3</span> <span class="o">=</span> <span class="n">dZ3</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">dW3</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">a2</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">dz3</span><span class="p">)</span>
+    <span class="n">db3</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">dz3</span>
+
+  <span class="n">dA2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">dz3</span> <span class="o">=</span> <span class="n">dZ3</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">dA2</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="n">W3</span> <span class="o">*</span> <span class="n">dz3</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+  <span class="n">dZ2</span> <span class="o">=</span> <span class="n">dA2</span> <span class="o">*</span> <span class="p">(</span><span class="n">A2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">A2</span><span class="p">))</span> <span class="c1"># size (3x20)</span>
+
+  <span class="n">dW2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+  <span class="n">db2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+  <span class="n">dW2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+  <span class="n">db2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="n">A1</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">dz2</span> <span class="o">=</span> <span class="n">dZ2</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">dW2</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">dz2</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">db2</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">dz2</span>
+
+  <span class="n">dA1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">dz2</span> <span class="o">=</span> <span class="n">dZ2</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">dA1</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="n">W2</span> <span class="o">*</span> <span class="n">dz2</span><span class="p">)</span>
+
+  <span class="n">dZ1</span> <span class="o">=</span> <span class="n">dA1</span> <span class="o">*</span> <span class="p">(</span><span class="n">A1</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">A1</span><span class="p">))</span> <span class="c1"># size (3x20)</span>
+
+  <span class="n">dW1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+  <span class="n">db1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">dz1</span> <span class="o">=</span> <span class="n">dZ1</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">dW2</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">dz1</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">db2</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">dz1</span>
 
   <span class="k">return</span> <span class="n">dW1</span><span class="p">,</span> <span class="n">db1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">db2</span><span class="p">,</span> <span class="n">dW3</span><span class="p">,</span> <span class="n">db3</span>
 
@@ -725,7 +708,8 @@ Let's apply the <b>backprop</b> altogether!
 
   <span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">get_loss_numerically_stable</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">Z3</span><span class="p">)</span>
 
-  <span class="n">dW1</span><span class="p">,</span> <span class="n">db1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">db2</span><span class="p">,</span> <span class="n">dW3</span><span class="p">,</span> <span class="n">db3</span> <span class="o">=</span> <span class="n">get_gradients</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">Z3</span><span class="p">,</span> <span class="n">A3</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+  <span class="n">dW1</span><span class="p">,</span> <span class="n">db1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">db2</span><span class="p">,</span> <span class="n">dW3</span><span class="p">,</span> <span class="n">db3</span> <span class="o">=</span> <span class="n">get_gradients_matrix_ops</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">Z3</span><span class="p">,</span> <span class="n">A3</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+  <span class="c1"># dW1, db1, dW2, db2, dW3, db3 = get_gradients_loops(Z1, A1, Z2, A2, Z3, A3, Y)</span>
 
   <span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">W3</span><span class="p">,</span> <span class="n">b3</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">W3</span><span class="p">,</span> <span class="n">b3</span><span class="p">,</span> <span class="n">dW1</span><span class="p">,</span> <span class="n">db1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">db2</span><span class="p">,</span> <span class="n">dW3</span><span class="p">,</span> <span class="n">db3</span><span class="p">,</span> <span class="n">ALPHA</span><span class="p">)</span>
   <span class="n">m</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">W3</span><span class="p">,</span> <span class="n">b3</span><span class="p">)</span>
@@ -748,7 +732,7 @@ Let's apply the <b>backprop</b> altogether!
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image001.png"/><p>
+<div class="executed_in">(Executed in 0.537 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><p>
 Let's see our <b>inferences</b> on the same points using our classifier.
 We are doing pretty good on inference (100%).
 </p>
@@ -756,10 +740,131 @@ We are doing pretty good on inference (100%).
 <span class="k">print</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">A3</span><span class="p">)</span>
 </pre></div>
-<div class="code_stdout"><pre>[[0 0 1 1 0 1 1 0 0 1 0 0 1 1 0 1 1 1 1 1]]
-[[ 0.02   0.043  0.995  0.997  0.045  0.995  0.995  0.017  0.012  0.978
-   0.051  0.024  0.965  0.99   0.019  0.996  0.975  0.998  0.982  0.973]]
-</pre></div><h1> Decision Boundary </h1>
+<div class="executed_in">(Executed in 0.001 seconds.)</div><div class="code_stdout"><pre>[[0 0 1 1 0 1 1 0 0 1 0 0 1 1 0 1 1 1 1 1]]
+[[ 0.012  0.034  0.988  0.995  0.017  0.979  0.981  0.033  0.036  0.979
+   0.019  0.017  0.983  0.973  0.048  0.987  0.982  0.996  0.984  0.995]]
+</pre></div><h1>Backpropagation using Matrix Operations</h1>
+
+Now, we will try to make things faster by applying matrix operations to do the backprop.
+We will eliminate the inside for loops by doing this.
+
+<p>
+To calculate $\frac{dL}{dW^{(3)}}$, using <b>matrix operations</b>:
+</p>
+
+$$
+\frac{dL}{dW3}
+=
+\begin{matrix}
+(\frac{dL}{dZ^{(3)}}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{1 \times 20}
+\end{matrix}
+
+\begin{matrix}
+(A^{(2)}.T) \\
+\begin{bmatrix}
+0   &  0   &  0  \\
+0   &  0   &  0  \\
+\vdots   &  \vdots   &  \vdots  \\
+0   &  0   &  0  \\
+\end{bmatrix}_{20 \times 3}
+\end{matrix}
+=
+\begin{matrix}
+(\frac{dL}{dW^{(3)}}) \\
+\begin{bmatrix}
+0 & 0 & 0 \\
+\end{bmatrix}_{1 \times 3}
+\end{matrix}
+$$
+
+and similarly for $\frac{dL}{db^{(3)}}$:
+
+$$
+\begin{matrix}
+(\frac{dL}{dZ^{(3)}}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{1 \times 20}
+\end{matrix}
+
+\stackrel{\text{average}}{\rightarrow}
+
+\begin{matrix}
+(\frac{dL}{db^{(3)}}) \\
+\begin{bmatrix}
+0  \\
+\end{bmatrix}_{1 \times 1}
+\end{matrix}
+$$
+
+<p>
+Similarly, using <b>matrix operations</b>: (Again, assuming $W^{(3)}$ and $b^{(3)}$ is fixed and frozen.)
+</p>
+
+$$
+\frac{dL}{dA^{(2)}} =
+\begin{matrix}
+(W^{(3)}.T)\\
+\begin{bmatrix}
+0   \\
+0   \\
+0   \\
+\end{bmatrix}_{3 \times 1}
+\end{matrix}
+
+\begin{matrix}
+(\frac{dL}{dZ^{(3)}})\\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{1 \times 20}
+\end{matrix}
+
+=
+
+\begin{matrix}
+(\frac{dL}{dA^{(2)}}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{3 \times 20}
+\end{matrix}
+$$
+
+<p>
+And, finally, using matrix operations:
+</p>
+
+$$
+\frac{dL}{dW2}
+=
+\begin{matrix}
+(\frac{dL}{dZ^{(2)}}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{3 \times 20}
+\end{matrix}
+
+\begin{matrix}
+(A1.T) \\
+\begin{bmatrix}
+0   &  0   &  0  \\
+0   &  0   &  0  \\
+\vdots   &  \vdots   &  \vdots  \\
+0   &  0   &  0  \\
+\end{bmatrix}_{20 \times 3}
+\end{matrix}
+$$
+
+
+
+
+<h1> Decision Boundary </h1>
 
 <p>
 Let's try to visualize the decision boundary that error final classifier learns.
@@ -800,7 +905,7 @@ Thanks to our non-linear sigmoid function. (Please see Exercise 1)
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image002.png"/><p>
+<div class="executed_in">(Executed in 0.196 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/><p>
 Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
 is one dimensional and between $[0,1]$. If it is $0.0$ it means we are classifying the point confidently as
 red and if it is $1.0$ we are very confident on green.
@@ -858,7 +963,7 @@ As you may guess, it should start from a random point and get smarter in each st
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 3.956 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation000.mp4" type="video/mp4">
 </video><p>
 As you can see, it starts from a random classifier that does not seem to be working well in the
@@ -925,7 +1030,7 @@ models from the same initial random starting point (same $W$ and same $b$) using
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image003.png"/>
+<div class="executed_in">(Executed in 3.634 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/>
 <h1>Exercises</h1>
 <ol>
   <li> We claim that the decision boundary of the 3-layer simple neural network as it explained

@@ -26,6 +26,10 @@ body {
   background-color: #f0f0f0;
 }
 
+.executed_in {
+  color: green;
+}
+
 .generated_image, .generated_video {
   display: block;
   margin: auto;

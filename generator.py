@@ -75,6 +75,10 @@ def add_last_updated():
 def add_stdout(text):
   return '<div class="code_stdout"><pre>{}</pre></div>'.format(text)
 
+def add_executed_in_seconds(seconds):
+  return '<div class="executed_in">(Executed in %.3f seconds.)</div>' % seconds
+
+
 def generate_code_html(source, info):
   global image_counter
   global animation_counter
@@ -82,22 +86,33 @@ def generate_code_html(source, info):
   image_name = '"images/image{:03d}.png"'.format(image_counter)
   animation_name = '"animations/animation{:03d}.mp4"'.format(animation_counter)
 
+  execution_before_time = time.time()
+
   if IMAGE_PNG in source:
     highlighted = highlight(source, PythonLexer(), FORMATTER)
     source = source.replace(IMAGE_PNG, image_name)
     exec (source, globals())
+     
+    highlighted += add_executed_in_seconds(time.time() - execution_before_time)
+
     highlighted += add_image('"../' + image_name[1:], info['width'])
     image_counter += 1
   elif ANIMATION_GIF in source:
     highlighted = highlight(source, PythonLexer(), FORMATTER)
     source = source.replace(ANIMATION_GIF, animation_name)
     exec (source, globals())
+
+    highlighted += add_executed_in_seconds(time.time() - execution_before_time)
+
     highlighted += add_animation('"../' + animation_name[1:], info['width'])
     animation_counter += 1
   elif PRINT in source:
     highlighted = highlight(source, PythonLexer(), FORMATTER)
     with stdoutIO() as s:
       exec (source, globals())
+
+    highlighted += add_executed_in_seconds(time.time() - execution_before_time)
+
     highlighted += add_stdout(s.getvalue())
 
   return highlighted

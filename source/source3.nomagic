@@ -376,7 +376,7 @@ of $W^{(3)}$, we can conclude:
 </p>
 
 $$
-\frac{dZ^{(3)}}{dW^{(3)}} = A^{(2)}
+\frac{dZ^{(3)}}{dW^{(3)}} = A^{(2)}.T
 $$
 
 <p>
@@ -388,62 +388,19 @@ $$
 $$
 
 <p>
-To calculate $\frac{dL}{dW^{(3)}}$, using <b>matrix operations</b>:
+To finalize the calculation of $\frac{dL}{dW^{(3)}}$, <b>for one sample</b>:
 </p>
 
-
 $$
-\frac{dL}{dW3}
-=
-\begin{matrix}
-(\frac{dL}{dZ^{(3)}}) \\
-\begin{bmatrix}
-0   &  0  & ... &  0  \\
-\end{bmatrix}_{1 \times 20}
-\end{matrix}
-
-\begin{matrix}
-(A^{(2)}.T) \\
-\begin{bmatrix}
-0   &  0   &  0  \\
-0   &  0   &  0  \\
-\vdots   &  \vdots   &  \vdots  \\
-0   &  0   &  0  \\
-\end{bmatrix}_{20 \times 3}
-\end{matrix}
-=
-\begin{matrix}
-(\frac{dL}{dW^{(3)}}) \\
-\begin{bmatrix}
-0 & 0 & 0 \\
-\end{bmatrix}_{1 \times 3}
-\end{matrix}
+\frac{dL}{dW^{(3)}} = \frac{dL}{dZ^{(3)}} \frac{dZ^{(3)}}{dW^{(3)}}
 $$
 
-or in summary, and high-level view:
-
-$$
-\frac{dL}{dZ^{(3)}} \frac{dZ^{(3)}}{dW^{(3)}} = \frac{dL}{dW^{(3)}}
-$$
-
+<p>
 and similarly for $\frac{dL}{db^{(3)}}$:
+</p>
 
 $$
-\begin{matrix}
-(\frac{dL}{dZ^{(3)}}) \\
-\begin{bmatrix}
-0   &  0  & ... &  0  \\
-\end{bmatrix}_{1 \times 20}
-\end{matrix}
-
-\stackrel{\text{average}}{\rightarrow}
-
-\begin{matrix}
-(\frac{dL}{db^{(3)}}) \\
-\begin{bmatrix}
-0  \\
-\end{bmatrix}_{1 \times 1}
-\end{matrix}
+\frac{dL}{db^{(3)}} = \frac{dL}{dZ^{(3)}}
 $$
 
 <p>
@@ -457,44 +414,19 @@ In order to calculate them, we need $\frac{dL}{dA^{(2)}}$ and $\frac{dL}{dZ^{(2)
 </p>
 
 <p>
-Looking to the same figure above visually, and using a similar logic, it looks obvious:
+Looking to the same figure above visually, and using a similar logic, it looks obvious <b>for one sample</b>:
 </p>
 
 $$
-\frac{dZ^{(3)}}{dA^{(2)}} = W^{(3)}
+\frac{dZ^{(3)}}{dA^{(2)}} = W^{(3)}.T
 $$
 
 <p>
-Again, assuming $W^{(3)}$ and $b^{(3)}$ is fixed and frozen.
+To finalize the calculation of $\frac{dL}{dA^{(2)}}$:
 </p>
 
 $$
-\begin{matrix}
-(W^{(3)}.T)\\
-\begin{bmatrix}
-0   \\
-0   \\
-0   \\
-\end{bmatrix}_{3 \times 1}
-\end{matrix}
-
-\begin{matrix}
-(\frac{dL}{dZ^{(3)}})\\
-\begin{bmatrix}
-0   &  0  & ... &  0  \\
-\end{bmatrix}_{1 \times 20}
-\end{matrix}
-
-=
-
-\begin{matrix}
-(\frac{dL}{dA^{(2)}}) \\
-\begin{bmatrix}
-0   &  0  & ... &  0  \\
-0   &  0  & ... &  0  \\
-0   &  0  & ... &  0  \\
-\end{bmatrix}_{3 \times 20}
-\end{matrix}
+\frac{dL}{dA^{(2)}} = \frac{dL}{dZ^{(3)}} \frac{dZ^{(3)}}{dA^{(2)}}
 $$
 
 <p>
@@ -508,6 +440,7 @@ $$
 
 <p>
 Now, with knowing $\frac{dL}{dZ2}$, we are set to calculate $\frac{dL}{dW2}$ and $\frac{dL}{db2}$.
+Here is how we compute $Z^{(2)}$:
 </p>
 
 $$
@@ -555,7 +488,7 @@ $$
 $$
 
 <p>
-Now, we are interested to know:
+It is easy to observe:
 </p>
 
 $$
@@ -584,56 +517,60 @@ $$
 $$
 
 <p>
-Now, I claim that for one element:
+Applying the chain rule, we should do something like:
+</p>
+
+$$
+\frac{dL}{dW^{(2)}} = \sum_{i=1}^{3} \frac{dL}{dZ^{(2)}_i} \frac{dZ^{(2)}_i}{dW^{(2)}}
+$$
+
+<p>
+which is a more fancy way of writing:
 </p>
 
 $$
 \frac{dL}{dW^{(2)}} =
 
-\begin{matrix}
-(\frac{dL}{dZ^{(2)}}.T) \\
+\frac{dL}{dZ^{(2)}_1}
 \begin{bmatrix}
-0 & 0 & 0
+  & A^{(1)}.T & \\
+0 & 0 & 0 \\
+0 & 0 & 0 \\
 \end{bmatrix}
-\\
-\\
-\\
-\mbox{}
-\end{matrix}
-
++
+\frac{dL}{dZ^{(2)}_2}
 \begin{bmatrix}
-& A^{(1)}.T & \\
-& A^{(1)}.T & \\
-& A^{(1)}.T & \\
+0 & 0 & 0 \\
+  & A^{(1)}.T & \\
+0 & 0 & 0 \\
+\end{bmatrix}
++
+\frac{dL}{dZ^{(2)}_3}
+\begin{bmatrix}
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+  & A^{(1)}.T & \\
 \end{bmatrix}
 
 $$
 
 <p>
-And, finally, using matrix operations:
+which is idential to:
 </p>
 
 $$
-\frac{dL}{dW2}
-=
-\begin{matrix}
-(\frac{dL}{dZ^{(2)}}) \\
-\begin{bmatrix}
-0   &  0  & ... &  0  \\
-0   &  0  & ... &  0  \\
-0   &  0  & ... &  0  \\
-\end{bmatrix}_{3 \times 20}
-\end{matrix}
+\frac{dL}{dW^{(2)}} =
 
-\begin{matrix}
-(A1.T) \\
 \begin{bmatrix}
-0   &  0   &  0  \\
-0   &  0   &  0  \\
-\vdots   &  \vdots   &  \vdots  \\
-0   &  0   &  0  \\
-\end{bmatrix}_{20 \times 3}
-\end{matrix}
+\\
+ \frac{dL}{dZ^{(2)}} \\
+\\
+\end{bmatrix}
+
+\begin{bmatrix}
+ A^{(1)}.T \\
+\end{bmatrix}
+
 $$
 
 <p>
@@ -666,11 +603,11 @@ def get_loss_numerically_stable(Y, Z3):
                      (1-Y) * (-Z3 - np.log(1 + np.exp(-Z3))))
   return loss
 
-def get_gradients(Z1, A1, Z2, A2, Z3, A3, Y):
+def get_gradients_matrix_ops(Z1, A1, Z2, A2, Z3, A3, Y):
   dZ3 = A3 - Y  # size (1x20)
 
   dW3 = (1.0/Y.size) * np.matmul(dZ3, A2.T)  # size (1x3)
-  db3 = (1.0/Y.size) * np.sum(dZ3, axis = 1, keepdims = True).T  # size (1x1)
+  db3 = (1.0/Y.size) * np.sum(dZ3, axis = 1, keepdims = True)  # size (1x1)
 
   dA2 = np.matmul(W3.T, dZ3)  # size (3x20)
   dZ2 = dA2 * (A2 * (1-A2)) # size (3x20)
@@ -683,6 +620,52 @@ def get_gradients(Z1, A1, Z2, A2, Z3, A3, Y):
 
   dW1 = (1.0/Y.size) * np.matmul(dZ1, X.T)  # size (3x2)
   db1 = (1.0/Y.size) * np.sum(dZ1, axis = 1, keepdims = True) # size (3x1)
+
+  return dW1, db1, dW2, db2, dW3, db3
+
+def get_gradients_loops(Z1, A1, Z2, A2, Z3, A3, Y):
+  dZ3 = A3 - Y  # size (1x20)
+
+  dW3 = np.zeros((1, 3))
+  db3 = np.zeros((1, 1))
+  for i in range(20):
+    a2 = A2[:, [i]]
+    dz3 = dZ3[:, [i]]
+    dW3 += (1.0/20) * (a2.T * dz3)
+    db3 += (1.0/20) * dz3
+
+  dA2 = np.zeros((3, 20))
+  for i in range(20):
+    dz3 = dZ3[:, [i]]
+    dA2[:, [i]] = (W3 * dz3).T
+
+  dZ2 = dA2 * (A2 * (1-A2)) # size (3x20)
+
+  dW2 = np.zeros((3, 3))
+  db2 = np.zeros((3, 1))
+
+  dW2 = np.zeros((3, 3))
+  db2 = np.zeros((3, 1))
+  for i in range(20):
+    a1 = A1[:, [i]]
+    dz2 = dZ2[:, [i]]
+    dW2 += (1.0/20) * dz2.T * np.tile(a1, 3).T
+    db2 += (1.0/20) * dz2
+
+  dA1 = np.zeros((3, 20))
+  for i in range(20):
+    dz2 = dZ2[:, [i]]
+    dA1[:, [i]] = (W2 * dz2)
+
+  dZ1 = dA1 * (A1 * (1-A1)) # size (3x20)
+
+  dW1 = np.zeros((3, 2))
+  db1 = np.zeros((3, 1))
+  for i in range(20):
+    x = X[:, [i]]
+    dz1 = dZ1[:, [i]]
+    dW2 += (1.0/20) * dz1.T * np.tile(x, 3).T
+    db2 += (1.0/20) * dz1
 
   return dW1, db1, dW2, db2, dW3, db3
 
@@ -704,7 +687,8 @@ for i in range(10000):
 
   L = (1.0 / 20) * get_loss_numerically_stable(Y, Z3)
 
-  dW1, db1, dW2, db2, dW3, db3 = get_gradients(Z1, A1, Z2, A2, Z3, A3, Y)
+  dW1, db1, dW2, db2, dW3, db3 = get_gradients_matrix_ops(Z1, A1, Z2, A2, Z3, A3, Y)
+  # dW1, db1, dW2, db2, dW3, db3 = get_gradients_loops(Z1, A1, Z2, A2, Z3, A3, Y)
 
   W1, b1, W2, b2, W3, b3 = gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, ALPHA)
   m = Model(W1, b1, W2, b2, W3, b3)
@@ -739,6 +723,130 @@ We are doing pretty good on inference (100%).
 Z1, A1, Z2, A2, Z3, A3 = forward_propagate(X, W1, b1, W2, b2, W3, b3)
 print(Y)
 print(A3)
+
+# HTML
+{}
+<h1>Backpropagation using Matrix Operations</h1>
+
+Now, we will try to make things faster by applying matrix operations to do the backprop.
+We will eliminate the inside for loops by doing this.
+
+<p>
+To calculate $\frac{dL}{dW^{(3)}}$, using <b>matrix operations</b>:
+</p>
+
+$$
+\frac{dL}{dW3}
+=
+\begin{matrix}
+(\frac{dL}{dZ^{(3)}}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{1 \times 20}
+\end{matrix}
+
+\begin{matrix}
+(A^{(2)}.T) \\
+\begin{bmatrix}
+0   &  0   &  0  \\
+0   &  0   &  0  \\
+\vdots   &  \vdots   &  \vdots  \\
+0   &  0   &  0  \\
+\end{bmatrix}_{20 \times 3}
+\end{matrix}
+=
+\begin{matrix}
+(\frac{dL}{dW^{(3)}}) \\
+\begin{bmatrix}
+0 & 0 & 0 \\
+\end{bmatrix}_{1 \times 3}
+\end{matrix}
+$$
+
+and similarly for $\frac{dL}{db^{(3)}}$:
+
+$$
+\begin{matrix}
+(\frac{dL}{dZ^{(3)}}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{1 \times 20}
+\end{matrix}
+
+\stackrel{\text{average}}{\rightarrow}
+
+\begin{matrix}
+(\frac{dL}{db^{(3)}}) \\
+\begin{bmatrix}
+0  \\
+\end{bmatrix}_{1 \times 1}
+\end{matrix}
+$$
+
+<p>
+Similarly, using <b>matrix operations</b>: (Again, assuming $W^{(3)}$ and $b^{(3)}$ is fixed and frozen.)
+</p>
+
+$$
+\frac{dL}{dA^{(2)}} =
+\begin{matrix}
+(W^{(3)}.T)\\
+\begin{bmatrix}
+0   \\
+0   \\
+0   \\
+\end{bmatrix}_{3 \times 1}
+\end{matrix}
+
+\begin{matrix}
+(\frac{dL}{dZ^{(3)}})\\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{1 \times 20}
+\end{matrix}
+
+=
+
+\begin{matrix}
+(\frac{dL}{dA^{(2)}}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{3 \times 20}
+\end{matrix}
+$$
+
+<p>
+And, finally, using matrix operations:
+</p>
+
+$$
+\frac{dL}{dW2}
+=
+\begin{matrix}
+(\frac{dL}{dZ^{(2)}}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{3 \times 20}
+\end{matrix}
+
+\begin{matrix}
+(A1.T) \\
+\begin{bmatrix}
+0   &  0   &  0  \\
+0   &  0   &  0  \\
+\vdots   &  \vdots   &  \vdots  \\
+0   &  0   &  0  \\
+\end{bmatrix}_{20 \times 3}
+\end{matrix}
+$$
+
+
+
+
 
 # HTML
 {}

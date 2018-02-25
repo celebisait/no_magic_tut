@@ -932,7 +932,7 @@ so that we see that the loss is decreasing.
 
 # HTML
 {}
-<h1> Calculating Derivatives using Matrix Operations </h1>
+<h1> Computing Derivatives using Matrix Operations </h1>
 
 <p>
 Recall that we are trying to convert this to matrix operations:
