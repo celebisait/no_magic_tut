@@ -578,6 +578,12 @@ We are half-way there in terms of finishing the backprop.
 </p>
 
 <p>
+We need to calcualte $\frac{dL}{dA^{(1)}}$. Let's look at $\frac{dZ^{(2)}}{dA^{(1)}}$.
+</p>
+
+
+
+<p>
 The rest of backprop derivation is left to the reader for exercise.
 </p>
 
@@ -631,26 +637,25 @@ def get_gradients_loops(Z1, A1, Z2, A2, Z3, A3, Y):
   for i in range(20):
     a2 = A2[:, [i]]
     dz3 = dZ3[:, [i]]
-    dW3 += (1.0/20) * (a2.T * dz3)
+    dW3 += (1.0/20) * (dz3 * a2.T)
     db3 += (1.0/20) * dz3
 
   dA2 = np.zeros((3, 20))
   for i in range(20):
     dz3 = dZ3[:, [i]]
-    dA2[:, [i]] = (W3 * dz3).T
+    dA2[:, [i]] = dz3 * W3.T
 
   dZ2 = dA2 * (A2 * (1-A2)) # size (3x20)
-
-  dW2 = np.zeros((3, 3))
-  db2 = np.zeros((3, 1))
 
   dW2 = np.zeros((3, 3))
   db2 = np.zeros((3, 1))
   for i in range(20):
     a1 = A1[:, [i]]
     dz2 = dZ2[:, [i]]
-    dW2 += (1.0/20) * dz2.T * np.tile(a1, 3).T
+    dW2 += (1.0/20) * dz2 * a1.T
     db2 += (1.0/20) * dz2
+
+  # here done.
 
   dA1 = np.zeros((3, 20))
   for i in range(20):
