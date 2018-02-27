@@ -581,11 +581,84 @@ We are half-way there in terms of finishing the backprop.
 We need to calcualte $\frac{dL}{dA^{(1)}}$. Let's look at $\frac{dZ^{(2)}}{dA^{(1)}}$.
 </p>
 
-
+$$
+\frac{dL}{A^{(1)}_1} = W^{(2)}_{:,1} \frac{dL}{dZ^{(2)}}.T, \quad
+\frac{dL}{A^{(1)}_2} = W^{(2)}_{:,2} \frac{dL}{dZ^{(2)}}.T, \quad
+\frac{dL}{A^{(1)}_3} = W^{(2)}_{:,3} \frac{dL}{dZ^{(2)}}.T
+$$
 
 <p>
-The rest of backprop derivation is left to the reader for exercise.
+or, equivalently:
 </p>
+
+$$
+\frac{dL}{A^{(1)}} = W^{(2)}.T \frac{dL}{dZ^{(2)}}
+$$
+
+<p>
+Now we only missing $\frac{dL}{dW^{(1)}}$ and $\frac{dL}{db^{(1)}}$. Let's look how we calculate $Z^{(1)}$:
+</p>
+
+$$
+\begin{matrix}
+(W^{(1)}) \\
+\begin{bmatrix}
+0 & 0  \\
+0 & 0  \\
+0 & 0  \\
+\end{bmatrix}
+\end{matrix}
+
+\begin{matrix}
+(X) \\
+\begin{bmatrix}
+0  \\
+0  \\
+\end{bmatrix}
+\end{matrix}
+
++
+
+\begin{matrix}
+(b^{(1)})
+\\
+\begin{bmatrix}
+0 \\
+0 \\
+0 \\
+\end{bmatrix}
+\end{matrix}
+
+=
+
+\begin{matrix}
+(Z^{(1)})
+\\
+\begin{bmatrix}
+0 \\
+0 \\
+0 \\
+\end{bmatrix}
+\end{matrix}
+$$
+
+<p>
+Now, let's look at:
+</p>
+
+$$
+\frac{dL}{dW^{(1)}_{1,:}} = \frac{dL}{dZ^{(1)}_1} X.T, \quad
+\frac{dL}{dW^{(1)}_{2,:}} = \frac{dL}{dZ^{(1)}_2} X.T, \quad
+\frac{dL}{dW^{(1)}_{3,:}} = \frac{dL}{dZ^{(1)}_3} X.T
+$$
+
+<p>
+or equivalently:
+</p>
+
+$$
+\frac{dL}{dW^{(1)}} = \frac{dL}{dZ^{(1)}} X.T
+$$
 
 <p>
 Let's apply the <b>backprop</b> altogether!
@@ -637,7 +710,7 @@ def get_gradients_loops(Z1, A1, Z2, A2, Z3, A3, Y):
   for i in range(20):
     a2 = A2[:, [i]]
     dz3 = dZ3[:, [i]]
-    dW3 += (1.0/20) * (dz3 * a2.T)
+    dW3 += (1.0/20) * np.matmul(dz3, a2.T)
     db3 += (1.0/20) * dz3
 
   dA2 = np.zeros((3, 20))
@@ -652,15 +725,13 @@ def get_gradients_loops(Z1, A1, Z2, A2, Z3, A3, Y):
   for i in range(20):
     a1 = A1[:, [i]]
     dz2 = dZ2[:, [i]]
-    dW2 += (1.0/20) * dz2 * a1.T
+    dW2 += (1.0/20) * np.matmul(dz2, a1.T)
     db2 += (1.0/20) * dz2
-
-  # here done.
 
   dA1 = np.zeros((3, 20))
   for i in range(20):
     dz2 = dZ2[:, [i]]
-    dA1[:, [i]] = (W2 * dz2)
+    dA1[:, [i]] = np.matmul(W2.T, dz2)
 
   dZ1 = dA1 * (A1 * (1-A1)) # size (3x20)
 
@@ -669,8 +740,8 @@ def get_gradients_loops(Z1, A1, Z2, A2, Z3, A3, Y):
   for i in range(20):
     x = X[:, [i]]
     dz1 = dZ1[:, [i]]
-    dW2 += (1.0/20) * dz1.T * np.tile(x, 3).T
-    db2 += (1.0/20) * dz1
+    dW1 += (1.0/20) * np.matmul(dz1, x.T)
+    db1 += (1.0/20) * dz1
 
   return dW1, db1, dW2, db2, dW3, db3
 
@@ -692,8 +763,8 @@ for i in range(10000):
 
   L = (1.0 / 20) * get_loss_numerically_stable(Y, Z3)
 
-  dW1, db1, dW2, db2, dW3, db3 = get_gradients_matrix_ops(Z1, A1, Z2, A2, Z3, A3, Y)
-  # dW1, db1, dW2, db2, dW3, db3 = get_gradients_loops(Z1, A1, Z2, A2, Z3, A3, Y)
+  # dW1, db1, dW2, db2, dW3, db3 = get_gradients_matrix_ops(Z1, A1, Z2, A2, Z3, A3, Y)
+  dW1, db1, dW2, db2, dW3, db3 = get_gradients_loops(Z1, A1, Z2, A2, Z3, A3, Y)
 
   W1, b1, W2, b2, W3, b3 = gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, ALPHA)
   m = Model(W1, b1, W2, b2, W3, b3)
@@ -848,8 +919,6 @@ $$
 \end{bmatrix}_{20 \times 3}
 \end{matrix}
 $$
-
-
 
 
 
