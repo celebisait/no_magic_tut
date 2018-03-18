@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-51676383-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-51676383-1');
+</script>
+
+<title>Part 0: Introduction and Notation</title>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    TeX: {
+       equationNumbers: { autoNumber: "AMS" },
+       TagSide: "right"
+
+    }
+  });
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<link rel="stylesheet" href="pygments.css">
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="outer">
+    <div id="inner">
+<center><h1>Part 0: Introduction and notation <span style="color: red">[Draft]</span></h1></center>
+<center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
+<center>Last updated: March 18 2018</center><p>
+"Programming is one of the most difficult branches of applied mathematics;
+the poorer mathematicians had better remain pure mathematicians."
+-- Edsger Dijkstra
+</p>
+
+<h1>Introduction</h1>
+
+<p>
+Welcome to <b>No-magic tutorials</b>!
+</p>
+
+<p>
+No-magic tutorials aim to teach Deep Learning fundamentals using first principles with a bottom-up approach.
+</p>
+
+<p>
+I call them No-magic tutorials, because I don't like the word "magic". The word "magic" is used arguably
+commonly in the area of Machine Learning/Deep learning as an escape when failing to understand
+the actual reasoning behind things. These tutorials attempt to minimize the "magic" portion that prevents
+the deep understanding of the material. I still constantly go over the tutorials again and think
+about opportunuties to make it less magic.
+</p>
+
+<p>
+The tutorials focus on the underlying math and fundamentals. They generally attempt to derive the necessary
+ML fundamentals using first principles and apply it with simple Python/Numpy. They, on the other hand, do not try to
+implement these techniques using highly efficient/parallel data structures. Most of the time, the implementation
+is close to naive.
+</p>
+
+<h1>Notation</h1>
+
+<table class="notationTable">
+   <tr>
+   	<td> $a$ </td>
+	<td> A scalar </td>
+   </tr>
+   <tr>
+   	<td> $\mathbf{a}$ </td>
+	<td> A vector </td>
+   </tr>
+   <tr>
+   	<td> $\mathbf{A}$ </td>
+	<td> A matrix </td>
+   </tr>
+   <tr>
+   	<td> $\mathbf{I}$ </td>
+	<td> An Identity matrix with dimensionality implied by context </td>
+   </tr>
+   <tr>
+   	<td> $\mathbb{A}$ </td>
+	<td> A set </td>
+   </tr>
+   <tr>
+   	<td> $\mathbb{R}$ </td>
+	<td> A set of real numbers </td>
+   </tr>
+   <tr>
+   	<td> $a_i$ </td>
+	<td> Element $i$ of vector $\mathbf{a}$, indexing starting at 1 </td>
+   </tr>
+   <tr>
+   	<td> $A_{i,j}$ </td>
+	<td> Element $(i,j)$ of matrix $\mathbf{A}$ </td>
+   </tr>
+   <tr>
+   	<td> $\mathbf{A_{i,:}}$ </td>
+	<td> Row $i$ of matrix $\mathbf{A}$ </td>
+   </tr>
+   <tr>
+   	<td> $\mathbf{A_{:,i}}$ </td>
+	<td> Column $i$ of matrix $\mathbf{A}$ </td>
+   </tr>
+   <tr>
+   	<td> $\mathbf{A}^T$ </td>
+	<td> Transpose of matrix $\mathbf{A}$ </td>
+   </tr>
+   <tr>
+   	<td> $\mathbf{A} \circ \mathbf{B}$ </td>
+	<td> Element-wise (Hadamard) product of $\mathbf{A}$ and $\mathbf{B}$</td>
+   </tr>
+   <tr>
+   	<td> $\frac{dy}{dx}$ </td>
+	<td> Derivative of $y$ with respect to $x$ </td>
+   </tr>
+   <tr>
+   	<td> $\frac{\partial y}{\partial x}$ </td>
+	<td> Partial derivative of $y$ with respect to $x$ </td>
+   </tr>
+   <tr>
+   	<td> $\nabla_{\mathbf{x}}y$ </td>
+	<td> Gradient of $y$ with respect to $\mathbf{x}$ </td>
+   </tr>
+   <tr>
+   	<td> $\nabla_{\mathbf{X}}y$ </td>
+	<td> Matrix derivatives of $y$ with respect to $\mathbf{X}$ </td>
+   </tr>
+   <tr>
+   	<td> $\frac{\partial f}{\partial \mathbf{x}}$ </td>
+	<td> Jacobian matrix $\mathbf{J} \in \mathbb{R}^{m \times n}$ of $f: \mathbb{R}^n \rightarrow \mathbb{R}^m $</td>
+   </tr>
+   <tr>
+   	<td> $P(a)$ </td>
+	<td> A probability distribution over a discrete variable $a$ </td>
+   </tr>
+   <tr>
+   	<td> $p(a)$ </td>
+	<td> A probability distribution over a continuous variable $a$ </td>
+   </tr>
+   <tr>
+   	<td> $f: \mathbb{A} \rightarrow \mathbb{B}$ </td>
+	<td> A function $f$ with domain $\mathbb{A}$ and range $\mathbb{B}$ </td>
+   </tr>
+   <tr>
+   	<td> $f \circ g$ </td>
+	<td> Composition of the functions $f$ and $g$ </td>
+   </tr>
+   <tr>
+   	<td> log $x$ </td>
+	<td> Natural logarithm of $x$ </td>
+   </tr>
+   <tr>
+   	<td> $\mathbf{X}$ </td>
+	<td> An $m \times n$ matrix with input example $\mathbf{x}^{(i)}$ in row $\mathbf{X}_{i,:}$ </td>
+   </tr>
+   <tr>
+   	<td> $\mathbf{x}^{(i)}$ </td>
+	<td> The i-th example (input) from a dataset </td>
+   </tr>
+   <tr>
+   	<td> $\mathbf{y}^{(i)}$ or $y^{(i)}$ </td>
+	<td> The target associated with $\mathbf{x}^{(i)}$ for supervised learning </td>
+   </tr>
+</table>
+
+<h1> Outline of the material </h1>
+
+<p>
+The tutorials are somehow a combination of: (1) Math, (2) Code, (3) Figures and animations.
+I was using a Jupyter Notebook before, but I wanted more customization over the content
+and switched to a simple Python script that generates HTML which essentially produces all the tutorials.
+My HTML generation script, as well as the sources for these tutorials are all in Github, but I do not
+expect anybody to use those.
+</p>
+    </div>
+</div>
+
+</body>
+</html>

@@ -795,7 +795,7 @@ lines3, = ax.plot([], [], c='black')
 ax.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
 text_box = ax.text(1.1, 1.6, 'Iteration 0', size = 16)
 
-anim = animation.FuncAnimation(fig, animate, len(W_cache), blit=True, interval=500)
+anim = animation.FuncAnimation(fig, animate, len(W_cache), blit=False, interval=500)
 anim.save('animation.mp4', writer='avconv', fps=6, codec="libx264")
 
 plt.close()
@@ -908,7 +908,7 @@ bars = ax1.bar(range(9), np.zeros(9), color='blue', align='center')
 text_box = ax1.text(6.2, 3.6, 'Iteration 0', size = 16)
 lines, = ax2.plot([], [], c='black')
 
-anim = animation.FuncAnimation(fig, animate, len(W_cache), blit=True, interval=500)
+anim = animation.FuncAnimation(fig, animate, len(W_cache), blit=False, interval=500)
 anim.save('animation.mp4', writer='avconv', fps=4, codec="libx264")
 
 plt.close()

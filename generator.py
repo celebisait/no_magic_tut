@@ -145,24 +145,38 @@ def write_one_file(input_file, output_file, title):
     f.write(output)
 
 def main():
-  with open('pygments.css', 'w') as f:
+  with open('output/pygments.css', 'w') as f:
     f.write(FORMATTER.get_style_defs('.highlight'))
+
+  input_file = 'source/source0.nomagic'
+  output_file = 'output/part0.html'
+  title = 'Part 0: Introduction and Notation'
+
+  print('Generating: %s' % title)
+
+  write_one_file(input_file, output_file, title)
 
   input_file = 'source/source1.nomagic'
   output_file = 'output/part1.html'
   title = 'Part 1: Logistic Regression'
 
-  # write_one_file(input_file, output_file, title)
+  print('Generating: %s' % title)
+
+  write_one_file(input_file, output_file, title)
 
   input_file = 'source/source2.nomagic'
   output_file = 'output/part2.html'
   title = 'Part 2: Softmax Regression'
 
-  # write_one_file(input_file, output_file, title)
+  print('Generating: %s' % title)
+
+  write_one_file(input_file, output_file, title)
 
   input_file = 'source/source3.nomagic'
   output_file = 'output/part3.html'
   title = 'Part 3: Building a Simple Neural Network'
+
+  print('Generating: %s' % title)
 
   write_one_file(input_file, output_file, title)
 

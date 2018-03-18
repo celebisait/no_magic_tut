@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 2: Softmax Regression <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: February 20 2018</center><p>
+<center>Last updated: March 18 2018</center><p>
 "What I cannot create, I do not understand."
 -- Richard Feynman
 </p>
@@ -77,7 +77,7 @@ and <b>blue</b> points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image008.png"/><p>
+<div class="executed_in">(Executed in 0.181 seconds.)</div><img class="generated_image" width="600" src="../images/image008.png"/><p>
 In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
 <b>green</b> or <b>blue</b>.
 </p>
@@ -221,8 +221,8 @@ Let's make an example:
 <span class="k">print</span> <span class="n">a</span>
 <span class="k">print</span> <span class="n">softmax</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 </pre></div>
-<div class="code_stdout"><pre>[ 1.  2.  3.]
-[ 0.09   0.245  0.665]
+<div class="executed_in">(Executed in 0.001 seconds.)</div><div class="code_stdout"><pre>[1. 2. 3.]
+[0.09  0.245 0.665]
 </pre></div><p>
 Intuitively, softmax increases/emphasizes the <b>relative difference</b> between large and small values.
 </p>
@@ -237,15 +237,15 @@ However, let's look at this:
 <span class="k">print</span> <span class="n">a</span>
 <span class="k">print</span> <span class="n">softmax</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 </pre></div>
-<div class="code_stdout"><pre>[ 1000.  2000.  3000.]
-[ nan  nan  nan]
+<div class="executed_in">(Executed in 0.001 seconds.)</div><div class="code_stdout"><pre>[1000. 2000. 3000.]
+[nan nan nan]
 </pre></div><p>
 We are getting <b>nan</b> values along with a <b>RuntimeWarning: overflow encountered in exp</b>.
 Simply because:
 </p>
 <div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1000</span><span class="p">))</span>
 </pre></div>
-<div class="code_stdout"><pre>inf
+<div class="executed_in">(Executed in 0.000 seconds.)</div><div class="code_stdout"><pre>inf
 </pre></div>Instead, we can approach it differently:
 
 $$
@@ -267,8 +267,8 @@ More practically:
 <span class="k">print</span> <span class="n">a</span>
 <span class="k">print</span> <span class="n">softmax</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 </pre></div>
-<div class="code_stdout"><pre>[ 1000.  2000.  3000.]
-[ 0.  0.  1.]
+<div class="executed_in">(Executed in 0.001 seconds.)</div><div class="code_stdout"><pre>[1000. 2000. 3000.]
+[0. 0. 1.]
 </pre></div><p>
 As you can see, we still have some numerical issues. First and second value of the softmax
 shouldn't be $0$, they should be very close $0$, but not exactly $0$. Hmmm, but this is
@@ -299,12 +299,12 @@ So, to wrap-up the Feed-Forward phase, we can finalize the forward propagation s
 <span class="k">print</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
 <span class="k">print</span><span class="p">(</span><span class="n">A</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
 </pre></div>
-<div class="code_stdout"><pre>[[ 1.  1.  0.  1.  0.  0.  0.  0.  0.  1.]
- [ 0.  0.  1.  0.  0.  1.  1.  1.  1.  0.]
- [ 0.  0.  0.  0.  1.  0.  0.  0.  0.  0.]]
-[[ 0.992  0.652  0.001  0.963  0.118  0.096  0.186  0.     0.     0.988]
- [ 0.008  0.19   0.999  0.018  0.     0.904  0.734  1.     1.     0.   ]
- [ 0.     0.158  0.     0.019  0.882  0.     0.08   0.     0.     0.012]]
+<div class="executed_in">(Executed in 0.002 seconds.)</div><div class="code_stdout"><pre>[[1. 1. 0. 1. 0. 0. 0. 0. 0. 1.]
+ [0. 0. 1. 0. 0. 1. 1. 1. 1. 0.]
+ [0. 0. 0. 0. 1. 0. 0. 0. 0. 0.]]
+[[0.992 0.652 0.001 0.963 0.118 0.096 0.186 0.    0.    0.988]
+ [0.008 0.19  0.999 0.018 0.    0.904 0.734 1.    1.    0.   ]
+ [0.    0.158 0.    0.019 0.882 0.    0.08  0.    0.    0.012]]
 </pre></div><p>
 Above we print the first 10 predictions, and they look pretty good. In fact, we have 100% accuracy.
 So, given the weights, and bias, it is pretty straight-forward to calculate the final predictions.
@@ -686,7 +686,7 @@ We will <i>learn</i> the weights using <b>Back Propagation</b>.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image009.png"/><h1> Decision Boundary </h1>
+<div class="executed_in">(Executed in 0.212 seconds.)</div><img class="generated_image" width="600" src="../images/image009.png"/><h1> Decision Boundary </h1>
 
 <p>
 So, essentially, we have 3 equations:
@@ -746,7 +746,7 @@ If we plot these three lines:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image010.png"/><p>
+<div class="executed_in">(Executed in 0.232 seconds.)</div><img class="generated_image" width="600" src="../images/image010.png"/><p>
 Above, we simply find the boundaries and plot them. The definition of the boundary is that
 the region in which the predictions are equally confident for both of the classifiers. Since
 we have three classes, there are 3 choose 2 = 3 boundaries.
@@ -791,14 +791,14 @@ As you may guess, it should start from a random point and get smarter in each st
 <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
 <span class="n">text_box</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="s1">&#39;Iteration 0&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
 
-<span class="n">anim</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">animate</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">W_cache</span><span class="p">),</span> <span class="n">blit</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">anim</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">animate</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">W_cache</span><span class="p">),</span> <span class="n">blit</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 <span class="n">anim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;animation.mp4&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;avconv&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">codec</span><span class="o">=</span><span class="s2">&quot;libx264&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 1.737 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation002.mp4" type="video/mp4">
 </video><p>
 As you can see, it starts from a random classifier that does not seem to be working well in the
@@ -841,7 +841,7 @@ step through the gradient descent iterations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image011.png"/><p>
+<div class="executed_in">(Executed in 0.236 seconds.)</div><img class="generated_image" width="600" src="../images/image011.png"/><p>
 Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
 is $\mathbf{a}$ and it is three dimensional. So, we simply convert that vector to RGB space. So, for example
 if the prediction is: $[0.98, 0.01, 0.01]$, it will be almost a perfect <b>red</b>, and so on.
@@ -896,14 +896,14 @@ and blue which gives us purple. Similar phenomena happens between other decision
 <span class="n">text_box</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">6.2</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">,</span> <span class="s1">&#39;Iteration 0&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
 <span class="n">lines</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
 
-<span class="n">anim</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">animate</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">W_cache</span><span class="p">),</span> <span class="n">blit</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">anim</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">animate</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">W_cache</span><span class="p">),</span> <span class="n">blit</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 <span class="n">anim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;animation.mp4&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;avconv&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">codec</span><span class="o">=</span><span class="s2">&quot;libx264&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<video class="generated_video" width="1000" controls>
+<div class="executed_in">(Executed in 2.902 seconds.)</div><video class="generated_video" width="1000" controls>
 <source src="../animations/animation003.mp4" type="video/mp4">
 </video><p>
 This is a nice animation that shows the progress of our parameters $W$ and $\mathbf{b}$
@@ -917,7 +917,7 @@ w_{3,1}, w_{3,2}$. We start with all $0$ values for $b_1, b_2, b_3$. Then, we st
 gradient descent. Every step we take in the gradient descent is giving us a better set of parameters
 so that we see that the loss is decreasing.
 </p>
-<h1> Calculating Derivatives using Matrix Operations </h1>
+<h1> Computing Derivatives using Matrix Operations </h1>
 
 <p>
 Recall that we are trying to convert this to matrix operations:
@@ -1128,7 +1128,7 @@ because of the initial random start of both models. (Remember that $W$ is initia
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<img class="generated_image" width="600" src="../images/image012.png"/>
+<div class="executed_in">(Executed in 0.465 seconds.)</div><img class="generated_image" width="600" src="../images/image012.png"/>
 <h1>Exercises</h1>
 <ol>
   <li>

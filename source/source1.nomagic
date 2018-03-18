@@ -23,6 +23,7 @@ points in 2-dimensional space:
 {'type': 'image', 'width': 600}
 import numpy as np
 import matplotlib.pyplot as plt
+plt.style.use('classic')
 
 X = np.array([[-0.1, -0.5, 1.3,  -0.6, -1.5, 0.2, -0.3, 0.7,  1.1,
 	       -1.0, -0.5, -1.3, -1.4, -0.9, 0.4, -0.4, 0.3],
