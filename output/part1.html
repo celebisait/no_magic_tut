@@ -76,7 +76,7 @@ points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.662 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
+<div class="executed_in">(Executed in 0.691 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
 In other words, given a point, $(x_1, x_2)$, we want to output either $0$ or $1$. (In this tutorial $0$ represents red, $1$ represents blue.)
 </p>
 
@@ -190,7 +190,7 @@ $$ g(z) = \frac{1}{1+e^{-z}} $$
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.214 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><h1>Maximum Likelihood Estimation</h1>
+<div class="executed_in">(Executed in 0.179 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><h1>Maximum Likelihood Estimation</h1>
 
 <p>
 In training, our goal is to <b>learn</b> three numbers: $w_1, w_2, b$ that best
@@ -371,7 +371,7 @@ $$
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.224 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far away than $0$ the <i>change</i>
+<div class="executed_in">(Executed in 0.172 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far away than $0$ the <i>change</i>
 gets slower.
 <h1>Applying Gradient Descent to Minimize Loss</h1>
 <div class="highlight"><pre><span></span><span class="n">ALPHA</span> <span class="o">=</span> <span class="mf">0.4</span> <span class="c1"># learning rate</span>
@@ -424,7 +424,7 @@ gets slower.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.178 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/><p>
+<div class="executed_in">(Executed in 0.140 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/><p>
 It turns out we just trained a pretty good classifier for this problem. We achieved 100% accuracy. Let's try to visualize our <b>decision boundary</b>.
 
 <b>Remember:</b> if the value is smaller than 0.5,
@@ -477,7 +477,7 @@ Now, let's see what will be the value of $x_2$ when $x_1=-1.5$ and $x_1 =1.5$.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.182 seconds.)</div><img class="generated_image" width="600" src="../images/image004.png"/><p>
+<div class="executed_in">(Executed in 0.249 seconds.)</div><img class="generated_image" width="600" src="../images/image004.png"/><p>
 We can do better. Now, let's see the decision boundary step by step as an <b>animation</b>.
 Everybody <i>loves</i> animations. Something everybody loves even more is that animations
 that you can see the source code as well.
@@ -515,7 +515,7 @@ that you can see the source code as well.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.294 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 1.679 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation000.mp4" type="video/mp4">
 </video><p>
 Let's see the decision boundary in a more <b>lazy</b> setting. Here, we simply classify
@@ -553,7 +553,7 @@ parameters step by step through the gradient descent iterations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.255 seconds.)</div><img class="generated_image" width="600" src="../images/image005.png"/><p>
+<div class="executed_in">(Executed in 0.246 seconds.)</div><img class="generated_image" width="600" src="../images/image005.png"/><p>
 Here, background <b>blue</b> means our prediction is very close to $0$ which means it is confidently
 classified as <b>red</b>. And conversely, background <b>red</b> means our prediction is very close to
 $1$ which means it is confidently classified as <b>blue</b>.
@@ -618,7 +618,7 @@ has an interesting property of being <b>convex</b>.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.511 seconds.)</div><img class="generated_image" width="900" src="../images/image006.png"/><p>
+<div class="executed_in">(Executed in 0.584 seconds.)</div><img class="generated_image" width="900" src="../images/image006.png"/><p>
 Let's see the parameters step by step through the iterations of <b>gradient descent</b>.
 We start from a random initial point and keep iterating to refine our parameters.
 </p>
@@ -672,7 +672,7 @@ We start from a random initial point and keep iterating to refine our parameters
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.495 seconds.)</div><video class="generated_video" width="900" controls>
+<div class="executed_in">(Executed in 2.767 seconds.)</div><video class="generated_video" width="900" controls>
 <source src="../animations/animation001.mp4" type="video/mp4">
 </video><h1> Applying Logistic Regression using low-level Tensorflow APIs</h1>
 
@@ -727,7 +727,7 @@ using low-level TensorFlow API:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.779 seconds.)</div><img class="generated_image" width="600" src="../images/image007.png"/><h1> References </h1>
+<div class="executed_in">(Executed in 0.683 seconds.)</div><img class="generated_image" width="600" src="../images/image007.png"/><h1> References </h1>
 
 <ol>
   <li> Andrew Ng Coursera Machine Learning course. </li>

@@ -79,7 +79,7 @@ points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.181 seconds.)</div><img class="generated_image" width="600" src="../images/image013.png"/><p>
+<div class="executed_in">(Executed in 0.180 seconds.)</div><img class="generated_image" width="600" src="../images/image013.png"/><p>
 In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
 or <b>green</b>. (In this tutorial 0.0 means red and 1.0 means green.)
 </p>
@@ -240,8 +240,8 @@ Let's try to apply the above equations using an <b>initial</b> random set of wei
 <span class="k">print</span><span class="p">(</span><span class="n">A3</span><span class="p">)</span>
 </pre></div>
 <div class="executed_in">(Executed in 0.003 seconds.)</div><div class="code_stdout"><pre>[[0 0 1 1 0 1 1 0 0 1 0 0 1 1 0 1 1 1 1 1]]
-[[0.793 0.779 0.762 0.804 0.773 0.758 0.772 0.794 0.787 0.771 0.781 0.789
-  0.785 0.795 0.774 0.802 0.761 0.802 0.783 0.794]]
+[[0.691 0.682 0.67  0.7   0.679 0.67  0.675 0.693 0.687 0.682 0.686 0.691
+  0.683 0.691 0.681 0.697 0.675 0.7   0.69  0.697]]
 </pre></div><p>
 Above we print the predictions for a random initial set of weights and bias. We are <b>randomly
 initializing</b> weights and bias and feeding $X$ to our random initial model. As you can see,
@@ -808,7 +808,7 @@ Let's apply the <b>backprop</b> altogether!
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 4.565 seconds.)</div><img class="generated_image" width="600" src="../images/image014.png"/><p>
+<div class="executed_in">(Executed in 5.809 seconds.)</div><img class="generated_image" width="600" src="../images/image014.png"/><p>
 Let's see our <b>inferences</b> on the same points using our classifier.
 We are doing pretty good on inference (100%).
 </p>
@@ -817,8 +817,8 @@ We are doing pretty good on inference (100%).
 <span class="k">print</span><span class="p">(</span><span class="n">A3</span><span class="p">)</span>
 </pre></div>
 <div class="executed_in">(Executed in 0.001 seconds.)</div><div class="code_stdout"><pre>[[0 0 1 1 0 1 1 0 0 1 0 0 1 1 0 1 1 1 1 1]]
-[[0.033 0.017 0.988 0.982 0.047 0.989 0.979 0.014 0.029 0.983 0.023 0.041
-  0.986 0.99  0.02  0.989 0.981 0.984 0.99  0.99 ]]
+[[0.039 0.027 0.988 0.989 0.041 0.984 0.983 0.017 0.016 0.987 0.042 0.026
+  0.983 0.989 0.018 0.99  0.982 0.984 0.989 0.984]]
 </pre></div><h1>Backpropagation using Matrix Operations</h1>
 
 Now, we will try to make things faster by applying matrix operations to do the backprop.
@@ -979,7 +979,7 @@ Thanks to our non-linear sigmoid function. (Please see Exercise 1)
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.246 seconds.)</div><img class="generated_image" width="600" src="../images/image015.png"/><p>
+<div class="executed_in">(Executed in 0.227 seconds.)</div><img class="generated_image" width="600" src="../images/image015.png"/><p>
 Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
 is one dimensional and between $[0,1]$. If it is $0.0$ it means we are classifying the point confidently as
 red and if it is $1.0$ we are very confident on green.
@@ -1037,7 +1037,7 @@ As you may guess, it should start from a random point and get smarter in each st
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 6.928 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 8.553 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation004.mp4" type="video/mp4">
 </video><p>
 As you can see, it starts from a random classifier that does not seem to be working well in the
@@ -1104,7 +1104,7 @@ models from the same initial random starting point (same $W$ and same $b$) using
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.058 seconds.)</div><img class="generated_image" width="600" src="../images/image016.png"/>
+<div class="executed_in">(Executed in 2.647 seconds.)</div><img class="generated_image" width="600" src="../images/image016.png"/>
 <h1>Exercises</h1>
 <ol>
   <li> We claim that the decision boundary of the 3-layer simple neural network as it explained
