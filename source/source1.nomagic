@@ -27,21 +27,21 @@ plt.style.use('classic')
 
 X = np.array([[-0.1, 1.4],
               [-0.5, -0.1],
-	      [1.3, 0.9],
-	      [-0.6, 0.4],
-	      [-1.5, 0.4],
-	      [0.2, 0.2],
-	      [-0.3, -0.4],
-	      [0.7, -0.8],
-	      [1.1,-1.5],
-	      [-1.0, 0.9],
-	      [-0.5, -1.5],
-	      [-1.3, -0.45],
-	      [-1.4, -1.2],
-	      [-0.9, -1.1],
-	      [0.4, -1.3],
-	      [-0.4, 0.6],
-	      [0.3, -0.5]])
+              [1.3, 0.9],
+              [-0.6, 0.4],
+              [-1.5, 0.4],
+              [0.2, 0.2],
+              [-0.3, -0.4],
+              [0.7, -0.8],
+              [1.1,-1.5],
+              [-1.0, 0.9],
+              [-0.5, -1.5],
+              [-1.3, -0.45],
+              [-1.4, -1.2],
+              [-0.9, -1.1],
+              [0.4, -1.3],
+              [-0.4, 0.6],
+              [0.3, -0.5]])
 
 Y = np.array([[0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1]])
 colormap = np.array(['r', 'b'])
@@ -65,11 +65,15 @@ plt.cla()
 # HTML
 {}
 <p>
-In other words, given a point, $(x_1, x_2)$, we want to output either $0$ or $1$. (In this tutorial $0$ represents red, $1$ represents blue.)
+In other words, given a point, $(x_1, x_2)$, we want to output either $0$ or $1$. 
+(In this tutorial $0$ represents red, $1$ represents blue.)
 </p>
 
 <p>
-We can use <b>Logistic Regression</b> for this problem. In Logistic Regression, we first learn <b>weights</b> ($w_1, w_2$) and <b>bias</b> ($b$). This phase is called <b>training</b>. Then we use the following formula to predict if the new point is red or blue. This phase is called <b>prediction</b> or <b>inference</b>.
+We can use <b>Logistic Regression</b> for this problem. In Logistic Regression,
+we first learn <b>weights</b> ($w_1, w_2$) and <b>bias</b> ($b$). This phase is
+called <b>training</b>. Then we use the following formula to predict if the new
+point is red or blue. This phase is called <b>prediction</b> or <b>inference</b>.
 </p>
 
 <p class="equation">
@@ -83,23 +87,26 @@ We can use <b>Logistic Regression</b> for this problem. In Logistic Regression, 
 </p>
 
 <p>
-In the above equation, $\hat{y}$ depicts our <b>guess</b> for a given label, or our <b>prediction</b>.
+In the above equation, $\hat{y}$ depicts our <b>guess</b> for a given label,
+or our <b>prediction</b>.
 </p>
 
 <p>
-Parameters of a Logistic Regression model contains <b>weights</b> ($w_1, w_2$) and <b>bias</b> ($b$).
-These parameters are <i>learned</i> with a <b>learning algorithm</b>. After they are learned, we apply
-them using a function to predict a new sample's class.
+Parameters of a Logistic Regression model contains <b>weights</b> ($w_1, w_2$) and 
+<b>bias</b> ($b$). These parameters are <i>learned</i> with a <b>learning algorithm</b>.
+After they are learned, we apply them using a function to predict a new sample's class.
 </p>
 
 <p>
-Let's make an example prediction for a new given point. Let's assume somebody already learned some weights ($W$) and bias ($b$) for us:
+Let's make an example prediction for a new given point. Let's assume somebody already
+learned some weights ($W$) and bias ($b$) for us:
 </p>
 
 $$ W = \begin{bmatrix} 6.33 \\ -4.22 \end{bmatrix}, \quad b=1.99 $$
 
 <p>
-For a new given point ($x_1, x_2$) in the two dimensional space, say, $X = \begin{bmatrix} 1.1 \\ -0.6 \end{bmatrix}$,
+For a new given point ($x_1, x_2$) in the two dimensional space, say,
+$X = \begin{bmatrix} 1.1 \\ -0.6 \end{bmatrix}$,
 we can predict the class using Equation \ref{eq:inference}.
 </p>
 
@@ -107,11 +114,11 @@ we can predict the class using Equation \ref{eq:inference}.
 {}
 sigmoid = lambda x: 1/(1+np.exp(-x))
 
-W = np.array([6.33, -4.22]) # some magical W
-x = np.array([1.1, -0.6])   # point we want to classify
+w = np.array([6.33, -4.22])   # some magical w
+x = np.array([1.1, -0.6])     # point we want to classify
 b = 1.99
 
-print sigmoid(W.dot(x) + b)
+print(sigmoid(w.dot(x) + b))
 
 # HTML
 {}
@@ -123,18 +130,19 @@ Let's try another point, $x = \begin{bmatrix} -1.2 \\ 1.0 \end{bmatrix}$.
 {}
 sigmoid = lambda x: 1/(1+np.exp(-x))
 
-W = np.array([6.33, -4.22]) # some magical W
-x = np.array([-1.2, 1.0])   # point we want to classify
+w = np.array([6.33, -4.22])   # some magical w
+x = np.array([-1.2, 1.0])     # point we want to classify
 
 b = 1.99
 
-print sigmoid(W.dot(x) + b)
+print(sigmoid(w.dot(x) + b))
 
 # HTML
 {}
 <p>
-We see that we get a value close to $1$ first and close to $0$ secondly. <b>Remember:</b> if the value is smaller than 0.5,
-it means our prediction is <b>red</b> and otherwise it is <b>blue</b>.
+We see that we get a value close to $1$ first and close to $0$ secondly.
+<b>Remember:</b> if the value is smaller than 0.5, it means our prediction
+is <b>red</b> and otherwise it is <b>blue</b>.
 </p>
 
 <h1>Computation Graph</h1>
@@ -154,14 +162,16 @@ or alternatively we can visualize the same:
 <img class="static_image" style="width: 500px;" src="../static_images/image001.png"/>
 
 <p>
-We typically see the first version of the computation graph visualization more than the second one in
-the literature. The first version looks more compact, however, I personally enjoy the second one better
-since it is more explicit in terms of the input-output at each node.
+We typically see the first version of the computation graph visualization more than the
+second one in the literature. The first version looks more compact, however, I personally
+enjoy the second one better since it is more explicit in terms of the input-output at
+each node.
 </p>
 
 <p>
-In the second representation, if there is an arrow <b>from</b> node $A$ <b>to</b> node $B$, it means $A$ is needed to
-compute $B$. It is that simple. We will dive more into computation graph internals in the following tutorials.
+In the second representation, if there is an arrow <b>from</b> node $A$ <b>to</b>
+node $B$, it means $A$ is needed to compute $B$. It is that simple. We will dive more
+into computation graph internals in the following tutorials.
 </p>
 
 <p>
@@ -270,7 +280,9 @@ Which classifier is <b><i>better</i></b>? (Classifier 1 or Classifier 2?)
 </p>
 
 <p>
-There are multiple answers for this question. One of the answers is <b>Maximum Likelihood Estimation</b> (MLE). MLE decides this question by multiplying those numbers and taking the maximum:
+There are multiple answers for this question. One of the answers is <b>Maximum 
+Likelihood Estimation</b> (MLE). MLE decides this question by multiplying those numbers and
+taking the maximum:
 
 <ul>
   <li> <b>Classifier 1</b>: $0.9 \times 0.4 \times 0.8 \simeq 0.29$ </li>
@@ -295,7 +307,8 @@ or, equivalently, we need to <b>minimize</b>:
 $$J = - \sum log P(y|x) = - \sum \left ( ylog(\hat{y}) + (1-y)log(1-\hat{y}) \right )$$
 
 <p>
-Here we use the notation $J$ for the quantity we want to minimize for <b>all samples</b>, and $L$ for <b>one sample</b>. Let's add these to our computation graph visualization:
+Here we use the notation $J$ for the quantity we want to minimize for <b>all samples</b>, and
+$L$ for <b>one sample</b>. Let's add these to our computation graph visualization:
 </p>
 
 <img class="static_image" style="width: 900px;" src="../static_images/image002.png"/>
@@ -316,7 +329,8 @@ we make a step towards to the opposite of the gradient. Hence, it is gradient <i
 In order to do gradient descent, we need the derivatives:
 </p>
 
-$$\frac{dL}{dw_1} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{dw_1}, \quad \frac{dL}{dw_2} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{dw_1}, \quad
+$$\frac{dL}{dw_1} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{dw_1}, \quad \frac{dL}{dw_2} =
+\frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{dw_1}, \quad
 \frac{dL}{db} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{db}$$
 
 <p>
@@ -331,22 +345,30 @@ Let's do some calculus:
 <img src="../static_images/evil2.png" style="width:30px; height:30px;">
 </p>
 
-$$ \frac{dL}{d\hat{y}} = \frac{d}{d\hat{y}} - \left(ylog(\hat{y}) + (1-y)log(1-\hat{y})\right) = \frac{d}{d\hat{y}} - ylog(\hat{y}) +  \frac{d}{d\hat{y}} - (1-y)log(1-\hat{y})
-  = \frac{-y}{\hat{y}} + \frac{1-y}{1-\hat{y}} $$
+$$ \frac{dL}{d\hat{y}} = \frac{d}{d\hat{y}} - \left(ylog(\hat{y}) + (1-y)log(1-\hat{y})\right) = 
+\frac{d}{d\hat{y}} - ylog(\hat{y}) +  \frac{d}{d\hat{y}} - (1-y)log(1-\hat{y}) = 
+\frac{-y}{\hat{y}} + \frac{1-y}{1-\hat{y}} $$
 
-$$ \frac{d\hat{y}}{dz} = \frac{e^{-z}}{(1+e^{-z})^2} = \frac{1 + e^{-z} - 1}{(1+e^{-z})^2} = \frac{1 + e^{-z}}{(1+e^{-z})^2} - \frac{1}{(1+e^{-z})^2} =
-\frac{1}{1+e^{-z}} - \left( \frac{1}{(1+e^{-z})^2} \right )^2 = g(z) - (g(z)) ^2 = g(z) (1-g(z)) $$
+$$ \frac{d\hat{y}}{dz} = \frac{e^{-z}}{(1+e^{-z})^2} = \frac{1 + e^{-z} - 1}{(1+e^{-z})^2} = 
+\frac{1 + e^{-z}}{(1+e^{-z})^2} - \frac{1}{(1+e^{-z})^2} =
+\frac{1}{1+e^{-z}} - \left( \frac{1}{(1+e^{-z})^2} \right )^2 = 
+g(z) - (g(z)) ^2 = g(z) (1-g(z)) $$
 
 $$
-  \frac{dz}{dw_1} = x_1, \quad \frac{dz}{dw_2} = x_2, \quad \frac{dz}{db} = 1
+\frac{dz}{dw_1} = x_1, \quad \frac{dz}{dw_2} = x_2, \quad \frac{dz}{db} = 1
 $$
 
 $$
-\frac{dL}{dz} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} = \left (  \frac{-y}{\hat{y}} + \frac{1-y}{1-\hat{y}}  \right ) \left ( \hat{y} (1-\hat{y}) \right )
-  = \frac{-y}{\hat{y}} \hat{y} (1-\hat{y}) + \frac{1-y}{1-\hat{y}} \hat{y} (1-\hat{y}) = -y (1-\hat{y}) + (1-y) \hat{y} = -y + y\hat{y} + \hat{y} - y\hat{y} = \hat{y} - y
+\frac{dL}{dz} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} = 
+\left (  \frac{-y}{\hat{y}} + \frac{1-y}{1-\hat{y}}  \right ) \left ( \hat{y} (1-\hat{y}) \right ) =
+\frac{-y}{\hat{y}} \hat{y} (1-\hat{y}) + \frac{1-y}{1-\hat{y}} \hat{y} (1-\hat{y}) = 
+-y (1-\hat{y}) + (1-y) \hat{y} = -y + y\hat{y} + \hat{y} - y\hat{y} = \hat{y} - y
 $$
 
-$$\frac{dL}{dw_1} = \frac{dL}{dz} \frac{dz}{dw_1} = (\hat{y} - y) x_1, \quad \frac{dL}{dw_2} = \frac{dL}{dz} \frac{dz}{dw_2} = (\hat{y} - y) x_2, \quad \frac{dL}{db} = \frac{dL}{dz} \frac{dz}{db} = (\hat{y} - y)$$
+$$
+\frac{dL}{dw_1} = \frac{dL}{dz} \frac{dz}{dw_1} = (\hat{y} - y) x_1, \quad \frac{dL}{dw_2} = 
+\frac{dL}{dz} \frac{dz}{dw_2} = (\hat{y} - y) x_2, \quad \frac{dL}{db} = \frac{dL}{dz} \frac{dz}{db} = (\hat{y} - y)
+$$
 
 # HTML
 {}
@@ -357,7 +379,6 @@ $$
 $$
 
 <p>Let's see how this actually looks like:</p>
-
 
 # CODE
 {'type': 'image', 'width': 600}
@@ -383,8 +404,8 @@ plt.cla()
 
 # HTML
 {}
-<p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far away than $0$ the <i>change</i>
-gets slower.
+<p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far
+away than $0$ the <i>change</i> gets slower.
 
 # HTML
 {}
@@ -413,14 +434,15 @@ losses_cache = []
 
 # some nice initial value, so that the plot looks nice.
 W = np.array([[-4.0], [29.0]])
-b = 0
+b = 0.0
 
 for i in range(20):
-   z = np.matmul(W.T, X) + b
+   z = np.matmul(W.T, X.T) + b
+
    Y_hat = sigmoid(z)
    loss = get_loss_numerically_stable(Y, z)
 
-   dw = np.matmul(X, (Y_hat - Y).T)
+   dw = np.matmul(X.T, (Y_hat - Y).T)
    db = np.sum(Y_hat - Y)
 
    W -= ALPHA * dw
@@ -491,7 +513,7 @@ def plot_decision_boundary(X, Y, W, b, path):
    xs = np.array([-2.0, 2.0])
    ys = (-W[0] * xs - b)/W[1]
 
-   plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+   plt.scatter(X[:,0], X[:,1], s=50, c=colormap[Y[0]])
    plt.plot(xs, ys, c='black')
    plt.savefig(path)
 
@@ -510,7 +532,7 @@ that you can see the source code as well.
 <img src="../static_images/heart.png" style="width:30px; height:30px;">
 </p>
 
-# CODE
+# HTML
 {'type': 'animation', 'width': 600}
 import matplotlib.animation as animation
 
@@ -534,7 +556,7 @@ def animate(i):
   return lines, text_box
 
 lines, = ax.plot([], [], c='black')
-ax.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+ax.scatter(X[:,0], X[:,1], s=50, c=colormap[Y[0]])
 text_box = ax.text(1.1, 1.6, 'Iteration 0', size = 16)
 
 anim = animation.FuncAnimation(fig, animate, len(W_cache), blit=True, interval=500)
@@ -554,7 +576,7 @@ in the final version of the classifiers parameters. On the other hand, the previ
 parameters step by step through the gradient descent iterations.
 </p>
 
-# CODE
+# HTML
 {'type': 'image', 'width': 600}
 NX = 10
 NY = 10
@@ -608,7 +630,7 @@ plug all possible values of $W$ and compute the error value for that given $w$ w
 has an interesting property of being <b>convex</b>.
 </p>
 
-# CODE
+# HTML
 {'type': 'image', 'width': 900}
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 
@@ -665,7 +687,7 @@ Let's see the parameters step by step through the iterations of <b>gradient desc
 We start from a random initial point and keep iterating to refine our parameters.
 </p>
 
-# CODE
+# HTML
 {'type': 'image', 'width': 900}
 NX = 100
 NY = 100
@@ -740,17 +762,17 @@ Here is how to train the same classifier for the above red and blue points
 using low-level TensorFlow API:
 </p>
 
-# CODE
+# HTML
 {'type': 'image', 'width': 600}
 import tensorflow as tf
 
-t_X = tf.placeholder(tf.float32, [2, None])
-t_Y = tf.placeholder(tf.float32, [1, None])
+t_X = tf.placeholder(tf.float32, [None, 2])
+t_Y = tf.placeholder(tf.float32, [None, 1])
 
 t_W = tf.Variable([[-4.0, 29.0]])
 t_b = tf.Variable(tf.zeros([1]))
 
-t_Z = tf.matmul(t_W, t_X) + t_b
+t_Z = tf.matmul(t_X, t_W) + t_b
 t_Yhat = tf.sigmoid(t_Z)
 t_Loss = tf.reduce_sum(tf.nn.sigmoid_cross_entropy_with_logits(logits = t_Z,  labels = t_Y))
 
@@ -790,4 +812,3 @@ plt.cla()
   <li> http://cs231n.github.io/ </li>
   <li> https://www.tensorflow.org/ </li>
 </ol>
-
