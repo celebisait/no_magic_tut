@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 1: Logistic Regression <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: March 18 2018</center><p>
+<center>Last updated: March 20 2018</center><p>
 "If you can't explain it to a six year old, you don't understand it yourself."
 -- Albert Einstein
 </p>
@@ -52,93 +52,129 @@ points in 2-dimensional space:
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;classic&#39;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
-<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span>  <span class="mf">1.1</span><span class="p">,</span>
-	       <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
-              <span class="p">[</span><span class="mf">1.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span>  <span class="mf">0.9</span><span class="p">,</span>  <span class="mf">0.4</span><span class="p">,</span>  <span class="mf">0.4</span><span class="p">,</span>  <span class="mf">0.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span>
-	       <span class="mf">0.9</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.45</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.3</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">]])</span>
-<span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">],</span>
+              <span class="p">[</span><span class="mf">1.3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span>
+              <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">],</span>
+              <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8</span><span class="p">],</span>
+              <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span><span class="o">-</span><span class="mf">1.5</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">1.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.45</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">1.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">0.9</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.1</span><span class="p">],</span>
+              <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.3</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span>
+              <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">]])</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="n">colormap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">])</span>
 
-<span class="k">def</span> <span class="nf">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">colormap</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">colormap</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Input 2D points&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">y</span><span class="p">])</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
-<span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">colormap</span><span class="p">,</span> <span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+<span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">colormap</span><span class="p">,</span> <span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.691 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
-In other words, given a point, $(x_1, x_2)$, we want to output either $0$ or $1$. (In this tutorial $0$ represents red, $1$ represents blue.)
+<div class="executed_in">(Executed in 0.674 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
+In other words, given a point in 2-dimensions, $\mathbf{x} = (x_1, x_2)$, we want
+to output either $0$ or $1$. (In this tutorial $0$ represents red, $1$ represents blue.)
 </p>
 
 <p>
-We can use <b>Logistic Regression</b> for this problem. In Logistic Regression, we first learn <b>weights</b> ($w_1, w_2$) and <b>bias</b> ($b$). This phase is called <b>training</b>. Then we use the following formula to predict if the new point is red or blue. This phase is called <b>prediction</b> or <b>inference</b>.
+We can use <b>Logistic Regression</b> for this problem. In Logistic Regression,
+we first learn <b>weights</b>, $\mathbf{w} = (w_1, w_2)$, and <b>bias</b>, $b$.
+This phase of learning these weights and the bias is called <b>training</b>.
+Then we use the following formula to predict if the new
+point is red or blue. This phase is called <b>prediction</b> or <b>inference</b>.
+</p>
+
+<p>
+In this tutorial, we will use the following equation to predict the class of a new point:
+</p>
+
+<p class="equation">
+\begin{equation} \label{eq:sigmoid_eq}
+a = \frac{1}{1+e^{-(w_1x_1 + w_2x_2 + b)}}
+\end{equation}
+</p>
+
+<p>
+In the above equation, we can see that $0 < a < 1$. This is a useful property
+of the <b>sigmoid</b> function. We will see what sigmoid function is in a second.
+</p>
+
+<p>
+Let's see how we are going to finalize our prediction (our guess) for a given point $\mathbf{x}$:
 </p>
 
 <p class="equation">
 \begin{equation} \label{eq:inference}
-\hat{y} =
-  \begin{cases}
-  0, & \text{if}\ \quad \frac{1}{1+e^{-(w_1x_1 + w_2x_2 + b)}} < 0.5 \\
+\text{Our prediction} = \begin{cases}
+  0, & \text{if}\ \quad a < 0.5 \\
   1, & \text{otherwise}
   \end{cases}
 \end{equation}
 </p>
 
 <p>
-In the above equation, $\hat{y}$ depicts our <b>guess</b> for a given label, or our <b>prediction</b>.
+The parameters of the Logistic Regression model are: <b>weights</b>, $\mathbf{w} = (w_1, w_2)$ and
+<b>bias</b>, $b$. These parameters are <i>learned</i> with a <b>learning algorithm</b>.
+After they are learned, we apply them using the above procedure to predict the class of a new sample.
 </p>
 
 <p>
-Parameters of a Logistic Regression model contains <b>weights</b> ($w_1, w_2$) and <b>bias</b> ($b$).
-These parameters are <i>learned</i> with a <b>learning algorithm</b>. After they are learned, we apply
-them using a function to predict a new sample's class.
+Let's make an example prediction for a new given point. Let's assume somebody already
+learned some weights, $\mathbf{w}$, and bias, $b$ for us:
 </p>
 
-<p>
-Let's make an example prediction for a new given point. Let's assume somebody already learned some weights ($W$) and bias ($b$) for us:
-</p>
-
-$$ W = \begin{bmatrix} 6.33 \\ -4.22 \end{bmatrix}, \quad b=1.99 $$
+$$ \mathbf{w} = \begin{bmatrix} 6.33 & -4.22 \end{bmatrix}, \quad b=1.99 $$
 
 <p>
-For a new given point ($x_1, x_2$) in the two dimensional space, say, $X = \begin{bmatrix} 1.1 \\ -0.6 \end{bmatrix}$,
-we can predict the class using Equation \ref{eq:inference}.
+For a new given point, $\mathbf{x} = (x_1, x_2)$, in the two dimensional space, say,
+$\mathbf{x} = \begin{bmatrix} 1.1 & -0.6 \end{bmatrix}$,
+we can predict the class using Equation \ref{eq:sigmoid_eq} and \ref{eq:inference}.
 </p>
 <div class="highlight"><pre><span></span><span class="n">sigmoid</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
 
-<span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">6.33</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.22</span><span class="p">])</span> <span class="c1"># some magical W</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6</span><span class="p">])</span>   <span class="c1"># point we want to classify</span>
-<span class="n">b</span> <span class="o">=</span> <span class="mf">1.99</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">6.33</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.22</span><span class="p">])</span>   <span class="c1"># some magical w</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mf">1.99</span>                      <span class="c1"># some magical b</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6</span><span class="p">])</span>     <span class="c1"># point we want to classify</span>
 
-<span class="k">print</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">))</span>
 </pre></div>
 <div class="executed_in">(Executed in 0.001 seconds.)</div><div class="code_stdout"><pre>0.9999897169153853
 </pre></div><p>
-Let's try another point, $x = \begin{bmatrix} -1.2 \\ 1.0 \end{bmatrix}$.
+Let's try another point, $\mathbf{x} = \begin{bmatrix} -1.2 & 1.0 \end{bmatrix}$.
 </p>
 <div class="highlight"><pre><span></span><span class="n">sigmoid</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
 
-<span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">6.33</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.22</span><span class="p">])</span> <span class="c1"># some magical W</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>   <span class="c1"># point we want to classify</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">6.33</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.22</span><span class="p">])</span>   <span class="c1"># some magical w</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mf">1.99</span>                      <span class="c1"># some magical b</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>     <span class="c1"># point we want to classify</span>
 
-<span class="n">b</span> <span class="o">=</span> <span class="mf">1.99</span>
-
-<span class="k">print</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">))</span>
 </pre></div>
 <div class="executed_in">(Executed in 0.001 seconds.)</div><div class="code_stdout"><pre>5.402552018717133e-05
 </pre></div><p>
-We see that we get a value close to $1$ first and close to $0$ secondly. <b>Remember:</b> if the value is smaller than 0.5,
-it means our prediction is <b>red</b> and otherwise it is <b>blue</b>.
+We see that we get a value close to $1$ first and close to $0$ secondly.
+<b>Remember:</b> if the value is smaller than 0.5, it means our prediction
+is <b>red</b> and otherwise it is <b>blue</b>.
 </p>
 
 <h1>Computation Graph</h1>
@@ -155,14 +191,16 @@ or alternatively we can visualize the same:
 <img class="static_image" style="width: 500px;" src="../static_images/image001.png"/>
 
 <p>
-We typically see the first version of the computation graph visualization more than the second one in
-the literature. The first version looks more compact, however, I personally enjoy the second one better
-since it is more explicit in terms of the input-output at each node.
+We typically see the first version of the computation graph visualization more than the
+second one in the literature. The first version looks more compact. However, I personally
+enjoy the second one better since it is more explicit in terms of the input-output at
+each node.
 </p>
 
 <p>
-In the second representation, if there is an arrow <b>from</b> node $A$ <b>to</b> node $B$, it means $A$ is needed to
-compute $B$. It is that simple. We will dive more into computation graph internals in the following tutorials.
+In the second representation, if there is an arrow <b>from</b> node $A$ <b>to</b>
+node $B$, it means $A$ is needed to compute $B$. It is that simple. We will dive more
+into computation graph internals in the following tutorials.
 </p>
 
 <p>
@@ -170,6 +208,12 @@ We use sigmoid function as $g(z)$ in logistic regression:
 </p>
 
 $$ g(z) = \frac{1}{1+e^{-z}} $$
+
+<p>
+We can intuitively see that $0 < g(z) < 1$ for any given $z \in \mathbb{R}$. Here is
+how $g(z)$ behaves in some useful range.
+</p>
+
 <div class="highlight"><pre><span></span><span class="n">sigmoid</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
 
 <span class="k">def</span> <span class="nf">plot_sigmoid</span><span class="p">():</span>
@@ -190,7 +234,7 @@ $$ g(z) = \frac{1}{1+e^{-z}} $$
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.179 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><h1>Maximum Likelihood Estimation</h1>
+<div class="executed_in">(Executed in 0.191 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><h1>Maximum Likelihood Estimation</h1>
 
 <p>
 In training, our goal is to <b>learn</b> three numbers: $w_1, w_2, b$ that best
@@ -206,26 +250,25 @@ Let's attempt to write a cost function for this problem.
 Let's say we have two points:
 </p>
 
-$$x = \begin{bmatrix} -0.1 \\ 1.4 \end{bmatrix}, y=0$$
+$$\mathbf{x}^{(1)} = \begin{bmatrix} -0.1 & 1.4 \end{bmatrix}, \quad y^{(1)} = 0$$
 
 <p>
 and similarly:
 </p>
 
-$$x = \begin{bmatrix} 1.3  \\ 0.9 \end{bmatrix}, y=1$$
+$$\mathbf{x}^{(2)} = \begin{bmatrix} 1.3 & 0.9 \end{bmatrix}, \quad y^{(2)} = 1$$
 
 <p>
-We want a classifier that produces very <b>high</b> $\hat{y}$ when $y=1$, and conversely
-very <b>low</b> $\hat{y}$ when $y=0$. ($\hat{y}$ represents our <b>prediction</b>, we hope that
-$\hat{y} = y$.)
+We want a classifier that produces very <b>high</b> $a$ when $y=1$, and conversely
+very <b>low</b> $a$ when $y=0$. We hope that $a$ is very close to $y$ for each sample.
 </p>
 
 <p>
 In other words,
 
 <ol>
-  <li>If $y=1$, we want to <b>maximize</b> $\hat{y}$.</li>
-  <li>If $y=0$, we want to <b>maximize</b> $1-\hat{y}$.</li>
+  <li>If $y=1$, we want to <b>maximize</b> $a$.</li>
+  <li>If $y=0$, we want to <b>maximize</b> $1-a$.</li>
 </ol>
 </p>
 
@@ -233,29 +276,34 @@ In other words,
 If we combine (1) and (2), we want to <b>maximize</b>:
 </p>
 
-$$P(y|x) = \hat{y}^y.(1-\hat{y})^{(1-y)}$$
+$$a^y.(1-a)^{(1-y)}$$
 
 <p>
 Maximizing above is equal to maximizing:
 </p>
 
-$$log(P(y|x)) = log(\hat{y}^y.(1-\hat{y})^{(1-y)}) = ylog(\hat{y}) + (1-y)log(1-\hat{y})$$
+$$ \text{log}(a^y.(1-a)^{(1-y)}) = y\text{log}(a) + (1-y) \text{log}(1-a) $$
 
 <p>
 or we want to <b>minimize</b>:
 </p>
 
-$$L(y, \hat{y}) = - \left(ylog(\hat{y}) + (1-y)log(1-\hat{y})\right)$$
+$$ \text{L} = -(y\text{log}(a) + (1-y) \text{log}(1-a)) $$
 
 <p>
-The above formula defines a cost function for only <b>one sample</b>. We call this $L$,
-and $L$ stands or <b>loss</b>. We also need a loss function for <b>multiple samples</b>
-(which we will call $J$).
+Generally, in Machine Learning we like to minimize the loss. That is why
+we changed the direction. This is by convention. We call the above $\text{L}$, which stands
+for <b>loss</b>.
+</p>
+
+<p>
+The above formula defines a cost function (or loss) for only <b>one sample</b>. We also
+need a loss function for <b>multiple samples</b> (which we will call $\text{J}$).
 </p>
 
 <p>
 Let's start by an example. Say, we have <b>three positive samples</b> and <b>two different
-classifiers</b> output the following $\hat{y}$ for those three samples:
+classifiers</b>. Here is the $a$ values for those three samples for each of the classifier:
 
 <ul>
   <li> <b>Classifier 1</b>: 0.9, 0.4, 0.8 </li>
@@ -266,7 +314,9 @@ Which classifier is <b><i>better</i></b>? (Classifier 1 or Classifier 2?)
 </p>
 
 <p>
-There are multiple answers for this question. One of the answers is <b>Maximum Likelihood Estimation</b> (MLE). MLE decides this question by multiplying those numbers and taking the maximum:
+There are multiple answers for this question. One of the answers is <b>Maximum
+Likelihood Estimation</b> (MLE). MLE decides this question by multiplying those numbers and
+taking the maximum:
 
 <ul>
   <li> <b>Classifier 1</b>: $0.9 \times 0.4 \times 0.8 \simeq 0.29$ </li>
@@ -276,43 +326,153 @@ There are multiple answers for this question. One of the answers is <b>Maximum L
 So, in this case, Classifier 2 is <b>more likely</b>. More formally, for multiple samples, MLE wants to maximize:
 </p>
 
-$$ P(Y|X) = \prod P(y|x) $$
+$$ \prod_{i=1}^{m}  a^{(i)^{y^{(i)}}} . (1-a^{(i)})^{(1-y^{(i)})} $$
 
 <p>
 this is called maximum likelihood. Maximizing the above is equal to <b>maximizing</b> below:
 </p>
 
-$$ log(P(Y|X)) = \sum log P(y|x) $$
+$$
+\begin{align*}
+ & = \text{log} \left( \prod_{i=1}^{m}  a^{(i)^{y^{(i)}}} . (1-a^{(i)})^{(1-y^{(i)})} \right ) \\
+ & = \sum_{i=1}^m \text{log} \left( a^{(i)^{y^{(i)}}} . (1-a^{(i)})^{(1-y^{(i)})} \right ) \\
+ & = \sum_{i=1}^m {y^{(i)}} \text{log} \left( a^{(i)} \right ) + (1-y^{(i)}) \text{log} \left ( 1-a^{(i)} \right )
+\end{align*}
+$$
 
 <p>
 or, equivalently, we need to <b>minimize</b>:
 </p>
 
-$$J = - \sum log P(y|x) = - \sum \left ( ylog(\hat{y}) + (1-y)log(1-\hat{y}) \right )$$
+$$
+\text{J} = - \sum_{i=1}^m {y^{(i)}} \text{log} \left( a^{(i)} \right ) + (1-y^{(i)}) \text{log} \left ( 1-a^{(i)} \right )
+$$
 
 <p>
-Here we use the notation $J$ for the quantity we want to minimize for <b>all samples</b>, and $L$ for <b>one sample</b>. Let's add these to our computation graph visualization:
+Here we use the notation $\text{J}$ for the quantity we want to minimize for <b>all samples</b>, and
+$\text{L}$ for <b>one sample</b>. Let's add these to our computation graph visualization:
 </p>
 
 <img class="static_image" style="width: 900px;" src="../static_images/image002.png"/>
 
+<p>
+We kept the computation graph simpler by only showing the Loss for one sample.
+</p>
+
 <h1>Gradient Descent</h1>
 
 <p>
-Gradient descent is probably one of the most <i>beautiful</i> algorithm ever invented, in my opinion.
+Gradient descent is probably one of the most <i>beautiful</i> algorithm ever invented.
 It is an iterative algorithm that makes the output better and better in each step. In each iteration,
 we make a step towards to the opposite of the gradient. Hence, it is gradient <i>descent</i>.
 </p>
 
 <p>
-<b>By the way</b>; "gradient" and "derivative" <i>pretty much</i> mean the same thing.
+Let's think about how we would minimize $f(x) = x^2 + 6x + 5$, numerically:
+</p>
+<div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">5</span>
+
+<span class="k">def</span> <span class="nf">plot_func</span><span class="p">():</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+   <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$f(x)$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Some arbitrary function&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">xs</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$f(x)= x^2 + 6x + 5$&#39;</span><span class="p">)</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="n">f</span><span class="p">(</span><span class="mi">6</span><span class="p">)],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">17</span><span class="p">)</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+
+<span class="n">plot_func</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
+</pre></div>
+<div class="executed_in">(Executed in 0.239 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/>
+<p>
+Let's say we started with $x=6$ and we want to take step that will make $f(x)$ smaller.
+</p>
+
+<p>
+We have two questions to ask here:
+
+<ol>
+<li> Should we walk to the left or to the right? </li>
+<li> How much should we walk? </li>
+</ol>
+</p>
+
+<p>
+In gradient descent, we decide those by looking to the:
+</p>
+
+$$ \frac{df}{dx} = 2x + 6 $$
+
+<p>
+This is the slope of $f(x)$ at each $x$. So, if slope is positive, we want to go to left, and
+if slope is negative, we want to go to right. (Assuming we want to minimize.)
+</p>
+
+<p>
+Intuitively, we want to take a big step if the slope is big, and a smaller step if slope
+is relatively small. However, we may want to play with the size of our steps, so we invent a new
+parameter: <b> learning rate </b>. We will use $\alpha$ to denote learning rate.
+</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.animation</span> <span class="kn">as</span> <span class="nn">animation</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">5</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mf">6.0</span>
+<span class="n">LEARNING_RATE</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="n">steps</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">21</span><span class="p">):</span>
+  <span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)])</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">LEARNING_RATE</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">6</span><span class="p">)</span>
+
+<span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">animate</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+  <span class="n">scatter_points</span><span class="o">.</span><span class="n">set_offsets</span><span class="p">(</span><span class="n">steps</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,:])</span>
+  <span class="n">text_box</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s1">&#39;Iteration: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+  <span class="k">return</span> <span class="n">scatter_points</span><span class="p">,</span> <span class="n">text_box</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Gradient descent updates&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$f(x)$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">xs</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$f(x)= x^2 + 6x + 5$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">17</span><span class="p">)</span>
+
+<span class="n">scatter_points</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">text_box</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">170</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+
+<span class="n">anim</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">animate</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">blit</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">anim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;animation.mp4&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;avconv&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">codec</span><span class="o">=</span><span class="s2">&quot;libx264&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
+</pre></div>
+<div class="executed_in">(Executed in 1.264 seconds.)</div><video class="generated_video" width="600" controls>
+<source src="../animations/animation000.mp4" type="video/mp4">
+</video>
+<p>
+What if we had a more complex surface? Maybe two dimensional?
 </p>
 
 <p>
 In order to do gradient descent, we need the derivatives:
 </p>
 
-$$\frac{dL}{dw_1} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{dw_1}, \quad \frac{dL}{dw_2} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{dw_1}, \quad
+$$\frac{dL}{dw_1} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{dw_1}, \quad \frac{dL}{dw_2} =
+\frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{dw_1}, \quad
 \frac{dL}{db} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{db}$$
 
 <p>
@@ -327,22 +487,30 @@ Let's do some calculus:
 <img src="../static_images/evil2.png" style="width:30px; height:30px;">
 </p>
 
-$$ \frac{dL}{d\hat{y}} = \frac{d}{d\hat{y}} - \left(ylog(\hat{y}) + (1-y)log(1-\hat{y})\right) = \frac{d}{d\hat{y}} - ylog(\hat{y}) +  \frac{d}{d\hat{y}} - (1-y)log(1-\hat{y})
-  = \frac{-y}{\hat{y}} + \frac{1-y}{1-\hat{y}} $$
+$$ \frac{dL}{d\hat{y}} = \frac{d}{d\hat{y}} - \left(ylog(\hat{y}) + (1-y)log(1-\hat{y})\right) =
+\frac{d}{d\hat{y}} - ylog(\hat{y}) +  \frac{d}{d\hat{y}} - (1-y)log(1-\hat{y}) =
+\frac{-y}{\hat{y}} + \frac{1-y}{1-\hat{y}} $$
 
-$$ \frac{d\hat{y}}{dz} = \frac{e^{-z}}{(1+e^{-z})^2} = \frac{1 + e^{-z} - 1}{(1+e^{-z})^2} = \frac{1 + e^{-z}}{(1+e^{-z})^2} - \frac{1}{(1+e^{-z})^2} =
-\frac{1}{1+e^{-z}} - \left( \frac{1}{(1+e^{-z})^2} \right )^2 = g(z) - (g(z)) ^2 = g(z) (1-g(z)) $$
+$$ \frac{d\hat{y}}{dz} = \frac{e^{-z}}{(1+e^{-z})^2} = \frac{1 + e^{-z} - 1}{(1+e^{-z})^2} =
+\frac{1 + e^{-z}}{(1+e^{-z})^2} - \frac{1}{(1+e^{-z})^2} =
+\frac{1}{1+e^{-z}} - \left( \frac{1}{(1+e^{-z})^2} \right )^2 =
+g(z) - (g(z)) ^2 = g(z) (1-g(z)) $$
 
 $$
-  \frac{dz}{dw_1} = x_1, \quad \frac{dz}{dw_2} = x_2, \quad \frac{dz}{db} = 1
+\frac{dz}{dw_1} = x_1, \quad \frac{dz}{dw_2} = x_2, \quad \frac{dz}{db} = 1
 $$
 
 $$
-\frac{dL}{dz} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} = \left (  \frac{-y}{\hat{y}} + \frac{1-y}{1-\hat{y}}  \right ) \left ( \hat{y} (1-\hat{y}) \right )
-  = \frac{-y}{\hat{y}} \hat{y} (1-\hat{y}) + \frac{1-y}{1-\hat{y}} \hat{y} (1-\hat{y}) = -y (1-\hat{y}) + (1-y) \hat{y} = -y + y\hat{y} + \hat{y} - y\hat{y} = \hat{y} - y
+\frac{dL}{dz} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} =
+\left (  \frac{-y}{\hat{y}} + \frac{1-y}{1-\hat{y}}  \right ) \left ( \hat{y} (1-\hat{y}) \right ) =
+\frac{-y}{\hat{y}} \hat{y} (1-\hat{y}) + \frac{1-y}{1-\hat{y}} \hat{y} (1-\hat{y}) =
+-y (1-\hat{y}) + (1-y) \hat{y} = -y + y\hat{y} + \hat{y} - y\hat{y} = \hat{y} - y
 $$
 
-$$\frac{dL}{dw_1} = \frac{dL}{dz} \frac{dz}{dw_1} = (\hat{y} - y) x_1, \quad \frac{dL}{dw_2} = \frac{dL}{dz} \frac{dz}{dw_2} = (\hat{y} - y) x_2, \quad \frac{dL}{db} = \frac{dL}{dz} \frac{dz}{db} = (\hat{y} - y)$$
+$$
+\frac{dL}{dw_1} = \frac{dL}{dz} \frac{dz}{dw_1} = (\hat{y} - y) x_1, \quad \frac{dL}{dw_2} =
+\frac{dL}{dz} \frac{dz}{dw_2} = (\hat{y} - y) x_2, \quad \frac{dL}{db} = \frac{dL}{dz} \frac{dz}{db} = (\hat{y} - y)
+$$
 <p>We took the <b>derivative of sigmoid function</b> while deriving the above gradients:</p>
 
 $$
@@ -350,7 +518,6 @@ $$
 $$
 
 <p>Let's see how this actually looks like:</p>
-
 <div class="highlight"><pre><span></span><span class="n">sigmoid_der</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 
 <span class="k">def</span> <span class="nf">plot_sigmoid_der</span><span class="p">():</span>
@@ -371,60 +538,60 @@ $$
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.172 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far away than $0$ the <i>change</i>
-gets slower.
+<div class="executed_in">(Executed in 0.223 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far
+away than $0$ the <i>change</i> gets slower.
 <h1>Applying Gradient Descent to Minimize Loss</h1>
-<div class="highlight"><pre><span></span><span class="n">ALPHA</span> <span class="o">=</span> <span class="mf">0.4</span> <span class="c1"># learning rate</span>
+ALPHA = 0.4 # learning rate
 
-<span class="c1"># this simple implementation is numerically unstable, because:</span>
-<span class="c1"># np.log() returns -inf for small inputs very close to 0</span>
-<span class="k">def</span> <span class="nf">get_loss</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">Y_hat</span><span class="p">):</span>
-   <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Y_hat</span><span class="p">)</span> <span class="o">+</span>
-                      <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Y</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Y_hat</span><span class="p">))</span>
-   <span class="k">return</span> <span class="n">loss</span>
+# this simple implementation is numerically unstable, because:
+# np.log() returns -inf for small inputs very close to 0
+def get_loss(Y, Y_hat):
+   loss = -1 * np.sum(Y * np.log(Y_hat) +
+                      (1-Y) * np.log(1-Y_hat))
+   return loss
 
-<span class="c1"># semantically same with above function, and numerically stable.</span>
-<span class="k">def</span> <span class="nf">get_loss_numerically_stable</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
-   <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Y</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">z</span><span class="p">))</span> <span class="o">+</span>
-                      <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">z</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">z</span><span class="p">))))</span>
-   <span class="k">return</span> <span class="n">loss</span>
+# semantically same with above function, and numerically stable.
+def get_loss_numerically_stable(Y, z):
+   loss = -1 * np.sum(Y * -1 * np.log(1 + np.exp(-z)) +
+                      (1-Y) * (-z - np.log(1 + np.exp(-z))))
+   return loss
 
-<span class="n">W_cache</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">b_cache</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">losses_cache</span> <span class="o">=</span> <span class="p">[]</span>
+W_cache = []
+b_cache = []
+losses_cache = []
 
-<span class="c1"># some nice initial value, so that the plot looks nice.</span>
-<span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">4.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">29.0</span><span class="p">]])</span>
-<span class="n">b</span> <span class="o">=</span> <span class="mi">0</span>
+# some nice initial value, so that the plot looks nice.
+W = np.array([[-4.0], [29.0]])
+b = 0.0
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
-   <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
-   <span class="n">Y_hat</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-   <span class="n">loss</span> <span class="o">=</span> <span class="n">get_loss_numerically_stable</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+for i in range(20):
+   z = np.matmul(W.T, X.T) + b
 
-   <span class="n">dw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">Y_hat</span> <span class="o">-</span> <span class="n">Y</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-   <span class="n">db</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Y_hat</span> <span class="o">-</span> <span class="n">Y</span><span class="p">)</span>
+   Y_hat = sigmoid(z)
+   loss = get_loss_numerically_stable(Y, z)
 
-   <span class="n">W</span> <span class="o">-=</span> <span class="n">ALPHA</span> <span class="o">*</span> <span class="n">dw</span>
-   <span class="n">b</span> <span class="o">-=</span> <span class="n">ALPHA</span> <span class="o">*</span> <span class="n">db</span>
+   dw = np.matmul(X.T, (Y_hat - Y).T)
+   db = np.sum(Y_hat - Y)
 
-   <span class="n">W_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
-   <span class="n">b_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-   <span class="n">losses_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+   W -= ALPHA * dw
+   b -= ALPHA * db
 
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Number of iterations&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">losses_cache</span><span class="p">)</span>
+   W_cache.append(W.copy())
+   b_cache.append(b)
+   losses_cache.append(loss)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+plt.grid()
+plt.title('Loss', size=18)
+plt.xlabel('Number of iterations', size=15)
+plt.ylabel('Loss', size=15)
+plt.plot(losses_cache)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-</pre></div>
-<div class="executed_in">(Executed in 0.140 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/><p>
+plt.savefig('image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
+<p>
 It turns out we just trained a pretty good classifier for this problem. We achieved 100% accuracy. Let's try to visualize our <b>decision boundary</b>.
 
 <b>Remember:</b> if the value is smaller than 0.5,
@@ -456,104 +623,100 @@ Now, let's see what will be the value of $x_2$ when $x_1=-1.5$ and $x_1 =1.5$.
 </p>
 
 <h1>Decision boundary</h1>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_decision_boundary</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Decision boundary&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
 
-   <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-   <span class="n">ys</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">xs</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">/</span><span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+def plot_decision_boundary(X, Y, W, b, path):
+   plt.grid()
+   plt.xlim([-2.0, 2.0])
+   plt.ylim([-2.0, 2.0])
+   plt.xlabel('$x_1$', size=20)
+   plt.ylabel('$x_2$', size=20)
+   plt.title('Decision boundary', size = 18)
 
-   <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+   xs = np.array([-2.0, 2.0])
+   ys = (-W[0] * xs - b)/W[1]
 
-<span class="n">plot_decision_boundary</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">W_cache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">b_cache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+   plt.scatter(X[:,0], X[:,1], s=50, c=colormap[Y[0]])
+   plt.plot(xs, ys, c='black')
+   plt.savefig(path)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-</pre></div>
-<div class="executed_in">(Executed in 0.249 seconds.)</div><img class="generated_image" width="600" src="../images/image004.png"/><p>
+plot_decision_boundary(X, Y, W_cache[-1], b_cache[-1], 'image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
+<p>
 We can do better. Now, let's see the decision boundary step by step as an <b>animation</b>.
 Everybody <i>loves</i> animations. Something everybody loves even more is that animations
 that you can see the source code as well.
 <img src="../static_images/heart.png" style="width:30px; height:30px;">
 </p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.animation</span> <span class="kn">as</span> <span class="nn">animation</span>
+import matplotlib.animation as animation
 
-<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+fig = plt.figure()
 
-<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+ax = fig.add_subplot(111)
+ax.set_xlim([-2.0, 2.0])
+ax.set_ylim([-2.0, 2.0])
+ax.set_xlabel('$x_1$', size=20)
+ax.set_ylabel('$x_2$', size=20)
 
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Decision boundary - Animated&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
+ax.set_title('Decision boundary - Animated', size = 18)
 
-<span class="k">def</span> <span class="nf">animate</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
-  <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-  <span class="n">ys</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">W_cache</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">xs</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">/</span><span class="n">W_cache</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
-  <span class="n">lines</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+def animate(i):
+  xs = np.array([-2.0, 2.0])
+  ys = (-W_cache[i].flatten()[0] * xs - b)/W_cache[i].flatten()[1]
+  lines.set_data(xs, ys)
 
-  <span class="n">text_box</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s1">&#39;Iteration: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+  text_box.set_text('Iteration: {}'.format(i))
 
-  <span class="k">return</span> <span class="n">lines</span><span class="p">,</span> <span class="n">text_box</span>
+  return lines, text_box
 
-<span class="n">lines</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
-<span class="n">text_box</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="s1">&#39;Iteration 0&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+lines, = ax.plot([], [], c='black')
+ax.scatter(X[:,0], X[:,1], s=50, c=colormap[Y[0]])
+text_box = ax.text(1.1, 1.6, 'Iteration 0', size = 16)
 
-<span class="n">anim</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">animate</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">W_cache</span><span class="p">),</span> <span class="n">blit</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-<span class="n">anim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;animation.mp4&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;avconv&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">codec</span><span class="o">=</span><span class="s2">&quot;libx264&quot;</span><span class="p">)</span>
+anim = animation.FuncAnimation(fig, animate, len(W_cache), blit=True, interval=500)
+anim.save('animation.mp4', writer='avconv', fps=2, codec="libx264")
 
-<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-</pre></div>
-<div class="executed_in">(Executed in 1.679 seconds.)</div><video class="generated_video" width="600" controls>
-<source src="../animations/animation000.mp4" type="video/mp4">
-</video><p>
+plt.close()
+plt.clf()
+plt.cla()
+<p>
 Let's see the decision boundary in a more <b>lazy</b> setting. Here, we simply classify
 every single point in the grid and then give the predictions to a <b>contour plot</b>. Comparing
 to the previous animation, contour plot shows the prediction of every single point in the grid
 in the final version of the classifiers parameters. On the other hand, the previous animation shows the
 parameters step by step through the gradient descent iterations.
 </p>
-<div class="highlight"><pre><span></span><span class="n">NX</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">NY</span> <span class="o">=</span> <span class="mi">10</span>
+NX = 10
+NY = 10
 
-<span class="k">def</span> <span class="nf">plot_decision_boundary_lazy</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">counter_param</span><span class="p">):</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Decision boundary - Contour plot&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
+def plot_decision_boundary_lazy(X, Y, W, b, counter_param):
+   plt.grid()
+   plt.xlim([-2.0, 2.0])
+   plt.ylim([-2.0, 2.0])
+   plt.xlabel('$x_1$', size=20)
+   plt.ylabel('$x_2$', size=20)
+   plt.title('Decision boundary - Contour plot', size = 18)
 
-   <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">NX</span><span class="p">)</span>
-   <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">NY</span><span class="p">)</span>
-   <span class="n">xv</span><span class="p">,</span> <span class="n">yv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+   xs = np.linspace(-2.0, 2.0, NX)
+   ys = np.linspace(-2.0, 2.0, NY)
+   xv, yv = np.meshgrid(xs, ys)
 
-   <span class="n">X_fake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">xv</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">yv</span><span class="o">.</span><span class="n">flatten</span><span class="p">()),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-   <span class="n">predictions</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">X_fake</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+   X_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
+   predictions = sigmoid(np.matmul(W.T, X_fake) + b)
 
-   <span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xv</span><span class="p">,</span> <span class="n">yv</span><span class="p">,</span> <span class="n">predictions</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">NX</span><span class="p">,</span> <span class="n">NY</span><span class="p">)),</span> <span class="n">counter_param</span><span class="p">)</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+   plt.contourf(xv, yv, predictions.reshape((NX, NY)), counter_param)
+   plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
 
-   <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+   plt.savefig('image.png')
 
-<span class="n">plot_decision_boundary_lazy</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">W_cache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">b_cache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">50</span><span class="p">)</span>
+plot_decision_boundary_lazy(X, Y, W_cache[-1], b_cache[-1], 50)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-</pre></div>
-<div class="executed_in">(Executed in 0.246 seconds.)</div><img class="generated_image" width="600" src="../images/image005.png"/><p>
+plt.close()
+plt.clf()
+plt.cla()
+<p>
 Here, background <b>blue</b> means our prediction is very close to $0$ which means it is confidently
 classified as <b>red</b>. And conversely, background <b>red</b> means our prediction is very close to
 $1$ which means it is confidently classified as <b>blue</b>.
@@ -570,111 +733,107 @@ We can also visualize the cost as a function of $W$, on 2-D surface. Here, we fi
 plug all possible values of $W$ and compute the error value for that given $w$ with that fixed $b$. This surface
 has an interesting property of being <b>convex</b>.
 </p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d.axes3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
+from mpl_toolkits.mplot3d.axes3d import Axes3D
 
-<span class="n">NX</span> <span class="o">=</span> <span class="mi">100</span>
-<span class="n">NY</span> <span class="o">=</span> <span class="mi">100</span>
+NX = 100
+NY = 100
 
-<span class="k">def</span> <span class="nf">get_losses_numerically_stable</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
-   <span class="n">temp</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">Y</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">z</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">z</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">z</span><span class="p">))))</span>
-   <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+def get_losses_numerically_stable(Y, z):
+   temp = -1 * (Y * -1 * np.log(1 + np.exp(-z)) + (1-Y) * (-z - np.log(1 + np.exp(-z))))
+   return np.sum(temp, axis = 0, keepdims = True)
 
-<span class="k">def</span> <span class="nf">plot_error_surface</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+def plot_error_surface(X, Y, b):
+   plt.grid()
 
-   <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="n">NX</span><span class="p">)</span>
-   <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="n">NY</span><span class="p">)</span>
-   <span class="n">xv</span><span class="p">,</span> <span class="n">yv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+   xs = np.linspace(-30, 30, NX)
+   ys = np.linspace(-30, 30, NY)
+   xv, yv = np.meshgrid(xs, ys)
 
-   <span class="n">W_fake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">xv</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">yv</span><span class="o">.</span><span class="n">flatten</span><span class="p">()),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+   W_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
 
-   <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">W_fake</span><span class="p">)</span> <span class="o">+</span> <span class="n">b_cache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-   <span class="n">losses</span> <span class="o">=</span> <span class="n">get_losses_numerically_stable</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+   z = np.matmul(X.T, W_fake) + b_cache[-1]
+   losses = get_losses_numerically_stable(Y.T, z)
 
-   <span class="n">best_W</span> <span class="o">=</span> <span class="n">W_cache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-   <span class="n">min_loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">losses</span><span class="p">)</span>
+   best_W = W_cache[-1]
+   min_loss = np.min(losses)
 
-   <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
-   <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;Error surface - Optimal loss&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">17</span><span class="p">)</span>
-   <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
-   <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$w_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-   <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$w_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-   <span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">xv</span><span class="p">,</span> <span class="n">yv</span><span class="p">,</span> <span class="n">losses</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">NX</span><span class="p">,</span> <span class="n">NY</span><span class="p">),</span> <span class="n">rstride</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cstride</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
-   <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">best_W</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">best_W</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">min_loss</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+   fig = plt.figure(figsize=(12,6))
+   fig.suptitle('Error surface - Optimal loss', fontsize=17)
+   ax = fig.add_subplot(1, 2, 1, projection='3d')
+   ax.set_xlabel('$w_1$', size=20)
+   ax.set_ylabel('$w_2$', size=20)
+   ax.plot_surface(xv, yv, losses.reshape(NX, NY), rstride=4, cstride=4, alpha=0.25)
+   ax.scatter(best_W[0], best_W[1], [min_loss], s=30, c='red')
 
-   <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
-   <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$w_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-   <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$w_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-   <span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">xv</span><span class="p">,</span> <span class="n">yv</span><span class="p">,</span> <span class="n">losses</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">NX</span><span class="p">,</span> <span class="n">NY</span><span class="p">),</span> <span class="n">rstride</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cstride</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
-   <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">best_W</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">best_W</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">min_loss</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
-   <span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="mi">45</span><span class="p">,</span> <span class="mi">45</span><span class="p">)</span>
+   ax = fig.add_subplot(1, 2, 2, projection='3d')
+   ax.set_xlabel('$w_1$', size=20)
+   ax.set_ylabel('$w_2$', size=20)
+   ax.plot_surface(xv, yv, losses.reshape(NX, NY), rstride=4, cstride=4, alpha=0.25)
+   ax.scatter(best_W[0], best_W[1], [min_loss], s=30, c='red')
+   ax.view_init(45, 45)
 
-   <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+   fig.tight_layout()
+   plt.savefig('image.png')
 
-<span class="n">plot_error_surface</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+plot_error_surface(X, Y, b)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-</pre></div>
-<div class="executed_in">(Executed in 0.584 seconds.)</div><img class="generated_image" width="900" src="../images/image006.png"/><p>
+plt.close()
+plt.clf()
+plt.cla()
+<p>
 Let's see the parameters step by step through the iterations of <b>gradient descent</b>.
 We start from a random initial point and keep iterating to refine our parameters.
 </p>
-<div class="highlight"><pre><span></span><span class="n">NX</span> <span class="o">=</span> <span class="mi">100</span>
-<span class="n">NY</span> <span class="o">=</span> <span class="mi">100</span>
+NX = 100
+NY = 100
 
-<span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="n">NX</span><span class="p">)</span>
-<span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="n">NY</span><span class="p">)</span>
-<span class="n">xv</span><span class="p">,</span> <span class="n">yv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+xs = np.linspace(-30, 30, NX)
+ys = np.linspace(-30, 30, NY)
+xv, yv = np.meshgrid(xs, ys)
 
-<span class="n">W_fake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">xv</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">yv</span><span class="o">.</span><span class="n">flatten</span><span class="p">()),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+W_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
 
-<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">W_fake</span><span class="p">)</span> <span class="o">+</span> <span class="n">b_cache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">losses</span> <span class="o">=</span> <span class="n">get_losses_numerically_stable</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+z = np.matmul(X.T, W_fake) + b_cache[-1]
+losses = get_losses_numerically_stable(Y.T, z)
 
-<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim3d</span><span class="p">([</span><span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim3d</span><span class="p">([</span><span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$w_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$w_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+fig = plt.figure(figsize=(12,6))
+ax = fig.add_subplot(111, projection='3d')
+ax.set_xlim3d([-40, 40.0])
+ax.set_ylim3d([-40, 40.0])
+ax.set_xlabel('$w_1$', size=20)
+ax.set_ylabel('$w_2$', size=20)
 
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Gradient descent updates&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">17</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">xv</span><span class="p">,</span> <span class="n">yv</span><span class="p">,</span> <span class="n">losses</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">NX</span><span class="p">,</span> <span class="n">NY</span><span class="p">),</span> <span class="n">rstride</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cstride</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+ax.set_title('Gradient descent updates', fontsize=17)
+ax.plot_surface(xv, yv, losses.reshape(NX, NY), rstride=4, cstride=4, alpha=0.25)
 
-<span class="k">def</span> <span class="nf">animate</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
-   <span class="n">graph</span><span class="o">.</span><span class="n">set_offsets</span><span class="p">([</span><span class="n">W_cache</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">W_cache</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]])</span>
-   <span class="n">graph</span><span class="o">.</span><span class="n">set_3d_properties</span><span class="p">([</span><span class="n">losses_cache</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="n">zdir</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
+def animate(i):
+   graph.set_offsets([W_cache[i][0], W_cache[i][1]])
+   graph.set_3d_properties([losses_cache[i]], zdir='z')
 
-   <span class="n">line_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">W_cache</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
-   <span class="n">line_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">W_cache</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
-   <span class="n">line_data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">losses_cache</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+   line_data[0].append(W_cache[i].flatten()[0])
+   line_data[1].append(W_cache[i].flatten()[1])
+   line_data[2].append(losses_cache[i])
 
-   <span class="n">lines</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">line_data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">line_data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-   <span class="n">lines</span><span class="o">.</span><span class="n">set_3d_properties</span><span class="p">(</span><span class="n">line_data</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+   lines.set_data(line_data[0], line_data[1])
+   lines.set_3d_properties(line_data[2])
 
-   <span class="n">text_box</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s1">&#39;Iteration: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+   text_box.set_text('Iteration: {}'.format(i))
 
-   <span class="k">return</span> <span class="n">graph</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">text_box</span>
+   return graph, lines, text_box
 
-<span class="n">line_data</span> <span class="o">=</span> <span class="p">[[],</span> <span class="p">[],</span> <span class="p">[]]</span>
-<span class="n">graph</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
-<span class="n">lines</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+line_data = [[], [], []]
+graph = ax.scatter([], [], [], s=50, c='red')
+lines, = ax.plot([], [], [], c='red')
 
-<span class="n">text_box</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">,</span> <span class="s1">&#39;Iteration 0&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+text_box = ax.text(20.0, 20.0, 500.0, 'Iteration 0', size = 16)
 
-<span class="n">anim</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">animate</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">W_cache</span><span class="p">),</span> <span class="n">interval</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">blit</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="n">anim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;animation.mp4&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;avconv&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">codec</span><span class="o">=</span><span class="s2">&quot;libx264&quot;</span><span class="p">)</span>
+anim = animation.FuncAnimation(fig, animate, len(W_cache), interval=50, blit=True)
+anim.save('animation.mp4', writer='avconv', fps=2, codec="libx264")
 
-<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-</pre></div>
-<div class="executed_in">(Executed in 2.767 seconds.)</div><video class="generated_video" width="900" controls>
-<source src="../animations/animation001.mp4" type="video/mp4">
-</video><h1> Applying Logistic Regression using low-level Tensorflow APIs</h1>
+plt.close()
+plt.clf()
+plt.cla()
+<h1> Applying Logistic Regression using low-level Tensorflow APIs</h1>
 
 <p>
 <b>TensorFlow</b> is an open-source software library for Machine Intelligence.
@@ -694,40 +853,39 @@ simple Python/Numpy especially if you are having <b>big data</b> and want to
 Here is how to train the same classifier for the above red and blue points
 using low-level TensorFlow API:
 </p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+import tensorflow as tf
 
-<span class="n">t_X</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="bp">None</span><span class="p">])</span>
-<span class="n">t_Y</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="bp">None</span><span class="p">])</span>
+t_X = tf.placeholder(tf.float32, [None, 2])
+t_Y = tf.placeholder(tf.float32, [None, 1])
 
-<span class="n">t_W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">([[</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">29.0</span><span class="p">]])</span>
-<span class="n">t_b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">1</span><span class="p">]))</span>
+t_W = tf.Variable([[-4.0, 29.0]])
+t_b = tf.Variable(tf.zeros([1]))
 
-<span class="n">t_Z</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">t_W</span><span class="p">,</span> <span class="n">t_X</span><span class="p">)</span> <span class="o">+</span> <span class="n">t_b</span>
-<span class="n">t_Yhat</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">t_Z</span><span class="p">)</span>
-<span class="n">t_Loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid_cross_entropy_with_logits</span><span class="p">(</span><span class="n">logits</span> <span class="o">=</span> <span class="n">t_Z</span><span class="p">,</span>  <span class="n">labels</span> <span class="o">=</span> <span class="n">t_Y</span><span class="p">))</span>
+t_Z = tf.matmul(t_X, t_W) + t_b
+t_Yhat = tf.sigmoid(t_Z)
+t_Loss = tf.reduce_sum(tf.nn.sigmoid_cross_entropy_with_logits(logits = t_Z,  labels = t_Y))
 
-<span class="n">train</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">GradientDescentOptimizer</span><span class="p">(</span><span class="mf">0.4</span><span class="p">)</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">t_Loss</span><span class="p">)</span>
-<span class="n">init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">()</span>
+train = tf.train.GradientDescentOptimizer(0.4).minimize(t_Loss)
+init = tf.global_variables_initializer()
 
-<span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-   <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init</span><span class="p">)</span>
-   <span class="n">losses</span> <span class="o">=</span> <span class="p">[]</span>
-   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
-      <span class="n">ttrain</span><span class="p">,</span> <span class="n">ttloss</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">train</span><span class="p">,</span> <span class="n">t_Loss</span><span class="p">],</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="n">t_X</span><span class="p">:</span><span class="n">X</span><span class="p">,</span> <span class="n">t_Y</span><span class="p">:</span><span class="n">Y</span><span class="p">})</span>
-      <span class="n">losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ttloss</span><span class="p">)</span>
+with tf.Session() as session:
+   session.run(init)
+   losses = []
+   for i in range(20):
+      ttrain, ttloss = session.run([train, t_Loss], feed_dict={t_X:X, t_Y:Y})
+      losses.append(ttloss)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">losses</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Tensorflow Loss&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Number of iterations&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+plt.grid()
+plt.plot(losses)
+plt.title('Tensorflow Loss', size = 18)
+plt.xlabel('Number of iterations', size=15)
+plt.ylabel('Loss', size=15)
+plt.savefig('image.png')
 
-<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-</pre></div>
-<div class="executed_in">(Executed in 0.683 seconds.)</div><img class="generated_image" width="600" src="../images/image007.png"/><h1> References </h1>
+plt.close()
+plt.clf()
+plt.cla()
+<h1> References </h1>
 
 <ol>
   <li> Andrew Ng Coursera Machine Learning course. </li>
@@ -740,7 +898,6 @@ using low-level TensorFlow API:
   <li> http://cs231n.github.io/ </li>
   <li> https://www.tensorflow.org/ </li>
 </ol>
-
     </div>
 </div>
 
