@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 1: Logistic Regression <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: March 21 2018</center><p>
+<center>Last updated: March 22 2018</center><p>
 "If you can't explain it to a six year old, you don't understand it yourself."
 -- Albert Einstein
 </p>
@@ -91,7 +91,7 @@ points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.688 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
+<div class="executed_in">(Executed in 1.004 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
 In other words, given a point in 2-dimensions, $\mathbf{x} = (x_1, x_2)$, we want
 to output either $0$ or $1$. (In this tutorial $0$ represents red, $1$ represents blue.)
 </p>
@@ -234,7 +234,7 @@ how $g(z)$ behaves in some useful range.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.200 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><h1>Maximum Likelihood Estimation</h1>
+<div class="executed_in">(Executed in 0.287 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><h1>Maximum Likelihood Estimation</h1>
 
 <p>
 In training, our goal is to <b>learn</b> three numbers: $w_1, w_2, b$ that best
@@ -390,7 +390,7 @@ Let's think about how we would minimize $f(x) = x^2 + 6x + 5$, numerically:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.184 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/>
+<div class="executed_in">(Executed in 0.258 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/>
 <p>
 Let's say we started with $x=6$ and we want to take step that will make $f(x)$ smaller.
 </p>
@@ -460,7 +460,7 @@ parameter: <b> learning rate </b>. We will use $\alpha$ to denote learning rate.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.292 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 1.089 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation000.mp4" type="video/mp4">
 </video>
 <p>
@@ -499,7 +499,7 @@ What if we had a more complex surface? Maybe two dimensional? For example:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.366 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/>
+<div class="executed_in">(Executed in 0.548 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/>
 <p>
 We can apply the same idea here as well.
 </p>
@@ -562,7 +562,7 @@ in the opposite direction of the derivative.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.554 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 3.049 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation001.mp4" type="video/mp4">
 </video><p>
 We simply applied this gradient descent rule:
@@ -699,10 +699,10 @@ $$
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.185 seconds.)</div><img class="generated_image" width="600" src="../images/image004.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far
+<div class="executed_in">(Executed in 0.286 seconds.)</div><img class="generated_image" width="600" src="../images/image004.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far
 away than $0$ the <i>change</i> gets slower.
 <h1>Applying Gradient Descent to Minimize Loss</h1>
-<div class="highlight"><pre><span></span><span class="n">LEARNING_RATE</span> <span class="o">=</span> <span class="mf">5.0</span>
+<div class="highlight"><pre><span></span><span class="n">LEARNING_RATE</span> <span class="o">=</span> <span class="mf">8.0</span>
 <span class="n">NUM_EPOCHS</span> <span class="o">=</span> <span class="mi">20</span>
 
 <span class="k">def</span> <span class="nf">get_loss</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
@@ -765,7 +765,7 @@ away than $0$ the <i>change</i> gets slower.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.166 seconds.)</div><img class="generated_image" width="600" src="../images/image005.png"/><p>
+<div class="executed_in">(Executed in 0.278 seconds.)</div><img class="generated_image" width="600" src="../images/image005.png"/><p>
 It turns out we just trained a pretty good classifier for this problem.
 We achieved 100% accuracy. Let's try to visualize our <b>decision boundary</b>.
 </p>
@@ -826,7 +826,7 @@ Now, let's see what will be the value of $x_2$ when $x_1=-1.5$ and $x_1 =1.5$.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.183 seconds.)</div><img class="generated_image" width="600" src="../images/image006.png"/>
+<div class="executed_in">(Executed in 0.277 seconds.)</div><img class="generated_image" width="600" src="../images/image006.png"/>
 <p>
 Nice. How do we know we have a linear classifier?
 </p>
@@ -867,7 +867,7 @@ Everybody <i>loves</i> animations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.250 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 1.077 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation002.mp4" type="video/mp4">
 </video><p>
 Let's see the decision boundary in a more <b>lazy</b> setting. Here, we simply classify
@@ -876,35 +876,41 @@ to the previous animation, contour plot shows the prediction of every single poi
 in the final version of the classifiers parameters. On the other hand, the previous animation shows the
 parameters step by step through the gradient descent iterations.
 </p>
-NX = 10
-NY = 10
+<div class="highlight"><pre><span></span><span class="n">NX</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">NY</span> <span class="o">=</span> <span class="mi">100</span>
 
-def plot_decision_boundary_lazy(X, Y, W, b, counter_param):
-   plt.grid()
-   plt.xlim([-2.0, 2.0])
-   plt.ylim([-2.0, 2.0])
-   plt.xlabel('$x_1$', size=20)
-   plt.ylabel('$x_2$', size=20)
-   plt.title('Decision boundary - Contour plot', size = 18)
+<span class="k">def</span> <span class="nf">plot_decision_boundary_lazy</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Decision boundary - Lazy setting&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
 
-   xs = np.linspace(-2.0, 2.0, NX)
-   ys = np.linspace(-2.0, 2.0, NY)
-   xv, yv = np.meshgrid(xs, ys)
+  <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">NX</span><span class="p">)</span>
+  <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">NY</span><span class="p">)</span>
+  <span class="n">xv</span><span class="p">,</span> <span class="n">yv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
 
-   X_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
-   predictions = sigmoid(np.matmul(W.T, X_fake) + b)
+  <span class="n">X_fake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">xv</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">yv</span><span class="o">.</span><span class="n">flatten</span><span class="p">()),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-   plt.contourf(xv, yv, predictions.reshape((NX, NY)), counter_param)
-   plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+  <span class="n">predictions</span> <span class="o">=</span> <span class="p">[]</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_fake</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X_fake</span><span class="p">[</span><span class="n">i</span><span class="p">,:])</span> <span class="o">+</span> <span class="n">b</span><span class="p">))</span>
 
-   plt.savefig('image.png')
+  <span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+  <span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span> <span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">NX</span> <span class="o">*</span> <span class="n">NY</span><span class="p">),</span> <span class="mi">1</span><span class="o">-</span><span class="n">predictions</span><span class="p">)</span> <span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">predictions</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">NX</span><span class="p">,</span> <span class="n">NY</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">y</span><span class="p">])</span>
 
-plot_decision_boundary_lazy(X, Y, W_cache[-1], b_cache[-1], 50)
+  <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
 
-plt.close()
-plt.clf()
-plt.cla()
-<p>
+<span class="n">plot_decision_boundary_lazy</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w_cache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">b_cache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
+</pre></div>
+<div class="executed_in">(Executed in 0.334 seconds.)</div><img class="generated_image" width="600" src="../images/image007.png"/><p>
 Here, background <b>blue</b> means our prediction is very close to $0$ which means it is confidently
 classified as <b>red</b>. And conversely, background <b>red</b> means our prediction is very close to
 $1$ which means it is confidently classified as <b>blue</b>.

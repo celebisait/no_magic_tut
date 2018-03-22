@@ -722,7 +722,7 @@ away than $0$ the <i>change</i> gets slower.
 
 # CODE
 {'type': 'image', 'width': 600}
-LEARNING_RATE = 5.0
+LEARNING_RATE = 8.0
 NUM_EPOCHS = 20
 
 def get_loss(y, a):
@@ -908,32 +908,37 @@ in the final version of the classifiers parameters. On the other hand, the previ
 parameters step by step through the gradient descent iterations.
 </p>
 
-# HTML
+# CODE
 {'type': 'image', 'width': 600}
-NX = 10
-NY = 10
+NX = 100
+NY = 100
 
-def plot_decision_boundary_lazy(X, Y, W, b, counter_param):
-   plt.grid()
-   plt.xlim([-2.0, 2.0])
-   plt.ylim([-2.0, 2.0])
-   plt.xlabel('$x_1$', size=20)
-   plt.ylabel('$x_2$', size=20)
-   plt.title('Decision boundary - Contour plot', size = 18)
+def plot_decision_boundary_lazy(X, y, w, b):
+  plt.grid()
+  plt.xlim([-2.0, 2.0])
+  plt.ylim([-2.0, 2.0])
+  plt.xlabel('$x_1$', size=20)
+  plt.ylabel('$x_2$', size=20)
+  plt.title('Decision boundary - Lazy setting', size = 18)
 
-   xs = np.linspace(-2.0, 2.0, NX)
-   ys = np.linspace(-2.0, 2.0, NY)
-   xv, yv = np.meshgrid(xs, ys)
+  xs = np.linspace(-2.0, 2.0, NX)
+  ys = np.linspace(2.0, -2.0, NY)
+  xv, yv = np.meshgrid(xs, ys)
 
-   X_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
-   predictions = sigmoid(np.matmul(W.T, X_fake) + b)
+  X_fake = np.stack((xv.flatten(), yv.flatten()), axis=1)
 
-   plt.contourf(xv, yv, predictions.reshape((NX, NY)), counter_param)
-   plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+  predictions = []
+  for i in range(X_fake.shape[0]):
+    predictions.append(sigmoid(w.dot(X_fake[i,:]) + b))
 
-   plt.savefig('image.png')
+  predictions = np.array(predictions)
+  predictions = np.stack( (predictions, np.zeros(NX * NY), 1-predictions) )
+  plt.imshow(predictions.T.reshape(NX, NY, 3), extent=[-2.0, 2.0, -2.0, 2.0])
+  plt.scatter(X[:, 0], X[:, 1], s=50, c=colormap[y])
 
-plot_decision_boundary_lazy(X, Y, W_cache[-1], b_cache[-1], 50)
+  plt.savefig('image.png')
+
+plot_decision_boundary_lazy(X, y, w_cache[-1], b_cache[-1])
 
 plt.close()
 plt.clf()
