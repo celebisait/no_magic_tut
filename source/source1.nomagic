@@ -48,14 +48,14 @@ y = np.array([0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1])
 colormap = np.array(['r', 'b'])
 
 def plot_scatter(X, y, colormap, path):
-   plt.grid()
-   plt.xlim([-2.0, 2.0])
-   plt.ylim([-2.0, 2.0])
-   plt.xlabel('$x_1$', size=20)
-   plt.ylabel('$x_2$', size=20)
-   plt.title('Input 2D points', size=18)
-   plt.scatter(X[:,0], X[:, 1], s=50, c=colormap[y])
-   plt.savefig(path)
+  plt.grid()
+  plt.xlim([-2.0, 2.0])
+  plt.ylim([-2.0, 2.0])
+  plt.xlabel('$x_1$', size=20)
+  plt.ylabel('$x_2$', size=20)
+  plt.title('Input 2D points', size=18)
+  plt.scatter(X[:,0], X[:, 1], s=50, c=colormap[y])
+  plt.savefig(path)
 
 plot_scatter(X, y, colormap, 'image.png')
 
@@ -205,16 +205,16 @@ how $g(z)$ behaves in some useful range.
 sigmoid = lambda x: 1/(1+np.exp(-x))
 
 def plot_sigmoid():
-   plt.grid()
-   plt.xlim([-10.0, 10.0])
-   plt.ylim([-0.1, 1.1])
-   xs = np.arange(-10, 10, 0.001)
-   plt.xlabel('$z$', size=20)
-   plt.ylabel('$g(z)$', size=20)
-   plt.title('Sigmoid function', size=18)
-   plt.plot(xs, sigmoid(xs), label=r'$g(z)= \frac{1}{1+e^{-z}}$')
-   plt.legend(loc='upper left', fontsize=17)
-   plt.savefig('image.png')
+  plt.grid()
+  plt.xlim([-10.0, 10.0])
+  plt.ylim([-0.1, 1.1])
+  xs = np.arange(-10, 10, 0.001)
+  plt.xlabel('$z$', size=20)
+  plt.ylabel('$g(z)$', size=20)
+  plt.title('Sigmoid function', size=18)
+  plt.plot(xs, sigmoid(xs), label=r'$g(z)= \frac{1}{1+e^{-z}}$')
+  plt.legend(loc='upper left', fontsize=17)
+  plt.savefig('image.png')
 
 plot_sigmoid()
 
@@ -363,19 +363,19 @@ Let's think about how we would minimize $f(x) = x^2 + 6x + 5$, numerically:
 
 # CODE
 {'type': 'image', 'width': 600}
-f = lambda x: x**2 + 6 * x + 5
+f = lambda x: x**2 + 6*x + 5
 
 def plot_func():
-   plt.grid()
-   xs = np.arange(-10, 10, 0.001)
-   plt.xlim([-10, 10])
-   plt.xlabel('$x$', size=20)
-   plt.ylabel('$f(x)$', size=20)
-   plt.title('Some arbitrary function', size=18)
-   plt.plot(xs, f(xs), label=r'$f(x)= x^2 + 6x + 5$')
-   plt.scatter([6], [f(6)], c='red', s=50)
-   plt.legend(loc='upper left', fontsize=17)
-   plt.savefig('image.png')
+  plt.grid()
+  xs = np.arange(-10, 10, 0.001)
+  plt.xlim([-10, 10])
+  plt.xlabel('$x$', size=20)
+  plt.ylabel('$f(x)$', size=20)
+  plt.title('Some arbitrary function', size=18)
+  plt.plot(xs, f(xs), label=r'$f(x)= x^2 + 6x + 5$')
+  plt.scatter([6], [f(6)], c='red', s=50)
+  plt.legend(loc='upper left', fontsize=17)
+  plt.savefig('image.png')
 
 plot_func()
 
@@ -420,7 +420,7 @@ parameter: <b> learning rate </b>. We will use $\alpha$ to denote learning rate.
 {'type': 'animation', 'width': 600}
 import matplotlib.animation as animation
 
-f = lambda x: x**2 + 6 * x + 5
+f = lambda x: x**2 + 6*x + 5
 x = 6.0
 LEARNING_RATE = 0.1
 
@@ -462,52 +462,221 @@ plt.cla()
 {}
 
 <p>
-What if we had a more complex surface? Maybe two dimensional?
+What if we had a more complex surface? Maybe two dimensional? For example:
+</p>
+
+# CODE
+{'type': 'image', 'width': 600}
+from mpl_toolkits.mplot3d.axes3d import Axes3D
+
+f = lambda x,y: x**2 + y**2
+
+NX = 100
+NY = 100
+
+xs = np.linspace(-4, 4, NX)
+ys = np.linspace(-4, 4, NY)
+xv, yv = np.meshgrid(xs, ys)
+
+zv = f(yv.flatten(), xv.flatten())
+
+plt.grid()
+fig = plt.figure()
+fig.suptitle('Some arbitrary function: $f(x_1,x_2) = x_1^2 + x_2^2$', fontsize=15)
+ax = fig.add_subplot(1, 1, 1, projection='3d')
+ax.set_xlabel('$x_1$', size=16)
+ax.set_ylabel('$x_2$', size=16)
+ax.plot_surface(xv, yv, zv.reshape(NX, NY), rstride=4, cstride=4, alpha=0.25)
+ax.scatter([-3.2], [-3.2], [f(-3.2, -3.2)], c='red', s=50)
+ax.view_init(55, 35)
+
+plt.xlim([-4, 4])
+plt.ylim([-4, 4])
+
+fig.tight_layout()
+plt.savefig('image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+
+<p>
+We can apply the same idea here as well.
+</p>
+
+<p>
+Start with a random initial point. For each direction $x_1$ and $x_2$, independently go
+in the opposite direction of the derivative.
+</p>
+
+# CODE
+{'type': 'image', 'width': 600}
+f = lambda x,y: x**2 + y**2
+NX = 100
+NY = 100
+
+x1 = -3.2
+x2 = -3.2
+LEARNING_RATE = 0.1
+
+steps = []
+for i in range(21):
+  steps.append([x1, x2])
+  x1 = x1 - LEARNING_RATE * (2 * x1)
+  x2 = x2 - LEARNING_RATE * (2 * x2)
+
+steps = np.array(steps)
+
+xs = np.linspace(-4, 4, NX)
+ys = np.linspace(-4, 4, NY)
+xv, yv = np.meshgrid(xs, ys)
+
+zv = f(yv.flatten(), xv.flatten())
+
+plt.grid()
+fig = plt.figure()
+fig.suptitle('Some arbitrary function: $f(x_1,x_2) = x_1^2 + x_2^2$', fontsize=15)
+ax = fig.add_subplot(1, 1, 1, projection='3d')
+ax.set_xlabel('$x_1$', size=16)
+ax.set_ylabel('$x_2$', size=16)
+ax.plot_surface(xv, yv, zv.reshape(NX, NY), rstride=4, cstride=4, alpha=0.25)
+ax.view_init(55, 35)
+
+plt.xlim([-4, 4])
+plt.ylim([-4, 4])
+
+fig.tight_layout()
+
+def animate(i):
+  graph.set_offsets(steps[i,:])
+  graph.set_3d_properties([f(*steps[i,:])], zdir='z')
+  text_box.set_text('Iteration: {}'.format(i))
+  return graph, text_box
+
+graph = ax.scatter([], [], [], s=50, c='red')
+lines, = ax.plot([], [], [], c='red')
+
+text_box = ax.text(-4, 3, 500.0, 'Iteration 0', size = 16)
+
+anim = animation.FuncAnimation(fig, animate, 20, interval=50, blit=True)
+anim.save('animation.mp4', writer='avconv', fps=2, codec="libx264")
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+<p>
+We simply applied this gradient descent rule:
+</p>
+
+$$
+\begin{align*}
+x_1 &= x_1 - \alpha \frac{\partial f}{\partial x_1} \\
+x_2 &= x_2 - \alpha \frac{\partial f}{\partial x_2} \\
+\end{align*}
+$$
+
+<p>
+where $\alpha$ is the learning parameter.
+</p>
+
+<p>
+We will apply exactly the same idea in Logistic Regression as well.
 </p>
 
 <p>
 In order to do gradient descent, we need the derivatives:
 </p>
 
-$$\frac{dL}{dw_1} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{dw_1}, \quad \frac{dL}{dw_2} =
-\frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{dw_1}, \quad
-\frac{dL}{db} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} \frac{dz}{db}$$
+$$ \frac{\partial \text{L}}{\partial w_1}, \quad
+   \frac{\partial \text{L}}{\partial w_2}, \quad
+   \frac{\partial \text{L}}{\partial b}
+$$
 
 <p>
-Because we want to do:
+We need to do some calculus to calculate the derivatives. We will apply the chain rule.
 </p>
 
-$$w_1 := w_1 - \alpha \frac{dL}{dw_1}, \quad w_2 := w_2 - \alpha \frac{dL}{dw_2}, \quad b := b - \alpha \frac{dL}{db} $$
+<h1>Chain Rule</h1>
 
 <p>
-Let's do some calculus:
+Let's look at our computation graph again.
+</p>
+
+<img class="static_image" style="width: 900px;" src="../static_images/image002.png"/>
+
+<p>
+Here is the application of the Chain Rule for our case:
+</p>
+
+$$ \frac{\partial \text{L}}{\partial w_1} = \frac{\partial \text{L}}{\partial a}
+                   \frac{\partial a}{\partial z} \frac{\partial z}{\partial w_1}, \quad
+   \frac{\partial \text{L}}{\partial w_2} = \frac{\partial \text{L}}{\partial a}
+                   \frac{\partial a}{\partial z} \frac{\partial z}{\partial w_2}, \quad
+   \frac{\partial \text{L}}{\partial b} = \frac{\partial \text{L}}{\partial a}
+                   \frac{\partial a}{\partial z} \frac{\partial z}{\partial b}
+$$
+
+<p>
+After really understanding the above equation, the rest is simple mathematics.
+</p>
+
+<p>
+Let's do some calculus.
 <img src="../static_images/evil1.png" style="width:30px; height:30px;">
 <img src="../static_images/evil2.png" style="width:30px; height:30px;">
 </p>
 
-$$ \frac{dL}{d\hat{y}} = \frac{d}{d\hat{y}} - \left(ylog(\hat{y}) + (1-y)log(1-\hat{y})\right) =
-\frac{d}{d\hat{y}} - ylog(\hat{y}) +  \frac{d}{d\hat{y}} - (1-y)log(1-\hat{y}) =
-\frac{-y}{\hat{y}} + \frac{1-y}{1-\hat{y}} $$
-
-$$ \frac{d\hat{y}}{dz} = \frac{e^{-z}}{(1+e^{-z})^2} = \frac{1 + e^{-z} - 1}{(1+e^{-z})^2} =
-\frac{1 + e^{-z}}{(1+e^{-z})^2} - \frac{1}{(1+e^{-z})^2} =
-\frac{1}{1+e^{-z}} - \left( \frac{1}{(1+e^{-z})^2} \right )^2 =
-g(z) - (g(z)) ^2 = g(z) (1-g(z)) $$
-
-$$
-\frac{dz}{dw_1} = x_1, \quad \frac{dz}{dw_2} = x_2, \quad \frac{dz}{db} = 1
+$$ \frac{\partial \text{L}}{\partial a} =
+   \frac{\partial}{\partial a} - \left( y \text{log}(a) + (1-y)\text{log}(1-a)\right) =
+   \frac{\partial}{\partial a} - y \text{log} (a) +  \frac{\partial}{\partial a} - (1-y)\text{log}(1-a) =
+   \frac{-y}{a} + \frac{1-y}{1-a}
 $$
 
-$$
-\frac{dL}{dz} = \frac{dL}{d\hat{y}} \frac{d\hat{y}}{dz} =
-\left (  \frac{-y}{\hat{y}} + \frac{1-y}{1-\hat{y}}  \right ) \left ( \hat{y} (1-\hat{y}) \right ) =
-\frac{-y}{\hat{y}} \hat{y} (1-\hat{y}) + \frac{1-y}{1-\hat{y}} \hat{y} (1-\hat{y}) =
--y (1-\hat{y}) + (1-y) \hat{y} = -y + y\hat{y} + \hat{y} - y\hat{y} = \hat{y} - y
+$$ \frac{d a}{d z} = \frac{e^{-z}}{(1+e^{-z})^2} = \frac{1 + e^{-z} - 1}{(1+e^{-z})^2} =
+   \frac{1 + e^{-z}}{(1+e^{-z})^2} - \frac{1}{(1+e^{-z})^2} =
+   \frac{1}{1+e^{-z}} - \left( \frac{1}{1+e^{-z}} \right )^2 =
+   g(z) - (g(z)) ^2 = g(z) (1-g(z))
 $$
 
 $$
-\frac{dL}{dw_1} = \frac{dL}{dz} \frac{dz}{dw_1} = (\hat{y} - y) x_1, \quad \frac{dL}{dw_2} =
-\frac{dL}{dz} \frac{dz}{dw_2} = (\hat{y} - y) x_2, \quad \frac{dL}{db} = \frac{dL}{dz} \frac{dz}{db} = (\hat{y} - y)
+  \frac{\partial z}{\partial w_1} = x_1, \quad
+  \frac{\partial z}{\partial w_2} = x_2, \quad
+  \frac{\partial z}{\partial b} = 1
+$$
+
+<p>
+Now, let's combine the above three equations.
+</p>
+
+$$
+\begin{align*}
+\frac{\partial L}{\partial z} &= \frac{\partial \text{L}}{\partial a} \frac{d a}{d z} =
+      \left (  \frac{-y}{a} + \frac{1-y}{1-a}  \right ) \left ( a (1-a) \right ) \\
+      & = \frac{-y}{a} a (1-a) + \frac{1-y}{1-a} a(2-a) =
+     -y (1-a) + (1-y) a = -y + ya + a - ya = a - y
+\end{align*}
+$$
+
+<p>
+And finally, our final step:
+</p>
+
+$$
+   \frac{\partial \text{L}}{\partial w_1} =
+   \frac{\partial \text{L}}{d z} \frac{\partial z}{\partial w_1} = (a - y) x_1, \quad
+
+   \frac{\partial \text{L}}{\partial w_2} =
+   \frac{\partial \text{L}}{\partial z} \frac{\partial z}{\partial w_2} =
+   (a - y) x_2, \quad
+
+   \frac{\partial \text{L}}{\partial b} =
+   \frac{\partial \text{L}}{\partial z} \frac{\partial z}{\partial b} = (a - y)
 $$
 
 # HTML
@@ -515,7 +684,7 @@ $$
 <p>We took the <b>derivative of sigmoid function</b> while deriving the above gradients:</p>
 
 $$
-\frac{d\hat{y}}{dz} = g(z) (1-g(z))
+\frac{d a}{d z} = g(z) (1-g(z))
 $$
 
 <p>Let's see how this actually looks like:</p>
@@ -551,52 +720,64 @@ away than $0$ the <i>change</i> gets slower.
 {}
 <h1>Applying Gradient Descent to Minimize Loss</h1>
 
-# HTML
+# CODE
 {'type': 'image', 'width': 600}
-ALPHA = 0.4 # learning rate
+LEARNING_RATE = 5.0
+NUM_EPOCHS = 20
 
-# this simple implementation is numerically unstable, because:
-# np.log() returns -inf for small inputs very close to 0
-def get_loss(Y, Y_hat):
-   loss = -1 * np.sum(Y * np.log(Y_hat) +
-                      (1-Y) * np.log(1-Y_hat))
-   return loss
+def get_loss(y, a):
+  return -1 * (y * np.log(a) +
+               (1-y) * np.log(1-a))
 
-# semantically same with above function, and numerically stable.
-def get_loss_numerically_stable(Y, z):
-   loss = -1 * np.sum(Y * -1 * np.log(1 + np.exp(-z)) +
-                      (1-Y) * (-z - np.log(1 + np.exp(-z))))
-   return loss
+def get_loss_numerically_stable(y, z):
+   return -1 * (y * -1 * np.log(1 + np.exp(-z)) +
+                (1-y) * (-z - np.log(1 + np.exp(-z))))
 
-W_cache = []
+w_cache = []
 b_cache = []
-losses_cache = []
+l_cache = []
 
 # some nice initial value, so that the plot looks nice.
-W = np.array([[-4.0], [29.0]])
+w = np.array([-4.0, 29.0])
 b = 0.0
 
-for i in range(20):
-   z = np.matmul(W.T, X.T) + b
+for i in range(NUM_EPOCHS):
+  dw = np.zeros(w.shape)
+  db = 0.0
+  loss = 0.0
 
-   Y_hat = sigmoid(z)
-   loss = get_loss_numerically_stable(Y, z)
+  for j in range(X.shape[0]):
+    x_j = X[j,:]
+    y_j = y[j]
 
-   dw = np.matmul(X.T, (Y_hat - Y).T)
-   db = np.sum(Y_hat - Y)
+    z_j = w.dot(x_j) + b
+    a_j = sigmoid(z_j)
 
-   W -= ALPHA * dw
-   b -= ALPHA * db
+    loss_j = get_loss_numerically_stable(y_j, z_j)
 
-   W_cache.append(W.copy())
-   b_cache.append(b)
-   losses_cache.append(loss)
+    dw_j = x_j * (a_j-y_j)
+    db_j = a_j - y_j
+
+    dw += dw_j
+    db += db_j
+    loss += loss_j
+
+  dw = (1.0/20) * dw
+  db = (1.0/20) * db
+  loss = (1.0/20) * loss
+
+  w -= LEARNING_RATE * dw
+  b -= LEARNING_RATE * db
+
+  w_cache.append(w.copy())
+  b_cache.append(b)
+  l_cache.append(loss)
 
 plt.grid()
 plt.title('Loss', size=18)
 plt.xlabel('Number of iterations', size=15)
 plt.ylabel('Loss', size=15)
-plt.plot(losses_cache)
+plt.plot(l_cache)
 
 plt.savefig('image.png')
 
@@ -607,20 +788,30 @@ plt.cla()
 # HTML
 {}
 <p>
-It turns out we just trained a pretty good classifier for this problem. We achieved 100% accuracy. Let's try to visualize our <b>decision boundary</b>.
-
-<b>Remember:</b> if the value is smaller than 0.5,
-it means our prediction is <b>red</b> and otherwise it is <b>blue</b>. (see Equation \ref{eq:inference})
+It turns out we just trained a pretty good classifier for this problem.
+We achieved 100% accuracy. Let's try to visualize our <b>decision boundary</b>.
 </p>
 
+<b>Remember:</b> if the value is smaller than 0.5,
+it means our prediction is <b>red</b> and otherwise it is <b>blue</b>.
+(see Equation \ref{eq:inference})
+</p>
+
+
+<h1>Decision boundary</h1>
+
 <p>
-So, we predict <b>red</b> if:
+We predict <b>red</b> if:
 </p>
 
 $$ \frac{1}{1+e^{-(w_1x_1+w_2x_2+b)}} < 0.5 $$
 
 <p>
-and <b>blue</b> otherwise. So, our decision boundary is:
+and <b>blue</b> otherwise.
+</p>
+
+<p>
+So, our decision boundary is:
 </p>
 
 $$ \frac{1}{1+e^{-(w_1x_1+w_2x_2+b)}} = 0.5 $$
@@ -637,12 +828,10 @@ $$ x_2 = \frac{-w_1x_1 - b}{w_2} $$
 Now, let's see what will be the value of $x_2$ when $x_1=-1.5$ and $x_1 =1.5$.
 </p>
 
-<h1>Decision boundary</h1>
-
-# HTML
+# CODE
 {'type': 'image', 'width': 600}
 
-def plot_decision_boundary(X, Y, W, b, path):
+def plot_decision_boundary(X, y, w, b, path):
    plt.grid()
    plt.xlim([-2.0, 2.0])
    plt.ylim([-2.0, 2.0])
@@ -651,13 +840,13 @@ def plot_decision_boundary(X, Y, W, b, path):
    plt.title('Decision boundary', size = 18)
 
    xs = np.array([-2.0, 2.0])
-   ys = (-W[0] * xs - b)/W[1]
+   ys = (-w[0] * xs - b)/w[1]
 
-   plt.scatter(X[:,0], X[:,1], s=50, c=colormap[Y[0]])
+   plt.scatter(X[:,0], X[:,1], s=50, c=colormap[y])
    plt.plot(xs, ys, c='black')
    plt.savefig(path)
 
-plot_decision_boundary(X, Y, W_cache[-1], b_cache[-1], 'image.png')
+plot_decision_boundary(X, y, w_cache[-1], b_cache[-1], 'image.png')
 
 plt.close()
 plt.clf()
@@ -665,14 +854,17 @@ plt.cla()
 
 # HTML
 {}
+
 <p>
-We can do better. Now, let's see the decision boundary step by step as an <b>animation</b>.
-Everybody <i>loves</i> animations. Something everybody loves even more is that animations
-that you can see the source code as well.
-<img src="../static_images/heart.png" style="width:30px; height:30px;">
+Nice. How do we know we have a linear classifier?
 </p>
 
-# HTML
+<p>
+We can do better. Now, let's see the decision boundary step by step as an <b>animation</b>.
+Everybody <i>loves</i> animations.
+</p>
+
+# CODE
 {'type': 'animation', 'width': 600}
 import matplotlib.animation as animation
 
@@ -688,7 +880,7 @@ ax.set_title('Decision boundary - Animated', size = 18)
 
 def animate(i):
   xs = np.array([-2.0, 2.0])
-  ys = (-W_cache[i].flatten()[0] * xs - b)/W_cache[i].flatten()[1]
+  ys = (-w_cache[i][0] * xs - b)/w_cache[i][1]
   lines.set_data(xs, ys)
 
   text_box.set_text('Iteration: {}'.format(i))
@@ -696,10 +888,10 @@ def animate(i):
   return lines, text_box
 
 lines, = ax.plot([], [], c='black')
-ax.scatter(X[:,0], X[:,1], s=50, c=colormap[Y[0]])
+ax.scatter(X[:,0], X[:,1], s=50, c=colormap[y])
 text_box = ax.text(1.1, 1.6, 'Iteration 0', size = 16)
 
-anim = animation.FuncAnimation(fig, animate, len(W_cache), blit=True, interval=500)
+anim = animation.FuncAnimation(fig, animate, len(w_cache), blit=True, interval=500)
 anim.save('animation.mp4', writer='avconv', fps=2, codec="libx264")
 
 plt.close()
