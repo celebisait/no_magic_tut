@@ -91,7 +91,7 @@ points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.678 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
+<div class="executed_in">(Executed in 0.647 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
 In other words, given a point in 2-dimensions, $\mathbf{x} = (x_1, x_2)$, we want
 to output either $0$ or $1$. (In this tutorial $0$ represents red, $1$ represents blue.)
 
@@ -389,7 +389,7 @@ Let's think about how we would minimize $f(x) = x^2 + 6x + 5$, numerically:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.183 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/>
+<div class="executed_in">(Executed in 0.175 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/>
 <p>
 Let's say we started with $x=6$ and we want to take step that will make $f(x)$ smaller.
 </p>
@@ -459,7 +459,7 @@ parameter: <b> learning rate </b>. We will use $\alpha$ to denote learning rate.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.290 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 1.414 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation000.mp4" type="video/mp4">
 </video>
 <p>
@@ -498,7 +498,7 @@ What if we had a more complex surface? Maybe two dimensional? For example:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.393 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/>
+<div class="executed_in">(Executed in 0.356 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/>
 <p>
 We can apply the same idea here as well.
 </p>
@@ -561,7 +561,7 @@ in the opposite direction of the derivative.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.777 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 2.762 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation001.mp4" type="video/mp4">
 </video><p>
 We simply applied this gradient descent rule:
@@ -698,7 +698,7 @@ $$
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.209 seconds.)</div><img class="generated_image" width="600" src="../images/image004.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far
+<div class="executed_in">(Executed in 0.177 seconds.)</div><img class="generated_image" width="600" src="../images/image004.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far
 away than $0$ the <i>change</i> gets slower.
 
 <h1> Numerical Stability of the Loss function </h1>
@@ -734,7 +734,7 @@ Let's look at the natural logarithm function.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.200 seconds.)</div><img class="generated_image" width="600" src="../images/image005.png"/><p>
+<div class="executed_in">(Executed in 0.186 seconds.)</div><img class="generated_image" width="600" src="../images/image005.png"/><p>
 An important observation is that $\text{log}(0)$ approaches to $- \infty$.
 This is numerically an issue.
 </p>
@@ -853,7 +853,7 @@ unstable range.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.168 seconds.)</div><img class="generated_image" width="600" src="../images/image006.png"/><p>
+<div class="executed_in">(Executed in 0.153 seconds.)</div><img class="generated_image" width="600" src="../images/image006.png"/><p>
 It turns out we just trained a pretty good classifier for this problem.
 We achieved 100% accuracy. Let's try to visualize our <b>decision boundary</b>.
 </p>
@@ -914,7 +914,7 @@ Now, let's see what will be the value of $x_2$ when $x_1=-1.5$ and $x_1 =1.5$.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.183 seconds.)</div><img class="generated_image" width="600" src="../images/image007.png"/>
+<div class="executed_in">(Executed in 0.169 seconds.)</div><img class="generated_image" width="600" src="../images/image007.png"/>
 <p>
 Nice. How do we know we have a linear classifier?
 </p>
@@ -955,7 +955,7 @@ Everybody <i>loves</i> animations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.497 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 1.416 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation002.mp4" type="video/mp4">
 </video><p>
 Let's see the decision boundary in a more <b>lazy</b> setting. Here, we simply classify
@@ -998,7 +998,7 @@ parameters step by step through the gradient descent iterations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.242 seconds.)</div><img class="generated_image" width="600" src="../images/image008.png"/><p>
+<div class="executed_in">(Executed in 0.233 seconds.)</div><img class="generated_image" width="600" src="../images/image008.png"/><p>
 Here, background <b>red</b> means our prediction is very close to $0$ which means
 it is confidently classified as <b>red</b>. And conversely, background <b>blue</b>
 means our prediction is very close to $1$ which means it is confidently classified
@@ -1070,7 +1070,7 @@ being <b>convex</b>.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.884 seconds.)</div><img class="generated_image" width="900" src="../images/image009.png"/><p>
+<div class="executed_in">(Executed in 1.912 seconds.)</div><img class="generated_image" width="900" src="../images/image009.png"/><p>
 Let's see the parameters step by step through the iterations of <b>gradient descent</b>.
 We start from a random initial point and keep iterating to refine our parameters.
 </p>
@@ -1115,7 +1115,7 @@ We start from a random initial point and keep iterating to refine our parameters
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.629 seconds.)</div><video class="generated_video" width="900" controls>
+<div class="executed_in">(Executed in 2.643 seconds.)</div><video class="generated_video" width="900" controls>
 <source src="../animations/animation003.mp4" type="video/mp4">
 </video><h1> Applying Logistic Regression using low-level Tensorflow APIs</h1>
 
@@ -1170,7 +1170,7 @@ using low-level TensorFlow API:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.767 seconds.)</div><img class="generated_image" width="600" src="../images/image010.png"/><p>
+<div class="executed_in">(Executed in 0.731 seconds.)</div><img class="generated_image" width="600" src="../images/image010.png"/><p>
 It is maybe worth mentioning that the Logistic Regression we have just built is
 technically can be considered a <b>Neural Network</b> with only one layer.
 The techniques and the idea of building Neural Networks is extremely similar to
