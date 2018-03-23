@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 2: Softmax Regression <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: March 18 2018</center><p>
+<center>Last updated: March 22 2018</center><p>
 "What I cannot create, I do not understand."
 -- Richard Feynman
 </p>
@@ -77,7 +77,7 @@ and <b>blue</b> points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.173 seconds.)</div><img class="generated_image" width="600" src="../images/image008.png"/><p>
+<div class="executed_in">(Executed in 0.180 seconds.)</div><img class="generated_image" width="600" src="../images/image010.png"/><p>
 In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
 <b>green</b> or <b>blue</b>.
 </p>
@@ -686,7 +686,7 @@ We will <i>learn</i> the weights using <b>Back Propagation</b>.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.190 seconds.)</div><img class="generated_image" width="600" src="../images/image009.png"/><h1> Decision Boundary </h1>
+<div class="executed_in">(Executed in 0.195 seconds.)</div><img class="generated_image" width="600" src="../images/image011.png"/><h1> Decision Boundary </h1>
 
 <p>
 So, essentially, we have 3 equations:
@@ -746,7 +746,7 @@ If we plot these three lines:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.228 seconds.)</div><img class="generated_image" width="600" src="../images/image010.png"/><p>
+<div class="executed_in">(Executed in 0.200 seconds.)</div><img class="generated_image" width="600" src="../images/image012.png"/><p>
 Above, we simply find the boundaries and plot them. The definition of the boundary is that
 the region in which the predictions are equally confident for both of the classifiers. Since
 we have three classes, there are 3 choose 2 = 3 boundaries.
@@ -798,8 +798,8 @@ As you may guess, it should start from a random point and get smarter in each st
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.036 seconds.)</div><video class="generated_video" width="600" controls>
-<source src="../animations/animation002.mp4" type="video/mp4">
+<div class="executed_in">(Executed in 1.777 seconds.)</div><video class="generated_video" width="600" controls>
+<source src="../animations/animation004.mp4" type="video/mp4">
 </video><p>
 As you can see, it starts from a random classifier that does not seem to be working well in the
 beginning. And the learning process figures out where to go next to find a better classifier.
@@ -841,7 +841,7 @@ step through the gradient descent iterations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.214 seconds.)</div><img class="generated_image" width="600" src="../images/image011.png"/><p>
+<div class="executed_in">(Executed in 0.224 seconds.)</div><img class="generated_image" width="600" src="../images/image013.png"/><p>
 Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
 is $\mathbf{a}$ and it is three dimensional. So, we simply convert that vector to RGB space. So, for example
 if the prediction is: $[0.98, 0.01, 0.01]$, it will be almost a perfect <b>red</b>, and so on.
@@ -903,8 +903,8 @@ and blue which gives us purple. Similar phenomena happens between other decision
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 3.292 seconds.)</div><video class="generated_video" width="1000" controls>
-<source src="../animations/animation003.mp4" type="video/mp4">
+<div class="executed_in">(Executed in 2.947 seconds.)</div><video class="generated_video" width="1000" controls>
+<source src="../animations/animation005.mp4" type="video/mp4">
 </video><p>
 This is a nice animation that shows the progress of our parameters $W$ and $\mathbf{b}$
 in each iteration of gradient descent along with the corresponding loss value using the
@@ -1128,7 +1128,7 @@ because of the initial random start of both models. (Remember that $W$ is initia
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.585 seconds.)</div><img class="generated_image" width="600" src="../images/image012.png"/>
+<div class="executed_in">(Executed in 0.478 seconds.)</div><img class="generated_image" width="600" src="../images/image014.png"/>
 <h1>Exercises</h1>
 <ol>
   <li>

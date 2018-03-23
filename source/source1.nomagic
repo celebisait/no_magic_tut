@@ -68,7 +68,6 @@ plt.cla()
 <p>
 In other words, given a point in 2-dimensions, $\mathbf{x} = (x_1, x_2)$, we want
 to output either $0$ or $1$. (In this tutorial $0$ represents red, $1$ represents blue.)
-</p>
 
 <p>
 We can use <b>Logistic Regression</b> for this problem. In Logistic Regression,
@@ -615,11 +614,11 @@ Here is the application of the Chain Rule for our case:
 </p>
 
 $$ \frac{\partial \text{L}}{\partial w_1} = \frac{\partial \text{L}}{\partial a}
-                   \frac{\partial a}{\partial z} \frac{\partial z}{\partial w_1}, \quad
+                   \frac{d a}{d z} \frac{\partial z}{\partial w_1}, \quad
    \frac{\partial \text{L}}{\partial w_2} = \frac{\partial \text{L}}{\partial a}
-                   \frac{\partial a}{\partial z} \frac{\partial z}{\partial w_2}, \quad
+                   \frac{d a}{d z} \frac{\partial z}{\partial w_2}, \quad
    \frac{\partial \text{L}}{\partial b} = \frac{\partial \text{L}}{\partial a}
-                   \frac{\partial a}{\partial z} \frac{\partial z}{\partial b}
+                   \frac{d a}{d z} \frac{\partial z}{\partial b}
 $$
 
 <p>
@@ -633,8 +632,8 @@ Let's do some calculus.
 </p>
 
 $$ \frac{\partial \text{L}}{\partial a} =
-   \frac{\partial}{\partial a} - \left( y \text{log}(a) + (1-y)\text{log}(1-a)\right) =
-   \frac{\partial}{\partial a} - y \text{log} (a) +  \frac{\partial}{\partial a} - (1-y)\text{log}(1-a) =
+   \frac{\partial}{\partial a} \left ( - \left( y \text{log}(a) + (1-y)\text{log}(1-a)\right) \right ) =
+   \frac{\partial}{\partial a} \left ( - y \text{log} (a) \right ) +  \frac{\partial}{\partial a} \left (- (1-y)\text{log}(1-a) \right ) =
    \frac{-y}{a} + \frac{1-y}{1-a}
 $$
 
@@ -695,7 +694,7 @@ sigmoid_der = lambda x: sigmoid(x)*(1-sigmoid(x))
 
 def plot_sigmoid_der():
    plt.grid()
-   plt.ylim([-10.0, 10.0])
+   plt.xlim([-10.0, 10.0])
    plt.ylim([-0.1, 0.4])
    xs = np.arange(-10, 10, 0.001)
    plt.xlabel('$z$', size=20)
@@ -715,6 +714,101 @@ plt.cla()
 {}
 <p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far
 away than $0$ the <i>change</i> gets slower.
+
+<h1> Numerical Stability of the Loss function </h1>
+
+<p>
+There is only one thing remaining before we can start coding.
+</p>
+
+<p>
+Here is the loss function we came up with:
+</p>
+
+$$ \text{L} = -(y\text{log}(a) + (1-y) \text{log}(1-a)) $$
+
+<p>
+Notice that $y \in \{0,1\}$ and $0 < a < 1$. What are the possible values for $\text{L}$?
+Let's look at the natural logarithm function.
+</p>
+
+# CODE
+{'type': 'image', 'width': 600}
+
+def plot_natural_log():
+   plt.grid()
+   plt.xlim([-0.5, 8.0])
+   xs = np.arange(0.000000001, 8.0, 0.0001)
+   plt.xlabel('$x$', size=20)
+   plt.ylabel("$log(x)$", size=20)
+   plt.title('Natural log function.', size=18)
+   plt.plot(xs, np.log(xs), label=r"$log(x)$")
+   plt.legend(loc='upper left', fontsize=17)
+   plt.savefig('image.png')
+
+plot_natural_log()
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+<p>
+An important observation is that $\text{log}(0)$ approaches to $- \infty$.
+This is numerically an issue.
+</p>
+
+<p>
+Not only that, more importantly, $\text{log}(x)$ becomes unstable for small
+values of $x$. This means a small change in $x$ because of floating point
+representation issues, will play a big role in $\text{log}(x)$ which will
+give the algorithm unstable nature. (harder to converge, etc.)
+</p>
+
+<p>
+So, we will try to: come up with mathematically equal way that is numerically okay.
+</p>
+
+<p>
+Let's see what we can do. We know that:
+</p>
+
+$$ \text{L} = -(y\text{log}(a) + (1-y) \text{log}(1-a)) $$
+
+<p>
+and also we know:
+</p>
+
+$$ a = \frac{1}{1+e^{-z}} $$
+
+<p>
+Let's try to compute $\text{L}$ without explicitly computing $\text{log}(a)$.
+</p>
+
+<p>
+Plugging $a$ into $\text{L}$:
+</p>
+
+$$
+\begin{align*}
+
+\text{L} & = - \left ( y\text{log} \left (\frac{1}{1+e^{-z}} \right ) + (1-y) \text{log} \left (1-\frac{1}{1+e^{-z}}\right) \right) \\
+         & = - \left ( y\text{log} \left (\frac{1}{1+e^{-z}} \right ) + (1-y) \text{log} \left (\frac{e^{-z}}{1+e^{-z}}\right) \right) \\
+         & = - \left ( - y \text{log} \left ( 1+e^{-z} \right ) + (1-y) \left ( \text{log} (e^{-z}) - \text{log} (1 + e^{-z}) \right ) \right ) \\
+	& = - \left ( - y \text{log} \left ( 1+e^{-z} \right ) + (1-y) \left ( -z - \text{log} (1 + e^{-z}) \right ) \right )
+
+\end{align*}
+$$
+
+<p>
+And we are done.
+</p>
+
+<p>
+This is numerically stable because every time we are calling $\text{log}$, it is not in the critical
+unstable range.
+</p>
 
 # HTML
 {}
@@ -932,7 +1026,7 @@ def plot_decision_boundary_lazy(X, y, w, b):
     predictions.append(sigmoid(w.dot(X_fake[i,:]) + b))
 
   predictions = np.array(predictions)
-  predictions = np.stack( (predictions, np.zeros(NX * NY), 1-predictions) )
+  predictions = np.stack( (1-predictions, np.zeros(NX * NY), predictions) )
   plt.imshow(predictions.T.reshape(NX, NY, 3), extent=[-2.0, 2.0, -2.0, 2.0])
   plt.scatter(X[:, 0], X[:, 1], s=50, c=colormap[y])
 
@@ -947,14 +1041,15 @@ plt.cla()
 # HTML
 {}
 <p>
-Here, background <b>blue</b> means our prediction is very close to $0$ which means it is confidently
-classified as <b>red</b>. And conversely, background <b>red</b> means our prediction is very close to
-$1$ which means it is confidently classified as <b>blue</b>.
+Here, background <b>red</b> means our prediction is very close to $0$ which means
+it is confidently classified as <b>red</b>. And conversely, background <b>blue</b>
+means our prediction is very close to $1$ which means it is confidently classified
+as <b>blue</b>.
 </p>
 
 <p>
-For our predictions in the <b>greenish middle area</b>, we are not confident on our predictions. Our
-predictions are close to $0.5$, as expected.
+For our predictions in the <b>purpleish middle area</b>, we are not confident on
+our predictions. Our predictions are close to $0.5$, as expected.
 </p>
 
 # HTML
@@ -962,56 +1057,62 @@ predictions are close to $0.5$, as expected.
 <h1> Visualizing the error surface </h1>
 
 <p>
-We can also visualize the cost as a function of $W$, on 2-D surface. Here, we fix $b$ to the optimal value, and
-plug all possible values of $W$ and compute the error value for that given $w$ with that fixed $b$. This surface
-has an interesting property of being <b>convex</b>.
+We can also visualize the loss as a function of $\mathbf{w}$, on 2-D surface. Here, we fix $b$
+to the optimal value, and plug all possible values of $\mathbf{w}$ and compute the error value
+for that given $\mathbf{w}$ with that fixed $b$. This surface has an interesting property of
+being <b>convex</b>.
 </p>
 
-# HTML
+# CODE
 {'type': 'image', 'width': 900}
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 
 NX = 100
 NY = 100
 
-def get_losses_numerically_stable(Y, z):
-   temp = -1 * (Y * -1 * np.log(1 + np.exp(-z)) + (1-Y) * (-z - np.log(1 + np.exp(-z))))
-   return np.sum(temp, axis = 0, keepdims = True)
+def get_average_loss(X, w, b):
+  total_loss = 0.0
+  for i in range(X.shape[0]):
+    x_i = X[i,:]
+    z = w.dot(x_i) + b
+    total_loss += get_loss_numerically_stable(y[i], z)
+  return total_loss / X.shape[0]
 
-def plot_error_surface(X, Y, b):
-   plt.grid()
+xs = np.linspace(-30, 30, NX)
+ys = np.linspace(-30, 30, NY)
+xv, yv = np.meshgrid(xs, ys)
 
-   xs = np.linspace(-30, 30, NX)
-   ys = np.linspace(-30, 30, NY)
-   xv, yv = np.meshgrid(xs, ys)
+w_fake = np.stack((xv.flatten(), yv.flatten()), axis=1)
 
-   W_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
+losses = []
+for i in range(w_fake.shape[0]):
+  losses.append( get_average_loss(X, w_fake[i,:], b_cache[-1]) )
 
-   z = np.matmul(X.T, W_fake) + b_cache[-1]
-   losses = get_losses_numerically_stable(Y.T, z)
+losses = np.array(losses)
+min_loss = np.min(losses)
 
-   best_W = W_cache[-1]
-   min_loss = np.min(losses)
+def plot_error_surface(X, y, best_w):
+  plt.grid()
 
-   fig = plt.figure(figsize=(12,6))
-   fig.suptitle('Error surface - Optimal loss', fontsize=17)
-   ax = fig.add_subplot(1, 2, 1, projection='3d')
-   ax.set_xlabel('$w_1$', size=20)
-   ax.set_ylabel('$w_2$', size=20)
-   ax.plot_surface(xv, yv, losses.reshape(NX, NY), rstride=4, cstride=4, alpha=0.25)
-   ax.scatter(best_W[0], best_W[1], [min_loss], s=30, c='red')
+  fig = plt.figure(figsize=(12,6))
+  fig.suptitle('Error surface - Optimal loss', fontsize=17)
+  ax = fig.add_subplot(1, 2, 1, projection='3d')
+  ax.set_xlabel('$w_1$', size=20)
+  ax.set_ylabel('$w_2$', size=20)
+  ax.plot_surface(xv, yv, losses.reshape(NX, NY), rstride=4, cstride=4, alpha=0.25)
+  ax.scatter(best_w[0], best_w[1], [min_loss], s=30, c='red')
 
-   ax = fig.add_subplot(1, 2, 2, projection='3d')
-   ax.set_xlabel('$w_1$', size=20)
-   ax.set_ylabel('$w_2$', size=20)
-   ax.plot_surface(xv, yv, losses.reshape(NX, NY), rstride=4, cstride=4, alpha=0.25)
-   ax.scatter(best_W[0], best_W[1], [min_loss], s=30, c='red')
-   ax.view_init(45, 45)
+  ax = fig.add_subplot(1, 2, 2, projection='3d')
+  ax.set_xlabel('$w_1$', size=20)
+  ax.set_ylabel('$w_2$', size=20)
+  ax.plot_surface(xv, yv, losses.reshape(NX, NY), rstride=4, cstride=4, alpha=0.25)
+  ax.scatter(best_w[0], best_w[1], [min_loss], s=30, c='red')
+  ax.view_init(45, 45)
 
-   fig.tight_layout()
-   plt.savefig('image.png')
+  fig.tight_layout()
+  plt.savefig('image.png')
 
-plot_error_surface(X, Y, b)
+plot_error_surface(X, y, w_cache[-1])
 
 plt.close()
 plt.clf()
@@ -1024,19 +1125,10 @@ Let's see the parameters step by step through the iterations of <b>gradient desc
 We start from a random initial point and keep iterating to refine our parameters.
 </p>
 
-# HTML
+# CODE
 {'type': 'image', 'width': 900}
 NX = 100
 NY = 100
-
-xs = np.linspace(-30, 30, NX)
-ys = np.linspace(-30, 30, NY)
-xv, yv = np.meshgrid(xs, ys)
-
-W_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
-
-z = np.matmul(X.T, W_fake) + b_cache[-1]
-losses = get_losses_numerically_stable(Y.T, z)
 
 fig = plt.figure(figsize=(12,6))
 ax = fig.add_subplot(111, projection='3d')
@@ -1049,19 +1141,19 @@ ax.set_title('Gradient descent updates', fontsize=17)
 ax.plot_surface(xv, yv, losses.reshape(NX, NY), rstride=4, cstride=4, alpha=0.25)
 
 def animate(i):
-   graph.set_offsets([W_cache[i][0], W_cache[i][1]])
-   graph.set_3d_properties([losses_cache[i]], zdir='z')
+  graph.set_offsets([w_cache[i][0], w_cache[i][1]])
+  graph.set_3d_properties([l_cache[i]], zdir='z')
 
-   line_data[0].append(W_cache[i].flatten()[0])
-   line_data[1].append(W_cache[i].flatten()[1])
-   line_data[2].append(losses_cache[i])
+  line_data[0].append(w_cache[i].flatten()[0])
+  line_data[1].append(w_cache[i].flatten()[1])
+  line_data[2].append(l_cache[i])
 
-   lines.set_data(line_data[0], line_data[1])
-   lines.set_3d_properties(line_data[2])
+  lines.set_data(line_data[0], line_data[1])
+  lines.set_3d_properties(line_data[2])
 
-   text_box.set_text('Iteration: {}'.format(i))
+  text_box.set_text('Iteration: {}'.format(i))
 
-   return graph, lines, text_box
+  return graph, lines, text_box
 
 line_data = [[], [], []]
 graph = ax.scatter([], [], [], s=50, c='red')
@@ -1069,7 +1161,7 @@ lines, = ax.plot([], [], [], c='red')
 
 text_box = ax.text(20.0, 20.0, 500.0, 'Iteration 0', size = 16)
 
-anim = animation.FuncAnimation(fig, animate, len(W_cache), interval=50, blit=True)
+anim = animation.FuncAnimation(fig, animate, len(w_cache), interval=50, blit=True)
 anim.save('animation.mp4', writer='avconv', fps=2, codec="libx264")
 
 plt.close()
@@ -1099,28 +1191,28 @@ Here is how to train the same classifier for the above red and blue points
 using low-level TensorFlow API:
 </p>
 
-# HTML
+# CODE
 {'type': 'image', 'width': 600}
 import tensorflow as tf
 
 t_X = tf.placeholder(tf.float32, [None, 2])
 t_Y = tf.placeholder(tf.float32, [None, 1])
 
-t_W = tf.Variable([[-4.0, 29.0]])
+t_W = tf.Variable([[-4.0], [29.0]])
 t_b = tf.Variable(tf.zeros([1]))
 
 t_Z = tf.matmul(t_X, t_W) + t_b
 t_Yhat = tf.sigmoid(t_Z)
-t_Loss = tf.reduce_sum(tf.nn.sigmoid_cross_entropy_with_logits(logits = t_Z,  labels = t_Y))
+t_Loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits = t_Z,  labels = t_Y))
 
-train = tf.train.GradientDescentOptimizer(0.4).minimize(t_Loss)
+train = tf.train.GradientDescentOptimizer(8.0).minimize(t_Loss)
 init = tf.global_variables_initializer()
 
 with tf.Session() as session:
    session.run(init)
    losses = []
    for i in range(20):
-      ttrain, ttloss = session.run([train, t_Loss], feed_dict={t_X:X, t_Y:Y})
+      ttrain, ttloss = session.run([train, t_Loss], feed_dict={t_X:X, t_Y:y.reshape(17, 1)})
       losses.append(ttloss)
 
 plt.grid()
@@ -1133,6 +1225,22 @@ plt.savefig('image.png')
 plt.close()
 plt.clf()
 plt.cla()
+
+# HTML
+{}
+<p>
+It is maybe worth mentioning that the Logistic Regression we have just built is
+technically can be considered a <b>Neural Network</b> with only one layer.
+The techniques and the idea of building Neural Networks is extremely similar to
+the mechanics of Logistic Regression. More specifically, we define a loss function,
+we take the derivative of the loss function, we use gradient descent, etc. in
+Neural Networks as well.
+</p>
+
+<p>
+If you are interested learning more about Deep Learning and Neural Networks,
+you can go start reading <a href="part2.html">Part 2: Softmax Regression</a>.
+</p>
 
 # HTML
 {}
