@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 1: Logistic Regression <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: March 22 2018</center><p>
+<center>Last updated: March 24 2018</center><p>
 "If you can't explain it to a six year old, you don't understand it yourself."
 -- Albert Einstein
 </p>
@@ -91,7 +91,7 @@ points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.647 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
+<div class="executed_in">(Executed in 0.713 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
 In other words, given a point in 2-dimensions, $\mathbf{x} = (x_1, x_2)$, we want
 to output either $0$ or $1$. (In this tutorial $0$ represents red, $1$ represents blue.)
 
@@ -233,7 +233,7 @@ how $g(z)$ behaves in some useful range.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.199 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><h1>Maximum Likelihood Estimation</h1>
+<div class="executed_in">(Executed in 0.208 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><h1>Maximum Likelihood Estimation</h1>
 
 <p>
 In training, our goal is to <b>learn</b> three numbers: $w_1, w_2, b$ that best
@@ -389,7 +389,7 @@ Let's think about how we would minimize $f(x) = x^2 + 6x + 5$, numerically:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.175 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/>
+<div class="executed_in">(Executed in 0.206 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/>
 <p>
 Let's say we started with $x=6$ and we want to take step that will make $f(x)$ smaller.
 </p>
@@ -459,7 +459,7 @@ parameter: <b> learning rate </b>. We will use $\alpha$ to denote learning rate.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.414 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 1.521 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation000.mp4" type="video/mp4">
 </video>
 <p>
@@ -498,7 +498,7 @@ What if we had a more complex surface? Maybe two dimensional? For example:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.356 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/>
+<div class="executed_in">(Executed in 0.379 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/>
 <p>
 We can apply the same idea here as well.
 </p>
@@ -561,7 +561,7 @@ in the opposite direction of the derivative.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.762 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 2.411 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation001.mp4" type="video/mp4">
 </video><p>
 We simply applied this gradient descent rule:
@@ -698,7 +698,7 @@ $$
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.177 seconds.)</div><img class="generated_image" width="600" src="../images/image004.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far
+<div class="executed_in">(Executed in 0.359 seconds.)</div><img class="generated_image" width="600" src="../images/image004.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far
 away than $0$ the <i>change</i> gets slower.
 
 <h1> Numerical Stability of the Loss function </h1>
@@ -734,7 +734,7 @@ Let's look at the natural logarithm function.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.186 seconds.)</div><img class="generated_image" width="600" src="../images/image005.png"/><p>
+<div class="executed_in">(Executed in 0.196 seconds.)</div><img class="generated_image" width="600" src="../images/image005.png"/><p>
 An important observation is that $\text{log}(0)$ approaches to $- \infty$.
 This is numerically an issue.
 </p>
@@ -853,7 +853,7 @@ unstable range.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.153 seconds.)</div><img class="generated_image" width="600" src="../images/image006.png"/><p>
+<div class="executed_in">(Executed in 0.184 seconds.)</div><img class="generated_image" width="600" src="../images/image006.png"/><p>
 It turns out we just trained a pretty good classifier for this problem.
 We achieved 100% accuracy. Let's try to visualize our <b>decision boundary</b>.
 </p>
@@ -914,7 +914,7 @@ Now, let's see what will be the value of $x_2$ when $x_1=-1.5$ and $x_1 =1.5$.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.169 seconds.)</div><img class="generated_image" width="600" src="../images/image007.png"/>
+<div class="executed_in">(Executed in 0.188 seconds.)</div><img class="generated_image" width="600" src="../images/image007.png"/>
 <p>
 Nice. How do we know we have a linear classifier?
 </p>
@@ -955,7 +955,7 @@ Everybody <i>loves</i> animations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.416 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 1.312 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation002.mp4" type="video/mp4">
 </video><p>
 Let's see the decision boundary in a more <b>lazy</b> setting. Here, we simply classify
@@ -998,7 +998,7 @@ parameters step by step through the gradient descent iterations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.233 seconds.)</div><img class="generated_image" width="600" src="../images/image008.png"/><p>
+<div class="executed_in">(Executed in 0.224 seconds.)</div><img class="generated_image" width="600" src="../images/image008.png"/><p>
 Here, background <b>red</b> means our prediction is very close to $0$ which means
 it is confidently classified as <b>red</b>. And conversely, background <b>blue</b>
 means our prediction is very close to $1$ which means it is confidently classified
@@ -1070,7 +1070,7 @@ being <b>convex</b>.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.912 seconds.)</div><img class="generated_image" width="900" src="../images/image009.png"/><p>
+<div class="executed_in">(Executed in 1.954 seconds.)</div><img class="generated_image" width="900" src="../images/image009.png"/><p>
 Let's see the parameters step by step through the iterations of <b>gradient descent</b>.
 We start from a random initial point and keep iterating to refine our parameters.
 </p>
@@ -1115,7 +1115,7 @@ We start from a random initial point and keep iterating to refine our parameters
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.643 seconds.)</div><video class="generated_video" width="900" controls>
+<div class="executed_in">(Executed in 2.521 seconds.)</div><video class="generated_video" width="900" controls>
 <source src="../animations/animation003.mp4" type="video/mp4">
 </video><h1> Applying Logistic Regression using low-level Tensorflow APIs</h1>
 
@@ -1170,7 +1170,7 @@ using low-level TensorFlow API:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.731 seconds.)</div><img class="generated_image" width="600" src="../images/image010.png"/><p>
+<div class="executed_in">(Executed in 0.733 seconds.)</div><img class="generated_image" width="600" src="../images/image010.png"/><p>
 It is maybe worth mentioning that the Logistic Regression we have just built is
 technically can be considered a <b>Neural Network</b> with only one layer.
 The techniques and the idea of building Neural Networks is extremely similar to
@@ -1183,18 +1183,160 @@ Neural Networks as well.
 If you are interested learning more about Deep Learning and Neural Networks,
 you can go start reading <a href="part2.html">Part 2: Softmax Regression</a>.
 </p>
+<h1>Appendix</h1>
+
+<p>
+Let's spend some time on the decision of using the sigmoid function and the consequences of it.
+</p>
+
+<p>
+Why do we use the sigmoid function?
+</p>
+
+<ol>
+  <li> Historically popular </li>
+  <li> Squashes numbers to range $(0,1)$. This is a nice property since we want
+       to build a binary classifier </li>
+  <li> Differentiable in every point </li>
+  <li> It has "beautiful" derivatives that makes a nice math (after backpropagation)
+       which produces good $\frac{\partial \text{L}}{\partial \mathbf{w}}$.
+       For example: $\frac{\partial \text{L}}{\partial w_1} = (a-y)x_1$
+  </li>
+  <li> The loss surface is convex (if we use MLE) </li>
+</ol>
+
+<p>
+On the other hand it has problems like vanishing gradients.
+However, let's skip this for now, and focus more about the <b>convexity</b>.
+</p>
+
+<p> How do we prove the error surface of logistic regression is convex? </p>
+
+<p> First of all, what is the proper definition of convexity? </p>
+
+<p> Before jumping to that, let's think about another loss function. Say:
+<b>Sum of squared loss </b>. How would Sum of squared loss behave on the
+same problem.
+</p>
+
+<p> Let's remember our loss function we derived using MLE: </p>
+
+$$ \text{L} = -(y\text{log}(a) + (1-y) \text{log}(1-a)) $$
+
+<p> which produces a convex surface. </p>
+
+Let's try to use <b>least squared loss</b> instead:
+
+$$ \text{L} = (y-a)^2 $$
+
+<p> This should look pretty intuitive. If the difference between $y$ and $a$ is big,
+then the loss is big, and vice versa. </p>
+
+<p> Now, let's see the loss surface for the least squared loss for the same problem. </p>
+<div class="highlight"><pre><span></span><span class="n">NX</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">NY</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="k">def</span> <span class="nf">get_least_square_loss</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+  <span class="n">total_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="n">x_i</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x_i</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">total_loss</span> <span class="o">+=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+  <span class="k">return</span> <span class="n">total_loss</span> <span class="o">/</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">NX</span><span class="p">)</span>
+<span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">NY</span><span class="p">)</span>
+<span class="n">xv</span><span class="p">,</span> <span class="n">yv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+
+<span class="n">w_fake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">xv</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">yv</span><span class="o">.</span><span class="n">flatten</span><span class="p">()),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">losses</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">w_fake</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+  <span class="n">losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">get_least_square_loss</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w_fake</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span> <span class="n">b_cache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="p">)</span>
+<span class="n">losses</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">losses</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">plot_error_surface</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">losses</span><span class="p">):</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+  <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+  <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;Error surface for Least Squared loss&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">17</span><span class="p">)</span>
+  <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+  <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$w_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+  <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$w_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+  <span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">xv</span><span class="p">,</span> <span class="n">yv</span><span class="p">,</span> <span class="n">losses</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">NX</span><span class="p">,</span> <span class="n">NY</span><span class="p">),</span> <span class="n">rstride</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cstride</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+
+  <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+
+<span class="n">plot_error_surface</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">losses</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
+</pre></div>
+<div class="executed_in">(Executed in 1.068 seconds.)</div><img class="generated_image" width="600" src="../images/image011.png"/>
+<p>
+So, the loss surface is not too bad. However, it is not convex anymore. So, we don't have
+any nice guarantees. Our gradient descent may get stuck at local minimas.
+</p>
+
+<p>
+I don't want to write out the all proof for the convexity of MLE, however I will give
+a sketch of the proof.
+</p>
+
+<p>
+Let's remember our loss function for multiple samples:
+</p>
+
+$$
+\text{J} = - \sum_{i=1}^m {y^{(i)}} \text{log} \left( a^{(i)} \right ) + (1-y^{(i)}) \text{log} \left ( 1-a^{(i)} \right )
+$$
+
+<p>
+Okay. So, we know that any positive linear combination of two convex functions is convex as well.
+</p>
+
+<p>
+This means that if we can prove:
+</p>
+
+$$
+ \text{log}(a) = \text{log} \left (\frac{1}{1+e^{\mathbf{w}\mathbf{x} + b}} \right )
+$$
+
+<p>
+and
+</p>
+
+$$
+ \text{log}(1-a) = \text{log} \left (1 - \frac{1}{1+e^{\mathbf{w}\mathbf{x} + b}} \right )
+$$
+
+<p>
+is convex with respect to $\mathbf{w}$ and $b$, then our loss function must be also convex.
+Because we know that $y \in \{0,1\}$, it is positive linear combination of two convex functions.
+</p>
+
+<p>
+One can prove that both of the above functions are convex with respect to $\mathbf{w}$ and $b$ (independently)
+using the second-order condition of convexity.
+</p>
 <h1> References </h1>
 
 <ol>
   <li> Andrew Ng Coursera Machine Learning course. </li>
-  <li< http://cs229.stanford.edu/notes/cs229-notes1.pdf </li>
+  <li> http://cs229.stanford.edu/notes/cs229-notes1.pdf </li>
   <li> http://colah.github.io/posts/2015-08-Backprop/ </li>
   <li> http://neuralnetworksanddeeplearning.com/chap2.html </li>
   <li> https://theclevermachine.wordpress.com/2014/09/08/derivation-derivatives-for-common-neural-network-activation-functions/ </li>
   <li> http://ufldl.stanford.edu/tutorial/ </li>
   <li> https://distill.pub/ </li>
   <li> http://cs231n.github.io/ </li>
+  <li> https://www.youtube.com/watch?v=QWfmCyLEQ8U </li>
   <li> https://www.tensorflow.org/ </li>
+  <li> http://www.ccs.neu.edu/home/vip/teach/MLcourse/2_GD_REG_pton_NN/lecture_notes/logistic_regression_loss_function/logistic_regression_loss.pdf </li>
 </ol>
     </div>
 </div>

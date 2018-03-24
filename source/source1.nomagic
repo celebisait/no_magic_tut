@@ -1244,16 +1244,166 @@ you can go start reading <a href="part2.html">Part 2: Softmax Regression</a>.
 
 # HTML
 {}
+<h1>Appendix</h1>
+
+<p>
+Let's spend some time on the decision of using the sigmoid function and the consequences of it.
+</p>
+
+<p>
+Why do we use the sigmoid function?
+</p>
+
+<ol>
+  <li> Historically popular </li>
+  <li> Squashes numbers to range $(0,1)$. This is a nice property since we want
+       to build a binary classifier </li>
+  <li> Differentiable in every point </li>
+  <li> It has "beautiful" derivatives that makes a nice math (after backpropagation)
+       which produces good $\frac{\partial \text{L}}{\partial \mathbf{w}}$.
+       For example: $\frac{\partial \text{L}}{\partial w_1} = (a-y)x_1$
+  </li>
+  <li> The loss surface is convex (if we use MLE) </li>
+</ol>
+
+<p>
+On the other hand it has problems like vanishing gradients.
+However, let's skip this for now, and focus more about the <b>convexity</b>.
+</p>
+
+<p> How do we prove the error surface of logistic regression is convex? </p>
+
+<p> First of all, what is the proper definition of convexity? </p>
+
+<p> Before jumping to that, let's think about another loss function. Say:
+<b>Sum of squared loss </b>. How would Sum of squared loss behave on the
+same problem.
+</p>
+
+<p> Let's remember our loss function we derived using MLE: </p>
+
+$$ \text{L} = -(y\text{log}(a) + (1-y) \text{log}(1-a)) $$
+
+<p> which produces a convex surface. </p>
+
+Let's try to use <b>least squared loss</b> instead:
+
+$$ \text{L} = (y-a)^2 $$
+
+<p> This should look pretty intuitive. If the difference between $y$ and $a$ is big,
+then the loss is big, and vice versa. </p>
+
+<p> Now, let's see the loss surface for the least squared loss for the same problem. </p>
+
+# CODE
+{'type': 'image', 'width': 600}
+NX = 100
+NY = 100
+
+def get_least_square_loss(X, y, w, b):
+  total_loss = 0.0
+  for i in range(X.shape[0]):
+    x_i = X[i,:]
+    z = w.dot(x_i) + b
+    a = sigmoid(z)
+    total_loss += (y[i] - a) ** 2
+  return total_loss / X.shape[0]
+
+xs = np.linspace(-100, 100, NX)
+ys = np.linspace(-100, 100, NY)
+xv, yv = np.meshgrid(xs, ys)
+
+w_fake = np.stack((xv.flatten(), yv.flatten()), axis=1)
+
+losses = []
+for i in range(w_fake.shape[0]):
+  losses.append( get_least_square_loss(X, y, w_fake[i,:], b_cache[-1]) )
+losses = np.array(losses)
+
+def plot_error_surface(X, y, losses):
+  plt.grid()
+
+  fig = plt.figure()
+  fig.suptitle('Error surface for Least Squared loss', fontsize=17)
+  ax = fig.add_subplot(1, 1, 1, projection='3d')
+  ax.set_xlabel('$w_1$', size=20)
+  ax.set_ylabel('$w_2$', size=20)
+  ax.plot_surface(xv, yv, losses.reshape(NX, NY), rstride=4, cstride=4, alpha=0.25)
+
+  fig.tight_layout()
+  plt.savefig('image.png')
+
+plot_error_surface(X, y, losses)
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HTML
+{}
+
+<p>
+So, the loss surface is not too bad. However, it is not convex anymore. So, we don't have
+any nice guarantees. Our gradient descent may get stuck at local minimas.
+</p>
+
+<p>
+I don't want to write out the all proof for the convexity of MLE, however I will give
+a sketch of the proof.
+</p>
+
+<p>
+Let's remember our loss function for multiple samples:
+</p>
+
+$$
+\text{J} = - \sum_{i=1}^m {y^{(i)}} \text{log} \left( a^{(i)} \right ) + (1-y^{(i)}) \text{log} \left ( 1-a^{(i)} \right )
+$$
+
+<p>
+Okay. So, we know that any positive linear combination of two convex functions is convex as well.
+</p>
+
+<p>
+This means that if we can prove:
+</p>
+
+$$
+ \text{log}(a) = \text{log} \left (\frac{1}{1+e^{\mathbf{w}\mathbf{x} + b}} \right )
+$$
+
+<p>
+and
+</p>
+
+$$
+ \text{log}(1-a) = \text{log} \left (1 - \frac{1}{1+e^{\mathbf{w}\mathbf{x} + b}} \right )
+$$
+
+<p>
+is convex with respect to $\mathbf{w}$ and $b$, then our loss function must be also convex.
+Because we know that $y \in \{0,1\}$, it is positive linear combination of two convex functions.
+</p>
+
+<p>
+One can prove that both of the above functions are convex with respect to $\mathbf{w}$ and $b$ (independently)
+using the second-order condition of convexity.
+</p>
+
+# HTML
+{}
 <h1> References </h1>
 
 <ol>
   <li> Andrew Ng Coursera Machine Learning course. </li>
-  <li< http://cs229.stanford.edu/notes/cs229-notes1.pdf </li>
+  <li> http://cs229.stanford.edu/notes/cs229-notes1.pdf </li>
   <li> http://colah.github.io/posts/2015-08-Backprop/ </li>
   <li> http://neuralnetworksanddeeplearning.com/chap2.html </li>
   <li> https://theclevermachine.wordpress.com/2014/09/08/derivation-derivatives-for-common-neural-network-activation-functions/ </li>
   <li> http://ufldl.stanford.edu/tutorial/ </li>
   <li> https://distill.pub/ </li>
   <li> http://cs231n.github.io/ </li>
+  <li> https://www.youtube.com/watch?v=QWfmCyLEQ8U </li>
   <li> https://www.tensorflow.org/ </li>
+  <li> http://www.ccs.neu.edu/home/vip/teach/MLcourse/2_GD_REG_pton_NN/lecture_notes/logistic_regression_loss_function/logistic_regression_loss.pdf </li>
 </ol>
