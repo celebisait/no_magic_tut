@@ -13,7 +13,12 @@
 -- Richard Feynman
 </p>
 
-<h1>Introduction</h1>
+# HEADER
+{'header': 'Introduction'}
+
+# HTML
+{}
+
 <p>
 Let's say we want to build a model to discriminate the following <b>red</b>, <b>green</b>
 and <b>blue</b> points in 2-dimensional space:
@@ -23,27 +28,45 @@ and <b>blue</b> points in 2-dimensional space:
 {'type': 'image', 'width': 600}
 import numpy as np
 import matplotlib.pyplot as plt
+plt.style.use('classic')
 np.set_printoptions(precision=3, suppress=True)
 
-X = np.array([[-0.1, -0.5, 1.3, -0.6, -1.5, 0.2, -0.3,  0.7,  1.1, -1.0,
-               -0.5, -1.3,  -1.4, -0.9, 0.4 , -0.4, 0.3, -1.6, -0.5, -1.0],
-              [1.4,  -0.1, 0.9,  0.4,  0.4, 0.2, -0.4, -0.8, -1.5,  0.9,
-               1.5, -0.45, -1.2, -0.7, -1.3, 0.6, -0.5, -0.7, -1.4, -1.4]])
-Y = np.array([[0, 0, 1, 0, 2, 1, 1, 1, 1, 0, 0, 2, 2, 2, 1, 0, 1, 2, 2, 2]])
-Y_one_hot = np.eye(3)[Y[0]].T
+X = np.array([[-0.1, 1.4],
+              [-0.5, -0.1],
+	      [1.3, 0.9],
+	      [-0.6, 0.4],
+	      [-1.5, 0.4],
+	      [0.2, 0.2],
+	      [-0.3, -0.4],
+	      [0.7, -0.8],
+	      [1.1, -1.5],
+	      [-1.0, 0.9],
+	      [-0.5, 1.5],
+	      [-1.3, -0.45],
+	      [-1.4, -1.2],
+	      [-0.9, -0.7],
+	      [0.4 , -1.3],
+	      [-0.4, 0.6],
+	      [0.3, -0.5],
+	      [-1.6, -0.7],
+	      [-0.5, -1.4],
+	      [-1.0, -1.4]])
+
+y = np.array([0, 0, 1, 0, 2, 1, 1, 1, 1, 0, 0, 2, 2, 2, 1, 0, 1, 2, 2, 2])
+Y = np.eye(3)[y]
 colormap = np.array(['r', 'g', 'b'])
 
-def plot_scatter(X, Y, colormap, path):
+def plot_scatter(X, y, colormap, path):
    plt.grid()
    plt.xlim([-2.0, 2.0])
    plt.ylim([-2.0, 2.0])
    plt.xlabel('$x_1$', size=20)
    plt.ylabel('$x_2$', size=20)
    plt.title('Input 2D points', size=18)
-   plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+   plt.scatter(X[:,0], X[:,1], s=50, c=colormap[y])
    plt.savefig(path)
 
-plot_scatter(X, Y, colormap, 'image.png')
+plot_scatter(X, y, colormap, 'image.png')
 
 plt.close()
 plt.clf()
@@ -52,27 +75,35 @@ plt.cla()
 # HTML
 {}
 <p>
-In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
-<b>green</b> or <b>blue</b>.
+In other words, given a point in 2-dimensions, $\mathbf{x} = (x_1, x_2)$, we want to
+output either <b>red</b>, <b>green</b> or <b>blue</b>.
 </p>
 
 <p>
-We can use <b>Softmax Regression</b> for this problem. We first learn <b>weights</b>
-($w_{1,1}, w_{1,2}, w_{2,1}, w_{2,2}, w_{3,1}, w_{3,2}$) and <b>bias</b> ($b_1, b_2, b_3$).
-This phase is called <b>training</b>. Then we use the following formula to predict if the
-new point is red, blue or green. This phase is called <b>prediction</b> or <b>inference</b>.
+We can use <b>Softmax Regression</b> for this problem. We first learn <b>weights</b>,
+$w_{1,1}, w_{1,2}, w_{2,1}, w_{2,2}, w_{3,1}, w_{3,2}$, and <b>bias</b>, $b_1, b_2, b_3$.
+This phase is called <b>training</b>. And then, we will use those weights and the bias
+to predict a new point, $\mathbf{x}$.
 </p>
 
-<h1>One hot vector representation</h1>
+# HEADER
+{'header': 'One hot vector representation'}
+
+# HTML
+{}
 
 <p>
 We represent the output as a one hot vector. In other words, we represent <b>red points</b>
-using $\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$ and similarly for <b>green points</b> using
-$\begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}$ and lastly for <b>blue points</b> using
+using $\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$, similarly for <b>green points</b> using
+$\begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}$, and lastly for <b>blue points</b> using
 $\begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$.
 </p>
 
-<h1>Computation Graph</h1>
+# HEADER
+{'header': 'Computation Graph'}
+
+# HTML
+{}
 
 <p>
 Here is a visual representation of our model:
@@ -81,89 +112,88 @@ Here is a visual representation of our model:
 <img class="static_image" style="width: 800px;" src="../static_images/image003.png"/>
 
 <p>
-and simply pick the biggest $a_i$ to do the <b>final prediction</b>.
-</p>
-
-<h1>Feed-forward Phase</h1>
-
-<p>
-Let's assume that we are given the weights and bias. How do we calculate the output?
+and we simply pick the biggest $a_i$ as our <b>final prediction</b>.
 </p>
 
 <p>
-We represent $X$ as a matrix. $X$ contains all the points. In our case $X$ contains $M=20$
-samples and for each sample we have $(x,y)$. $Y$ contains all the labels (red, green and blue)
-as a one hot vector. $W$ has the weights. $b$ has the bias:
+The parameters of our Softmax Regression model is:
 </p>
 
 $$
-X =
-\begin{bmatrix}
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-\end{bmatrix}_{2 \times M}, \quad
-Y =
-\begin{bmatrix}
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-\end{bmatrix}_{3 \times M}, \quad
-W =
-\begin{bmatrix}
-0   &  0   \\
-0   &  0   \\
-0   &  0   \\
-\end{bmatrix}_{3 \times 2}
-b =
-\begin{bmatrix}
-0  \\
-0  \\
-0  \\
-\end{bmatrix}_{3 \times 1}
+  \mathbf{W} = \begin{bmatrix}
+w_{1,1}   &  w_{1,2}  \\
+w_{2,1}   &  w_{2,2}  \\
+w_{3,1}   &  w_{3,2}  \\
+\end{bmatrix}, \quad
+
+  \mathbf{b} = \begin{bmatrix}
+b_1 \\
+b_2 \\
+b_3
+\end{bmatrix}
 $$
 
 <p>
-Feed-forward basically means given $X, Y, W$ and $b$, will produce us $a$ and $L$.
-</p>
-
-$$
-Z = W X + b
-$$
-
-<p>
-Here we can see it visually:
-</p>
-
-$$
-\begin{bmatrix}
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-\end{bmatrix}_{3 \times M}
-=
-\begin{bmatrix}
-0   &  0   \\
-0   &  0   \\
-0   &  0   \\
-\end{bmatrix}_{3 \times 2}
-\begin{bmatrix}
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-\end{bmatrix}_{2 \times M}
-+
-\begin{bmatrix}
-0  \\
-0  \\
-0  \\
-\end{bmatrix}_{3 \times 1}
-$$
-
-<p>
-As you may realized, the summation here is called <b>broadcasting</b>.
+our goal is to <b>learn</b> these parameters.
 </p>
 
 <p>
-After getting $Z$, we apply softmax function over $Z$:
+We are given the coordinates of the input points in the matrix $\mathbf{X}$
+of size $(20 \times 2)$ and their corresponding class labels in $\mathbf{y}$
+which if of size $20$.
+</p>
+
+# HEADER
+{'header': 'Feed-forward Phase'}
+
+# HTML
+{}
+
+<p>
+First, let's assume that we are given the weights, $\mathbf{W}$, and, bias,
+$\mathbf{b}$. How do we calculate the output?
+</p>
+
+<p>
+We represent $\mathbf{X}$ as a matrix. $\mathbf{X}$ contains all the points.
+In our case $\mathbf{X}$ contains $m=20$ samples and for each sample we have $(x,y)$.
+$\mathbf{y}$ contains all the labels (red, green and blue). For each of the 20 samples,
+we have an integer $y^{(i)} \in \{0, 1, 2\}$. We convert $\mathbf{y}$ into a matrix
+$\mathbf{Y}$ of one hot vectors. $\mathbf{Y}$ is of size $(20 \times 3)$ where each
+row represents one of the sample's class as a one hot vector.
+</p>
+
+<p>
+As we discussed earlier, $\mathbf{W}$ has the weights. $\mathbf{b}$ has the bias.
+So, the sizes of matrices are:
+</p>
+
+<ul>
+  <li> $\mathbf{X}: 20 \times 2$
+  <li> $\mathbf{Y}: 20 \times 3$
+  <li> $\mathbf{W}: 3 \times 2$
+  <li> $\mathbf{b}: 20$
+</ul>
+
+<p>
+Feed-forward basically means: given $\mathbf{x}, \mathbf{y}, \mathbf{W}$ and $\mathbf{b}$,
+we produce $\mathbf{a}$ and $\text{L}$.
+</p>
+
+<p>
+Here is how we do it:
+</p>
+
+$$
+\mathbf{z} = \mathbf{W} \mathbf{x} + \mathbf{b}
+$$
+
+<p>
+here $\mathbf{x}$ is of size $2 \times 1$. So, $\mathbf{z}$ is of size $3 \times 1$.
+</p>
+
+<p>
+After getting $\mathbf{z}$, we apply softmax function to compute $\mathbf{a}$.
 </p>
 
 <p class="equation">
@@ -173,16 +203,32 @@ a_i = \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
 </p>
 
 <p>
-However, this may be problematic to compute for big values of $z_i$. We call this phenomena
-<b>numerically unstable</b>. Because $e^{z_i}$ easily overflows 64bit (even 128bit).
+A nice property about the Softmax function that it produces a legit <b>Probability Distrubition</b>.
+In classification (or more generally in Machine Learning) we often want to assign prababilities to
+categories or classes. Softmax function is known to work well for numereous applications/areas.
+</p>
+
+<p>
+Softmax is a vector function -- it takes a vector as an input and returns another vector.
+</p>
+
+<p>
+There is an issue with the naive way of implementing Softmax function we should keep in mind.
+This may be problematic to compute for big values of $z_i$. We call this phenomena
+<b>numerically unstable</b>. Because $e^{z_i}$ can easily overflow 64bit (even 128bit).
 We need to approach it slightly differently.
 </p>
 
-<h1>Numerical Stability of Softmax function</h1>
+# HEADER
+{'header': 'Numerical Stability of Softmax function'}
+
+# HTML
+{}
 
 <p>
 The Softmax function takes an N-dimensional vector of real values and
-returns a new N-dimensional vector that sums up to $1$. The exact formula is (Softmax equation):
+returns a new N-dimensional vector that sums up to $1$. In this tutorial, N is 3.
+Please see the softmax function in Equation $\ref{eq:softmax}$.
 </p>
 
 <p>
@@ -201,11 +247,13 @@ print softmax(a)
 # HTML
 {}
 <p>
-Intuitively, softmax increases/emphasizes the <b>relative difference</b> between large and small values.
+Intuitively, softmax increases/emphasizes the <b>relative difference</b> between large
+and small values.
 </p>
 
 <p>
-However, let's look at this:
+However, we may have numerical stability issues if we naively try to apply softmax function.
+Let's look at this:
 </p>
 
 # CODE
@@ -230,7 +278,15 @@ print(np.exp(1000))
 
 # HTML
 {}
-Instead, we can approach it differently:
+
+<p>
+$e^{1000}$ overflows and numpy returns positive infinity. So, both our numerator and denominator
+becomes inifity, and numpy returns <b>nan</b> for the division.
+</p>
+
+<p>
+There is a nice approach to compute the exact same function with a simple math trick:
+</p>
 
 $$
 a_i = \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}} = \frac{e^{z_i}e^K}{\sum_{j=1}^N e^{z_j} e^K}
@@ -238,11 +294,12 @@ a_i = \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}} = \frac{e^{z_i}e^K}{\sum_{j=1}^N e^{z
 $$
 
 <p>
-for some fixed $K$. And we can pick $K = - max(z_1, z_2, \dots, z_N)$.
+for some fixed $K \in \mathbb{R}$. And we can pick $K = - max(z_1, z_2, \dots, z_N)$.
 </p>
 
 <p>
-More practically:
+So, practically, we compute the same $\mathbf{a}$, using the below code, that does not have
+the same numerical stability issues we had before:
 </p>
 
 # CODE
@@ -257,171 +314,203 @@ print softmax(a)
 # HTML
 {}
 <p>
-As you can see, we still have some numerical issues. First and second value of the softmax
-shouldn't be $0$, they should be very close $0$, but not exactly $0$. Hmmm, but this is
-not as bad as <b>nan</b> issue.
+As you can see, we fixed the <b>nan</b> issues with this simple trick.
 </p>
 
 <p>
-So, to wrap-up the Feed-Forward phase, we can finalize the forward propagation step:
+However, we still have some numerical issues. First and second value of the softmax
+shouldn't be $0$, they should be very close $0$, but not exactly $0$. But this is
+okay for now.
+</p>
+
+<p>
+So, to wrap-up the Feed-Forward phase, we can finalize the feed-forward step:
 </p>
 
 # CODE
-{'width': 600}
-def stable_softmax(Z):
-  return np.exp(Z - Z.max(axis = 0)) / np.sum(np.exp(Z - Z.max(axis = 0)), axis = 0)
+{}
+def stable_softmax(z):
+  # z is 3 x 1
+  a = np.exp(z - max(z)) / np.sum(np.exp(z - max(z)))
+  # a is 3 x 1
+  return a
 
-def forward_propagate(X, W, b):
-  Z = np.matmul(W, X) + b
-  A = stable_softmax(Z)
-
-  return Z, A
+def forward_propagate(x, W, b):
+  # W is 3 x 2
+  # x is 2 x 1
+  # b is 3 x 1
+  z = np.matmul(W, x) + b
+  a = stable_softmax(z)
+  # z is 3 x 1
+  # a is 3 x 1
+  return z, a
 
 W = np.array([[ 0.31, 3.95],
-      [ 7.07, -0.23],
-      [-6.27, -2.35]])
+              [ 7.07, -0.23],
+              [-6.27, -2.35]])
 
 b = np.array([[ 1.2  ],
-      [ 2.93 ],
-      [-4.14 ]])
+              [ 2.93 ],
+              [-4.14 ]])
 
-Z, A = forward_propagate(X, W, b)
-print(Y_one_hot[:,0:10])
-print(A[:,0:10])
+z, a = forward_propagate(X[0,:].reshape(2,1), W, b)
 
-# HTML
-{}
-<p>
-Above we print the first 10 predictions, and they look pretty good. In fact, we have 100% accuracy.
-So, given the weights, and bias, it is pretty straight-forward to calculate the final predictions.
-The tricky part is to <i>learn</i> those weights properly.
-</p>
+print(z)
+print(a)
+print(y[0])
 
 # HTML
 {}
-<h1> Defining Loss function using Maximum Likelihood Estimation </h1>
-
 <p>
-In training, our goal is to <b>learn</b> a matrix $W$ of size $(3 \times 2)$  and a $\mathbf{b}$ of size $(3 \times 1)$
-that best <b>discriminates</b> red, green and blue points.
+Above, we feed the first sample of our $m=20$ samples. It is a red point, and our classifier
+produces a one hot vector which confidently says red as well. So, our classifier does a good job
+for this sample. In fact, this classifier correctly classifies all the samples correctly, so it
+has 100% accuracy.
 </p>
 
 <p>
-We want to find $W$ and $\mathbf{b}$ that minimizes some definition of a <b>cost function</b>.
-Let's attempt to write a cost function for this problem.
+So, given the weights, and bias, it is pretty straight-forward to calculate the final prediction.
+The tricky part is to <b>learn</b> the parameters (weights and the bias) properly.
+</p>
+
+# HEADER
+{'header': 'Defining Loss function using Maximum Likelihood Estimation'}
+
+# HTML
+{}
+
+<p>
+In training, our goal is to <b>learn</b> a matrix $\mathbf{W}$ of size $3 \times 2$,
+and a $\mathbf{b}$ of size $3 \times 1$ that best <b>discriminates</b> red, green
+and blue points.
+</p>
+
+<p>
+We want to find $\mathbf{W}$ and $\mathbf{\mathbf{b}}$ that minimizes some definition
+of a <b>loss function</b> (or cost function). Let's attempt to write a loss function
+for this problem.
 </p>
 
 <p>
 Let's say we have three points:
 </p>
 
-$$\mathbf{x} = \begin{bmatrix} -0.1 \\ 1.4 \end{bmatrix}, y=0$$
+$$\mathbf{x}^{(1)} = \begin{bmatrix} -0.1 \\ 1.4 \end{bmatrix}, y^{(1)}=0$$
 
-$$\mathbf{x} = \begin{bmatrix} 1.3  \\ 0.9 \end{bmatrix}, y=1$$
+$$\mathbf{x}^{(2)} = \begin{bmatrix} 1.3  \\ 0.9 \end{bmatrix}, y^{(2)}=1$$
 
 <p>
 and similarly,
 </p>
 
-$$\mathbf{x} = \begin{bmatrix} -1.4  \\ -1.1 \end{bmatrix}, y=2$$
+$$\mathbf{x}^{(3)} = \begin{bmatrix} -1.4  \\ -1.1 \end{bmatrix}, y^{(3)}=2$$
 
 <p>
-Now, let's list these $y$ as a <b>one hot vector</b> and, their corresponding <i>imaginary</i> $\mathbf{a}$ values:
+Now, let's list these $y$ as a <b>one hot vector</b> and, their corresponding
+<i>imaginary</i> $\mathbf{a}$ values:
 </p>
 
-$$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix} $$
+$$\mathbf{y}^{(1)} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix},
+	\mathbf{a}^{(1)}= \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix} $$
 
-$$\mathbf{y} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix} $$
+$$\mathbf{y}^{(2)} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix},
+        \mathbf{a}^{(2)} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix} $$
 
-$$\mathbf{y} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix} $$
+$$\mathbf{y}^{(3)} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix},
+        \mathbf{a}^{(3)} = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix} $$
 
 <p>
-Intuitively, we want a classifier that produces <b>similar</b> looking $\mathbf{a}$ and $\mathbf{y}$.
-This means, if
+Intuitively, we want a classifier that produces <b>similar</b> looking $\mathbf{a}$
+and $\mathbf{y}$. This means, if
 $\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$, then, for example, having
-$\mathbf{a} = \begin{bmatrix} 0.8 \\ 0.1 \\ 0.1 \end{bmatrix}$ is <b>more desirable</b> than having
-$\mathbf{a} = \begin{bmatrix} 0.6 \\ 0.2 \\ 0.2 \end{bmatrix}$.
+$\mathbf{a} = \begin{bmatrix} 0.8 \\ 0.1 \\ 0.1 \end{bmatrix}$ is <b>more desirable</b>
+than having $\mathbf{a} = \begin{bmatrix} 0.6 \\ 0.2 \\ 0.2 \end{bmatrix}$.
 
 <p>
 In other words, we want to <b>maximize</b>:
 </p>
 
-$$P(\mathbf{y}|\mathbf{x}) = \prod_{j=1}^{3} a_j^{y_j} $$
+$$ \prod_{j=1}^{3} a_j^{y_j} $$
 
 <p>
-Here, $a_j$ represents the jth item in the vector $\mathbf{a}$, and similarly $y_j$ represents the jth value in $\mathbf{y}$.
-For example, when $\mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix}$, then, $a_1 = 0.9, a_2 = 0.1$ and
-$a_3 = 0.0$.
+Here, $a_j$ represents the jth item in the vector $\mathbf{a}$, and similarly $y_j$
+represents the jth value in $\mathbf{y}$. For example, when
+$\mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix}$, then, $a_1 = 0.9, a_2 = 0.1$
+and $a_3 = 0.0$.
 </p>
 
-$$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix},
-P(\mathbf{y}|\mathbf{x}) = 0.9 \times 1 \times 1 = 0.9 $$
+$$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, \quad
+  \mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix}, \quad
+     9 \times 1 \times 1 = 0.9 $$
 
-$$\mathbf{y} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix},
-P(\mathbf{y}|\mathbf{x}) = 1 \times 0.8 \times 1 = 0.8 $$
+$$\mathbf{y} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, \quad
+  \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix}, \quad
+     1 \times 0.8 \times 1 = 0.8 $$
 
-$$\mathbf{y} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix},
-P(\mathbf{y}|\mathbf{x}) = 1 \times 1 \times 0.7 = 0.7 $$
+$$\mathbf{y} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, \quad
+  \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix}, \quad
+     1 \times 1 \times 0.7 = 0.7 $$
 
 <p>
-<b>Bigger</b> the $P(\mathbf{y}|\mathbf{x})$ is the <b>better</b>.
+Similar to <b>Logistic Regression</b>, we need to define the <b>loss</b> for multiple samples.
+We will apply Maximum Likelihood Estimation again, and try to maximize the
+multiplication for each sample:
 </p>
+
+$$ \prod_{i=1}^{M} \prod_{j=1}^{3}  (a_j^{(i)}) ^ {y_j^{(i)}} $$
 
 <p>
-Similar to <b>Logistic Regression</b>, in order to define the <b>loss</b> for multiple samples, we will simply multiply
-each value for each sample (<b>Maximum Likelihood Estimation</b>):
+here, $y^{(i)}$, $x^{(i)}$ and $a^{(i)}$ corresponds to ith sample in the training set
+out of $M$ training samples.
 </p>
-
-$$J = \prod_{i=1}^{M} P(y^{(i)}|x^{(i)}) $$
-
-<p>
-here, $y^{(i)}$, $x^{(i)}$ and $a^{(i)}$ corresponds to ith sample in the training set out of $M$ training samples. We can rewrite it as:
-</p>
-
-$$J = \prod_{i=1}^{M} \prod_{j=1}^{3}  (a_j^{(i)}) ^ {y_j^{(i)}} $$
 
 <p>
 Maximizing above is equal to maximizing:
 </p>
 
-$$J = log \left( \prod_{i=1}^{M} \prod_{j=1}^{3} (a_j^{(i)}) ^ {y_j^{(i)}} \right ) $$
-
-<p>
-we can write it as:
-</p>
-
-$$J = \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} log(a_j^{(i)}) $$
+$$
+\begin{align*}
+&= \text{log} \left( \prod_{i=1}^{M} \prod_{j=1}^{3} (a_j^{(i)}) ^ {y_j^{(i)}} \right ) \\
+&= \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} \text{log}(a_j^{(i)})
+\end{align*}
+$$
 
 <p>
 since we like to <b>minimize</b> things instead of <b>maximizing</b>:
 </p>
 
-$$J = - \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} log(a_j^{(i)}) $$
+$$J = - \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} \text{log}(a_j^{(i)}) $$
 
 <p>
-If we add our <b>Log Loss</b> to our computation graph:
+If we add our <b>Log Loss</b> to our computation graph, for one sample:
 </p>
 
 <img class="static_image" style="width: 900px;" src="../static_images/image004.png"/>
 
 <p>
-Also, this loss function is sometimes called <b>Cross Entropy Loss Function</b> in some contexts.
+Also, this loss function is sometimes called <b>Cross Entropy Loss Function</b> in
+some contexts.
 </p>
 
-<h1>Gradient Descent</h1>
+# HEADER
+{'header': 'Gradient Descent'}
+
+# HTML
+{}
 
 <p>
-Ideally, we want to start with <b>random</b> parameters and make our parameters
+We want to start with <b>random</b> parameters and make our parameters
 better and better gradually as an iterative manner. Gradient descent is simply:
 </p>
 
 $$
-W = W - \alpha \frac{dL}{dW} \quad \mathbf{b} = \mathbf{b} - \alpha \frac{dL}{d \mathbf{b}}
+\mathbf{W} = \mathbf{W} - \alpha \frac{d L}{d \mathbf{W}},
+  \quad \mathbf{b} = \mathbf{b} - \alpha \frac{d L}{d \mathbf{b}}
 $$
 
 <p>
-The tricky part here is to compute $\frac{dL}{dW}$ and $\frac{dL}{d \mathbf{b}}$. We need
-to do a small scale <b>back propagation</b> of derivatives here.
+The tricky part here is to compute $\frac{d L}{d \mathbf{W}}$ and $\frac{d L}{d \mathbf{b}}$.
+We need to do a small scale <b>back propagation</b> of derivatives here.
 </p>
 
 <p>
@@ -431,7 +520,8 @@ But first, let's see what happens if we change $w_{2, 1}$ in the network, step b
 <img class="static_image" style="width: 900px;" src="../static_images/animation001.gif"/>
 
 <p>
-In order to do gradient descent, we need the derivatives:
+In order to do gradient descent, we need the derivatives, $\frac{d L}{d \mathbf{W}}$ and
+$\frac{d L}{d \mathbf{b}}$:
 </p>
 
 $$
@@ -441,28 +531,60 @@ $$
 $$
 
 <p>
+Let's write an example for $\frac{dL}{d w_{2,1}}$ explicitly:
+</p>
+
+$$
+\begin{align*}
+\frac{dL}{dw_{2,1}} & = \sum_{i=1}^3 \left (\frac{dL}{da_i} \right)
+	\left (\frac{da_i}{dz_2} \right) \left(\frac{dz_2}{dw_{2,1}} \right ) \\
+	            &= \left (\frac{dL}{da_1} \right)
+	\left (\frac{da_1}{dz_2} \right) \left(\frac{dz_2}{dw_{2,1}} \right ) +
+		       \left (\frac{dL}{da_2} \right)
+	\left (\frac{da_2}{dz_2} \right) \left(\frac{dz_2}{dw_{2,1}} \right ) +
+		       \left (\frac{dL}{da_3} \right)
+	\left (\frac{da_3}{dz_2} \right) \left(\frac{dz_2}{dw_{2,1}} \right )
+\end{align*}
+$$
+
+<p>
+Above, we are summing up the contribution of the change of $w_{2,1}$ over
+different "paths": $a_1, a_2, a_3$. In other words: when we change $w_{2,1}$;
+$a_1, a_2$, and $a_3$ changes as a result. Then, the change of $a_1, a_2$ and $a_3$
+effects $L$. We sum up all the changes $w_{2,1}$ produces over each $a_1, a_2$ and
+$a_3$ to $L$.
+</p>
+
+<p>
+So, we need the derivatives: $\frac{dL}{d a_i}, \frac{da_i}{dz_m}$,
+$\frac{dz_m}{dw_{m,n}}$ and $\frac{dz_m}{db_m}$.
+</p>
+
+<p>
 Let's do some calculus:
 <img src="../static_images/evil1.png" style="width:30px; height:30px;">
 <img src="../static_images/evil2.png" style="width:30px; height:30px;">
 </p>
 
 $$
-\frac{dL}{da_i} =  \frac{d}{da_i} \left ( - \sum_{j=1}^3 y_j log(a_j) \right ) =
-\frac{d}{da_i} \left ( - y_i log(a_i) \right ) = \frac{-y_i}{a_i}
+\frac{dL}{da_i} =  \frac{d}{da_i} \left ( - \sum_{j=1}^3 y_j \text{log}(a_j) \right ) =
+\frac{d}{da_i} \left ( - y_i \text{log}(a_i) \right ) = \frac{-y_i}{a_i}
 $$
 
 $$
 \frac{dz_m}{dw_{m,n}} = x_n, \quad
-\frac{dz_m}{b_m} = 1
+\frac{d z_m}{d b_m} = 1
 $$
 
-<h1>Derivative of Softmax Function</h1>
-
 <p>
-A nice property about the Softmax function that it produces a legit <b>Probability Distrubition</b>.
-In classification (or more generally in Machine Learning) we often want to assign prababilities to
-categories or classes. Softmax function is known to work well numereous applications/areas.
+Now, we only missing the derivative of the Softmax function: $\frac{d a_i}{d z_m}$.
 </p>
+
+# HEADER
+{'header': 'Derivative of Softmax Function'}
+
+# HTML
+{}
 
 <p>
 Softmax is a vector function -- it takes a vector as an input and returns another vector. Therefore, we
@@ -483,7 +605,11 @@ refers to how much $a_1$ will change if play with $z_2$.
 </p>
 
 <p>
-Using the same logic for each element for $a_i$ and $z_j$ would produce us $N \times N$ matrix of derivatives.
+Using the same logic for each element for $a_i$ and $z_j$ would produce us $N \times N$ matrix
+of derivatives. This is sometimes called a Jacobian matrix. Let's think there is a function $f$
+, in this case this is the softmax function, takes an array and returns an array:
+$f: \mathbb{R}^n \rightarrow \mathbb{R}^m $. The derivative matrix, Jacobian matrix,
+$\mathbf{J} \in \mathbb{R}^{m \times n}$.
 </p>
 
 <p>
@@ -510,15 +636,18 @@ $$
 f(x) = e^{z_i}, \quad g(x) = \sum_{j=1}^N e^{z_j}
 $$
 
-<p>
-Let's apply <b>Quotient Rule</b>, if $i=m$:
-</p>
+<p>Let's apply <b>Quotient Rule</b>:</p>
+
+<p>if $i=m$:</p>
 
 $$
-\frac{d}{d z_m} a_i = \frac{d}{d z_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}} =
-\frac{ (e^{z_i})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } =
-\frac{ e^{z_i} \sum_{j=1}^N e^{z_j} - e^{z_m} e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } =
-\frac{ e^{z_i} } { \sum_{j=1}^N e^{z_j} }  \frac{ \sum_{j=1}^N e^{z_j} - e^{z_m} } { \sum_{j=1}^N e^{z_j} } = (a_i)(1-a_m)
+\begin{align*}
+\frac{d}{d z_m} a_i & = \frac{d}{d z_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
+= \frac{ (e^{z_i})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } \\
+& = \frac{ e^{z_i} \sum_{j=1}^N e^{z_j} - e^{z_m} e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 }
+= \frac{ e^{z_i} } { \sum_{j=1}^N e^{z_j} }  \frac{ \sum_{j=1}^N e^{z_j} - e^{z_m} } { \sum_{j=1}^N e^{z_j} } \\
+& = (a_i)(1-a_m)
+\end{align*}
 $$
 
 <p>
@@ -530,11 +659,13 @@ Similarly, if $i \neq m$:
 </p>
 
 $$
-\frac{d}{d z_m} a_i = \frac{d}{d z_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
-= \frac{ (e^{z_i})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 }
-= \frac{ 0 - e^{z_m} e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 }
-= -\frac{ e^{z_m} } { \sum_{j=1}^N e^{z_j} } \frac{ e^{z_i} }{ \sum_{j=1}^N e^{z_j} }
-= - (a_m) (a_i)
+\begin{align*}
+\frac{d}{d z_m} a_i & = \frac{d}{d z_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
+= \frac{ (e^{z_i})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } \\
+& = \frac{ 0 - e^{z_m} e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 }
+= -\frac{ e^{z_m} } { \sum_{j=1}^N e^{z_j} } \frac{ e^{z_i} }{ \sum_{j=1}^N e^{z_j} } \\
+& = - (a_m) (a_i)
+\end{align*}
 $$
 
 <p>
@@ -562,8 +693,8 @@ where $\delta_{i,m} = 1$ if $i=m$, and $0$ otherwise.
 </p>
 
 <p>
-The reason we want to write it this way is that we don't want to use any <b>loops</b>. And we can
-execute the above using matrix operations like:
+The reason we want to write it this way is that we don't want to use any <b>loops</b> to create
+this matrix, instead we can simply do:
 </p>
 
 $$
@@ -571,8 +702,12 @@ $$
 $$
 
 <p>
-where $\mathbf{e}$ is a vector of $1$'s of size $K\times1$ for a suitable $K$ and $\circ$ represents Hadamard product,
-in other words element-wise product of matrices. And it is of size $(3 \times 3)$. We plug this below:
+where $\mathbf{e}$ is a vector of $1$'s of size $K\times1$ for a suitable $K$. $\circ$ represents Hadamard product,
+in other words element-wise product of matrices.
+</p>
+
+<p>
+$\frac{d}{dz} a$ is of size $3 \times 3$.
 </p>
 
 $$
@@ -604,7 +739,7 @@ approach works using loops. After, we will see how to convert this to fully matr
 We will <i>learn</i> the weights using <b>Back Propagation</b>.
 </p>
 
-# CODE
+# HTML
 {'width': 600}
 ALPHA = 2.0 # learning rate
 
@@ -714,7 +849,7 @@ $$
 If we plot these three lines:
 </p>
 
-# CODE
+# HTML
 {'type': 'image', 'width': 600}
 
 def plot_decision_boundary(X, Y, W, b, path):
@@ -758,7 +893,7 @@ Similarly, we can plot the same as our classifier progresses through the learnin
 As you may guess, it should start from a random point and get smarter in each step.
 </p>
 
-# CODE
+# HTML
 {'width': 600}
 import matplotlib.animation as animation
 
@@ -818,7 +953,7 @@ classifiers parameters. On the other hand, the previous animation shows the para
 step through the gradient descent iterations.
 </p>
 
-# CODE
+# HTML
 {'width': 600}
 NX = 100
 NY = 100
@@ -866,7 +1001,7 @@ and blue which gives us purple. Similar phenomena happens between other decision
 
 <p> Here we see the updates of parameters step by step in the gradient descent. </p>
 
-# CODE
+# HTML
 {'width': 1000}
 import matplotlib.animation as animation
 
@@ -930,175 +1065,6 @@ gradient descent. Every step we take in the gradient descent is giving us a bett
 so that we see that the loss is decreasing.
 </p>
 
-# HTML
-{}
-<h1> Computing Derivatives using Matrix Operations </h1>
-
-<p>
-Recall that we are trying to convert this to matrix operations:
-</p>
-
-$$
-\mathbf{a} \mathbf{e^T} \circ (\mathbf{I} - \mathbf{e} \mathbf{a^T})
-$$
-
-<p>
-Now, instead of $\mathbf{a}$, we have $A$:
-</p>
-
-$$
-A =
-\left[
-\begin{array}{c|c|c|c}
-\mathbf{a}^{(1)} & \mathbf{a}^{(2)} & \dots & \mathbf{a}^{(20)} \\
-\end{array}
-\right]_{3 \times 20}
-$$
-
-<p>
-where each $\mathbf{a}$ of size $(3 \times 1)$.
-</p>
-
-<p>
-Similarly, we also have:
-</p>
-
-$$
-\frac{dL}{dA} =
-\left[
-\begin{array}{c|c|c|c}
-\frac{dL}{d \mathbf{a}^{(1)}} & \frac{dL}{d \mathbf{a}^{(2)}} & \dots & \frac{dL}{d \mathbf{a}^{(20)}} \\
-\end{array}
-\right]_{3 \times 20}
-$$
-
-<p>
-again, each $\frac{dL}{d \mathbf{a}}$ of size $(3 \times 1)$.
-</p>
-
-<p>
-<b>Goal:</b> calculate $\frac{dL}{dZ}$ of size $(3 \times 20)$ using only matrix operations.
-</p>
-
-$$
-\left[
-\begin{array}{c|c|c|c}
-\mathcal{A}_1 & \mathcal{A}_2 & \dots & \mathcal{A}_{20} \\
-\end{array}
-\right]_{3 \times (3 \times 20)}
-\left[
-\begin{array}{c|c|c|c}
-\frac{dL}{d\mathbf{a}^{(1)}} & 0                 & \dots  & 0                  \\ \hline
-0                 & \frac{dL}{d\mathbf{a}^{(2)}} & \dots  & 0                  \\ \hline
-\vdots            & \vdots            & \vdots & \vdots             \\ \hline
-0                 & 0                 & \dots  & \frac{dL}{d\mathbf{a}^{(20)}} \\
-\end{array}
-\right]_{(3 \times 20) \times 20}
-=
-\left[
-\begin{array}{c|c|c|c}
-\frac{dL}{d\mathbf{z}^{(1)}} & \frac{dL}{d\mathbf{z}^{(2)}} & \dots & \frac{dL}{d\mathbf{z}^{(20)}}
-\end{array}
-\right]_{3 \times 20}
-$$
-
-<p>
-where each $\mathcal{A}_i$ of size $(3 \times 3)$ and each $\frac{dL}{d\mathbf{a}^{(i)}}$ of size $(3 \times 1)$.
-</p>
-
-<p>
-We are almost done, if we can define a proper $\mathcal{A}$. Here it comes: $\mathcal{A}_{3 \times (3 \times 20)}$
-</p>
-
-$$
-\left (
-A_{3 \times 20}
-\left[
-\begin{array}{c|c|c|c|c}
-e^T & 0 & 0 & \dots & 0 \\ \hline
-0 & e^T & 0 & \dots & 0 \\ \hline
-\vdots & \vdots & \vdots & \vdots & \vdots \\ \hline
-0 & 0 & 0 & \dots & e^T \\
-\end{array}
-\right]_{20 \times (3 \times 20)}
-\right )
-\circ
-\left (
-\left[
-\begin{array}{c|c|c|c}
-I & I & \dots & I
-\end{array}
-\right]_{3 \times (3 \times 20)}
--
-ee^T_{3 \times 20}
-\left[
-\begin{array}{c|c|c|c|c}
-a_1^T & 0 & 0 & \dots & 0 \\ \hline
-0 & a_2^T & 0 & \dots & 0 \\ \hline
-\vdots & \vdots & \vdots & \vdots & \vdots \\ \hline
-0 & 0 & 0 & \dots & a_{20}^T \\
-\end{array}
-\right]_{20 \times (3 \times 20)}
-\right )
-$$
-
-<p>
-where all $e$ of size $(K \times 1)$ containing all $1$s for a suitable $K$ and all $I$ is of size ($3 \times 3$) identity
-matrix.
-</p>
-
-<p>
-Or equivalently, we can write this as:
-</p>
-
-$$
-\left (
-\left[
-\begin{array}{c|c|c|c|c|c|c|c}
-a_1 & a_1 & a_1 & a_2 & a_2 & a_2 & \dots & a_{20}
-\end{array}
-\right]_{3 \times (3 \times 20)}
-\right )
-\circ
-\left (
-
-\left[
-\begin{array}{c|c|c|c}
-I & I & \dots & I
-\end{array}
-\right]_{3 \times (3 \times 20)}
--
-\left[
-\begin{array}{c|c|c|c}
-a_1^T & a_2^T & \dots & a_{20}^T \\ \hline
-a_1^T & a_2^T & \dots & a_{20}^T \\ \hline
-a_1^T & a_2^T & \dots & a_{20}^T
-\end{array}
-\right]_{3 \times (3 \times 20)}
-\right )
-
-$$
-
-# HTML
-{}
-<p>
-Note that this calculates <b>exact same</b> gradients with the function <b>get_gradients()</b> which uses a for loop instead.
-The advantage of the matrix operations approach is being more parallelizable compared to the <b>for loop</b> approach.
-</p>
-
-<p>
-However, in order to be able to appreciate the speed of matrix approach, we should implement it carefully.
-This includes initializing <b>sparse matrices</b> without using any explicit for loops.
-Applying the above matrix operations using Numpy/Scipy carefully to make sure it is faster than the
-for loop approach is beyond the scope of this tutorial, so we leave this as an exercise to the reader.
-</p>
-
-<p>
-Also keep in mind that the speed advantage of the matrix operations may not be obvious in a small
-sample of $20$ elements. You may want to compare both approaches using more sample points and also
-a higher dimensional feature space.
-</p>
-
 <h1> Applying Softmax Regression using low-level Tensorflow APIs </h1>
 
 <p>
@@ -1107,7 +1073,7 @@ It produces <b>almost exact</b> output with our own hand crafted model. Be aware
 because of the initial random start of both models. (Remember that $W$ is initialized with random values.)
 </p>
 
-# CODE
+# HTML
 {'width': 600}
 
 import tensorflow as tf

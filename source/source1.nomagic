@@ -13,7 +13,11 @@
 -- Albert Einstein
 </p>
 
-<h1>Introduction</h1>
+# HEADER
+{'header': 'Introduction'}
+
+# HTML
+{}
 <p>
 Let's say we want to build a model to discriminate the following <b>red</b> and <b>blue</b>
 points in 2-dimensional space:
@@ -158,7 +162,8 @@ We see that we get a value close to $1$ first and close to $0$ secondly.
 is <b>red</b> and otherwise it is <b>blue</b>.
 </p>
 
-<h1>Computation Graph</h1>
+# HEADER
+{'header': 'Computation Graph'}
 
 # HTML
 {}
@@ -221,9 +226,11 @@ plt.close()
 plt.clf()
 plt.cla()
 
+# HEADER
+{'header': 'Maximum Likelihood Estimation'}
+
 # HTML
 {}
-<h1>Maximum Likelihood Estimation</h1>
 
 <p>
 In training, our goal is to <b>learn</b> three numbers: $w_1, w_2, b$ that best
@@ -348,7 +355,11 @@ $\text{L}$ for <b>one sample</b>. Let's add these to our computation graph visua
 We kept the computation graph simpler by only showing the Loss for one sample.
 </p>
 
-<h1>Gradient Descent</h1>
+# HEADER
+{'header': 'Gradient Descent'}
+
+# HTML
+{}
 
 <p>
 Gradient descent is probably one of the most <i>beautiful</i> algorithm ever invented.
@@ -601,7 +612,11 @@ $$
 We need to do some calculus to calculate the derivatives. We will apply the chain rule.
 </p>
 
-<h1>Chain Rule</h1>
+# HEADER
+{'header': 'Chain Rule'}
+
+# HTML
+{}
 
 <p>
 Let's look at our computation graph again.
@@ -715,7 +730,11 @@ plt.cla()
 <p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far
 away than $0$ the <i>change</i> gets slower.
 
-<h1> Numerical Stability of the Loss function </h1>
+# HEADER
+{'header': 'Numerical Stability of the Loss function'}
+
+# HTML
+{}
 
 <p>
 There is only one thing remaining before we can start coding.
@@ -810,9 +829,8 @@ This is numerically stable because every time we are calling $\text{log}$, it is
 unstable range.
 </p>
 
-# HTML
-{}
-<h1>Applying Gradient Descent to Minimize Loss</h1>
+# HEADER
+{'header': 'Applying Gradient Descent'}
 
 # CODE
 {'type': 'image', 'width': 600}
@@ -891,8 +909,11 @@ it means our prediction is <b>red</b> and otherwise it is <b>blue</b>.
 (see Equation \ref{eq:inference})
 </p>
 
+# HEADER
+{'header': 'Decision Boundary'}
 
-<h1>Decision boundary</h1>
+# HTML
+{}
 
 <p>
 We predict <b>red</b> if:
@@ -1052,9 +1073,11 @@ For our predictions in the <b>purpleish middle area</b>, we are not confident on
 our predictions. Our predictions are close to $0.5$, as expected.
 </p>
 
+# HEADER
+{'header': 'Visualizing the Error Surface'}
+
 # HTML
 {}
-<h1> Visualizing the error surface </h1>
 
 <p>
 We can also visualize the loss as a function of $\mathbf{w}$, on 2-D surface. Here, we fix $b$
@@ -1168,9 +1191,11 @@ plt.close()
 plt.clf()
 plt.cla()
 
+# HEADER
+{'header': 'Applying Logistic Regression using low-level Tensorflow APIs'}
+
 # HTML
 {}
-<h1> Applying Logistic Regression using low-level Tensorflow APIs</h1>
 
 <p>
 <b>TensorFlow</b> is an open-source software library for Machine Intelligence.
@@ -1242,9 +1267,11 @@ If you are interested learning more about Deep Learning and Neural Networks,
 you can go start reading <a href="part2.html">Part 2: Softmax Regression</a>.
 </p>
 
+# HEADER
+{'header': 'Appendix'}
+
 # HTML
 {}
-<h1>Appendix</h1>
 
 <p>
 Let's spend some time on the decision of using the sigmoid function and the consequences of it.
@@ -1390,9 +1417,50 @@ One can prove that both of the above functions are convex with respect to $\math
 using the second-order condition of convexity.
 </p>
 
+
+# HEADER
+{'header': 'High Level Algorithm'}
+
 # HTML
 {}
-<h1> References </h1>
+
+<p>
+Here is the high level code of what we are actually doing. I urge you all to use the same input
+values I used, and write Logistic Regression from scratch on your own.
+</p>
+
+<p>
+It is also a nice practice to derive all the Logistic Regression math from scratch.
+</p>
+
+# PSEUDO
+{}
+
+Randomly initialize w1 and w2
+Randomly initialize b
+
+do NUM_EPOCHS time:
+  for x, y in samples:
+    compute z = w1 x1 + w2 x2 + b
+    compute a = sigmoid(z)
+    compute numerically stable loss
+    compute derivative of loss w.r.t w_1  (dL/dw1)
+    compute derivative of loss w.r.t w_2  (dL/dw2)
+    compute derivative of loss w.r.t b    (dL/db)
+
+  print average loss
+
+  w1 := w1 - LEARNING_PARAMETER * average dL/dw1
+  w2 := w2 - LEARNING_PARAMETER * average dL/dw2
+  b := b - LEARNING_PARAMETER * average dL/b
+
+Predict all points using w_1, w_2, b and compute accuracy
+
+# HEADER
+{'header': 'References'}
+
+# HTML
+{}
 
 <ol>
   <li> Andrew Ng Coursera Machine Learning course. </li>

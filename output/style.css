@@ -57,3 +57,15 @@ body {
   padding-bottom: 10px;
   padding-right: 20px;
 }
+
+a.header_style:hover, a.header_style:visited,
+  a.header_style:active, a.header_style:link {
+  text-decoration: none;
+  color: black;
+}
+
+pre code {
+  background-color: #f0f0f0;
+  display: block;
+  padding: 20px;
+}

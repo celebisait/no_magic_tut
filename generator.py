@@ -22,8 +22,11 @@ def stdoutIO(stdout=None):
 
 CODE_TAG = '# CODE'
 HTML_TAG = '# HTML'
+HEADER_TAG = '# HEADER'
+PSEUDO_TAG = '# PSEUDO'
 LAST_UPDATED_TAG = '# LAST_UPDATED'
-TAGS = {HTML_TAG, CODE_TAG, LAST_UPDATED_TAG}
+
+TAGS = {HTML_TAG, CODE_TAG, HEADER_TAG, PSEUDO_TAG, LAST_UPDATED_TAG}
 
 Part = collections.namedtuple('Part', ['tag', 'content', 'info'])
 FORMATTER = HtmlFormatter(style='friendly')
@@ -63,6 +66,12 @@ def add_image(image_name, width):
   return '<img class="generated_image" width="{}" src={}/>'.format(width, image_name)
 
 
+def add_header(header_title):
+  header_id = header_title.lower().replace(' ', '_')
+  return '<a href="#{}" class="header_style">  <h1 id="{}">{}</h1>  </a>'.format(
+                              header_id, header_id, header_title)
+
+
 def add_animation(animation_name, width):
   return """<video class="generated_video" width="{}" controls>
 <source src={} type="video/mp4">
@@ -92,7 +101,7 @@ def generate_code_html(source, info):
     highlighted = highlight(source, PythonLexer(), FORMATTER)
     source = source.replace(IMAGE_PNG, image_name)
     exec (source, globals())
-     
+
     highlighted += add_executed_in_seconds(time.time() - execution_before_time)
 
     highlighted += add_image('"../' + image_name[1:], info['width'])
@@ -117,6 +126,9 @@ def generate_code_html(source, info):
 
   return highlighted
 
+def generate_pseudo_code(source):
+  return "<pre><code>{}</code></pre>".format(source)
+
 
 def generate_html(template, source_lines):
   body = ''
@@ -127,6 +139,10 @@ def generate_html(template, source_lines):
       body += add_last_updated()
     elif part.tag == CODE_TAG:
       body += generate_code_html(part.content.strip(), part.info)
+    elif part.tag == HEADER_TAG:
+      body += add_header(part.info['header'])
+    elif part.tag == PSEUDO_TAG:
+      body += generate_pseudo_code(part.content.strip())
 
   return template.replace('$BODY', body)
 
@@ -159,8 +175,8 @@ def main():
   output_file = 'output/part1.html'
   title = 'Part 1: Logistic Regression'
 
-  print('Generating: %s' % title)
-  write_one_file(input_file, output_file, title)
+  # print('Generating: %s' % title)
+  # write_one_file(input_file, output_file, title)
 
   input_file = 'source/source2.nomagic'
   output_file = 'output/part2.html'
@@ -173,7 +189,7 @@ def main():
   output_file = 'output/part3.html'
   title = 'Part 3: Building a Simple Neural Network'
 
-  print('Generating: %s' % title)
-  write_one_file(input_file, output_file, title)
+  # print('Generating: %s' % title)
+  # write_one_file(input_file, output_file, title)
 
 main()

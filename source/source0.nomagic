@@ -14,8 +14,11 @@ the poorer mathematicians had better remain pure mathematicians."
 -- Edsger Dijkstra
 </p>
 
-<h1>Introduction</h1>
+# HEADER
+{'header': 'Introduction'}
 
+# HTML
+{}
 <p>
 Welcome to <b>No-magic tutorials</b>!
 </p>
@@ -39,8 +42,11 @@ implement these techniques using highly efficient/parallel data structures. Most
 is close to naive.
 </p>
 
-<h1>Notation</h1>
+# HEADER
+{'header': 'Notation'}
 
+# HTML
+{}
 <table class="notationTable">
    <tr>
    	<td> $a$ </td>
@@ -144,7 +150,17 @@ is close to naive.
    </tr>
 </table>
 
-<h1> Outline of the material </h1>
+<p>
+Or, visually we can summarize our notation as:
+</p>
+
+<img class="static_image" style="width: 800px;" src="../static_images/notation_funny.jpg"/>
+
+# HEADER
+{'header': 'Outline of the material'}
+
+# HTML
+{}
 
 <p>
 The tutorials are somehow a combination of: (1) Math, (2) Code, (3) Figures and animations.

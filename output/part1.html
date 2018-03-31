@@ -39,13 +39,11 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 1: Logistic Regression <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: March 24 2018</center><p>
+<center>Last updated: March 30 2018</center><p>
 "If you can't explain it to a six year old, you don't understand it yourself."
 -- Albert Einstein
 </p>
-
-<h1>Introduction</h1>
-<p>
+<a href="#introduction" class="header_style">  <h1 id="introduction">Introduction</h1>  </a><p>
 Let's say we want to build a model to discriminate the following <b>red</b> and <b>blue</b>
 points in 2-dimensional space:
 </p>
@@ -91,7 +89,7 @@ points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.713 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
+<div class="executed_in">(Executed in 0.660 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
 In other words, given a point in 2-dimensions, $\mathbf{x} = (x_1, x_2)$, we want
 to output either $0$ or $1$. (In this tutorial $0$ represents red, $1$ represents blue.)
 
@@ -175,9 +173,7 @@ We see that we get a value close to $1$ first and close to $0$ secondly.
 <b>Remember:</b> if the value is smaller than 0.5, it means our prediction
 is <b>red</b> and otherwise it is <b>blue</b>.
 </p>
-
-<h1>Computation Graph</h1>
-<p>
+<a href="#computation_graph" class="header_style">  <h1 id="computation_graph">Computation Graph</h1>  </a><p>
 Here is a visual representation of our model:
 </p>
 
@@ -233,8 +229,7 @@ how $g(z)$ behaves in some useful range.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.208 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><h1>Maximum Likelihood Estimation</h1>
-
+<div class="executed_in">(Executed in 0.212 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><a href="#maximum_likelihood_estimation" class="header_style">  <h1 id="maximum_likelihood_estimation">Maximum Likelihood Estimation</h1>  </a>
 <p>
 In training, our goal is to <b>learn</b> three numbers: $w_1, w_2, b$ that best
 <b>discriminates</b> red and blue points.
@@ -357,9 +352,7 @@ $\text{L}$ for <b>one sample</b>. Let's add these to our computation graph visua
 <p>
 We kept the computation graph simpler by only showing the Loss for one sample.
 </p>
-
-<h1>Gradient Descent</h1>
-
+<a href="#gradient_descent" class="header_style">  <h1 id="gradient_descent">Gradient Descent</h1>  </a>
 <p>
 Gradient descent is probably one of the most <i>beautiful</i> algorithm ever invented.
 It is an iterative algorithm that makes the output better and better in each step. In each iteration,
@@ -389,7 +382,7 @@ Let's think about how we would minimize $f(x) = x^2 + 6x + 5$, numerically:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.206 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/>
+<div class="executed_in">(Executed in 0.184 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/>
 <p>
 Let's say we started with $x=6$ and we want to take step that will make $f(x)$ smaller.
 </p>
@@ -459,7 +452,7 @@ parameter: <b> learning rate </b>. We will use $\alpha$ to denote learning rate.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.521 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 1.417 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation000.mp4" type="video/mp4">
 </video>
 <p>
@@ -498,7 +491,7 @@ What if we had a more complex surface? Maybe two dimensional? For example:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.379 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/>
+<div class="executed_in">(Executed in 0.381 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/>
 <p>
 We can apply the same idea here as well.
 </p>
@@ -561,7 +554,7 @@ in the opposite direction of the derivative.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.411 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 2.524 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation001.mp4" type="video/mp4">
 </video><p>
 We simply applied this gradient descent rule:
@@ -594,9 +587,7 @@ $$
 <p>
 We need to do some calculus to calculate the derivatives. We will apply the chain rule.
 </p>
-
-<h1>Chain Rule</h1>
-
+<a href="#chain_rule" class="header_style">  <h1 id="chain_rule">Chain Rule</h1>  </a>
 <p>
 Let's look at our computation graph again.
 </p>
@@ -698,11 +689,9 @@ $$
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.359 seconds.)</div><img class="generated_image" width="600" src="../images/image004.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far
+<div class="executed_in">(Executed in 0.233 seconds.)</div><img class="generated_image" width="600" src="../images/image004.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far
 away than $0$ the <i>change</i> gets slower.
-
-<h1> Numerical Stability of the Loss function </h1>
-
+<a href="#numerical_stability_of_the_loss_function" class="header_style">  <h1 id="numerical_stability_of_the_loss_function">Numerical Stability of the Loss function</h1>  </a>
 <p>
 There is only one thing remaining before we can start coding.
 </p>
@@ -734,7 +723,7 @@ Let's look at the natural logarithm function.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.196 seconds.)</div><img class="generated_image" width="600" src="../images/image005.png"/><p>
+<div class="executed_in">(Executed in 0.217 seconds.)</div><img class="generated_image" width="600" src="../images/image005.png"/><p>
 An important observation is that $\text{log}(0)$ approaches to $- \infty$.
 This is numerically an issue.
 </p>
@@ -789,8 +778,7 @@ And we are done.
 This is numerically stable because every time we are calling $\text{log}$, it is not in the critical
 unstable range.
 </p>
-<h1>Applying Gradient Descent to Minimize Loss</h1>
-<div class="highlight"><pre><span></span><span class="n">LEARNING_RATE</span> <span class="o">=</span> <span class="mf">8.0</span>
+<a href="#applying_gradient_descent" class="header_style">  <h1 id="applying_gradient_descent">Applying Gradient Descent</h1>  </a><div class="highlight"><pre><span></span><span class="n">LEARNING_RATE</span> <span class="o">=</span> <span class="mf">8.0</span>
 <span class="n">NUM_EPOCHS</span> <span class="o">=</span> <span class="mi">20</span>
 
 <span class="k">def</span> <span class="nf">get_loss</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
@@ -853,7 +841,7 @@ unstable range.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.184 seconds.)</div><img class="generated_image" width="600" src="../images/image006.png"/><p>
+<div class="executed_in">(Executed in 0.185 seconds.)</div><img class="generated_image" width="600" src="../images/image006.png"/><p>
 It turns out we just trained a pretty good classifier for this problem.
 We achieved 100% accuracy. Let's try to visualize our <b>decision boundary</b>.
 </p>
@@ -862,10 +850,7 @@ We achieved 100% accuracy. Let's try to visualize our <b>decision boundary</b>.
 it means our prediction is <b>red</b> and otherwise it is <b>blue</b>.
 (see Equation \ref{eq:inference})
 </p>
-
-
-<h1>Decision boundary</h1>
-
+<a href="#decision_boundary" class="header_style">  <h1 id="decision_boundary">Decision Boundary</h1>  </a>
 <p>
 We predict <b>red</b> if:
 </p>
@@ -914,7 +899,7 @@ Now, let's see what will be the value of $x_2$ when $x_1=-1.5$ and $x_1 =1.5$.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.188 seconds.)</div><img class="generated_image" width="600" src="../images/image007.png"/>
+<div class="executed_in">(Executed in 0.215 seconds.)</div><img class="generated_image" width="600" src="../images/image007.png"/>
 <p>
 Nice. How do we know we have a linear classifier?
 </p>
@@ -955,7 +940,7 @@ Everybody <i>loves</i> animations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.312 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 1.302 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation002.mp4" type="video/mp4">
 </video><p>
 Let's see the decision boundary in a more <b>lazy</b> setting. Here, we simply classify
@@ -998,7 +983,7 @@ parameters step by step through the gradient descent iterations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.224 seconds.)</div><img class="generated_image" width="600" src="../images/image008.png"/><p>
+<div class="executed_in">(Executed in 0.292 seconds.)</div><img class="generated_image" width="600" src="../images/image008.png"/><p>
 Here, background <b>red</b> means our prediction is very close to $0$ which means
 it is confidently classified as <b>red</b>. And conversely, background <b>blue</b>
 means our prediction is very close to $1$ which means it is confidently classified
@@ -1009,8 +994,7 @@ as <b>blue</b>.
 For our predictions in the <b>purpleish middle area</b>, we are not confident on
 our predictions. Our predictions are close to $0.5$, as expected.
 </p>
-<h1> Visualizing the error surface </h1>
-
+<a href="#visualizing_the_error_surface" class="header_style">  <h1 id="visualizing_the_error_surface">Visualizing the Error Surface</h1>  </a>
 <p>
 We can also visualize the loss as a function of $\mathbf{w}$, on 2-D surface. Here, we fix $b$
 to the optimal value, and plug all possible values of $\mathbf{w}$ and compute the error value
@@ -1070,7 +1054,7 @@ being <b>convex</b>.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.954 seconds.)</div><img class="generated_image" width="900" src="../images/image009.png"/><p>
+<div class="executed_in">(Executed in 1.902 seconds.)</div><img class="generated_image" width="900" src="../images/image009.png"/><p>
 Let's see the parameters step by step through the iterations of <b>gradient descent</b>.
 We start from a random initial point and keep iterating to refine our parameters.
 </p>
@@ -1117,8 +1101,7 @@ We start from a random initial point and keep iterating to refine our parameters
 </pre></div>
 <div class="executed_in">(Executed in 2.521 seconds.)</div><video class="generated_video" width="900" controls>
 <source src="../animations/animation003.mp4" type="video/mp4">
-</video><h1> Applying Logistic Regression using low-level Tensorflow APIs</h1>
-
+</video><a href="#applying_logistic_regression_using_low-level_tensorflow_apis" class="header_style">  <h1 id="applying_logistic_regression_using_low-level_tensorflow_apis">Applying Logistic Regression using low-level Tensorflow APIs</h1>  </a>
 <p>
 <b>TensorFlow</b> is an open-source software library for Machine Intelligence.
 Nodes in the TensorFlow graph represent mathematical operations, while the graph edges
@@ -1170,7 +1153,7 @@ using low-level TensorFlow API:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.733 seconds.)</div><img class="generated_image" width="600" src="../images/image010.png"/><p>
+<div class="executed_in">(Executed in 0.753 seconds.)</div><img class="generated_image" width="600" src="../images/image010.png"/><p>
 It is maybe worth mentioning that the Logistic Regression we have just built is
 technically can be considered a <b>Neural Network</b> with only one layer.
 The techniques and the idea of building Neural Networks is extremely similar to
@@ -1183,8 +1166,7 @@ Neural Networks as well.
 If you are interested learning more about Deep Learning and Neural Networks,
 you can go start reading <a href="part2.html">Part 2: Softmax Regression</a>.
 </p>
-<h1>Appendix</h1>
-
+<a href="#appendix" class="header_style">  <h1 id="appendix">Appendix</h1>  </a>
 <p>
 Let's spend some time on the decision of using the sigmoid function and the consequences of it.
 </p>
@@ -1275,7 +1257,7 @@ then the loss is big, and vice versa. </p>
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.068 seconds.)</div><img class="generated_image" width="600" src="../images/image011.png"/>
+<div class="executed_in">(Executed in 1.129 seconds.)</div><img class="generated_image" width="600" src="../images/image011.png"/>
 <p>
 So, the loss surface is not too bad. However, it is not convex anymore. So, we don't have
 any nice guarantees. Our gradient descent may get stuck at local minimas.
@@ -1323,8 +1305,35 @@ Because we know that $y \in \{0,1\}$, it is positive linear combination of two c
 One can prove that both of the above functions are convex with respect to $\mathbf{w}$ and $b$ (independently)
 using the second-order condition of convexity.
 </p>
-<h1> References </h1>
 
+<a href="#high_level_algorithm" class="header_style">  <h1 id="high_level_algorithm">High Level Algorithm</h1>  </a>
+<p>
+Here is the high level code of what we are actually doing. I urge you all to use the same input
+values I used, and write Logistic Regression from scratch on your own.
+</p>
+
+<p>
+It is also a nice practice to derive all the Logistic Regression math from scratch.
+</p>
+<pre><code>Randomly initialize w1 and w2
+Randomly initialize b
+
+do NUM_EPOCHS time:
+  for x, y in samples:
+    compute z = w1 x1 + w2 x2 + b
+    compute a = sigmoid(z)
+    compute numerically stable loss
+    compute derivative of loss w.r.t w_1  (dL/dw1)
+    compute derivative of loss w.r.t w_2  (dL/dw2)
+    compute derivative of loss w.r.t b    (dL/db)
+
+  print average loss
+
+  w1 := w1 - LEARNING_PARAMETER * average dL/dw1
+  w2 := w2 - LEARNING_PARAMETER * average dL/dw2
+  b := b - LEARNING_PARAMETER * average dL/b
+
+Predict all points using w_1, w_2, b and compute accuracy</code></pre><a href="#references" class="header_style">  <h1 id="references">References</h1>  </a>
 <ol>
   <li> Andrew Ng Coursera Machine Learning course. </li>
   <li> http://cs229.stanford.edu/notes/cs229-notes1.pdf </li>

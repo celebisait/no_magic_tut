@@ -39,67 +39,80 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 2: Softmax Regression <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: March 24 2018</center><p>
+<center>Last updated: March 31 2018</center><p>
 "What I cannot create, I do not understand."
 -- Richard Feynman
 </p>
-
-<h1>Introduction</h1>
+<a href="#introduction" class="header_style">  <h1 id="introduction">Introduction</h1>  </a>
 <p>
 Let's say we want to build a model to discriminate the following <b>red</b>, <b>green</b>
 and <b>blue</b> points in 2-dimensional space:
 </p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;classic&#39;</span><span class="p">)</span>
 <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
-<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">,</span>  <span class="mf">0.7</span><span class="p">,</span>  <span class="mf">1.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
-               <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.3</span><span class="p">,</span>  <span class="o">-</span><span class="mf">1.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">],</span>
-              <span class="p">[</span><span class="mf">1.4</span><span class="p">,</span>  <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span>  <span class="mf">0.4</span><span class="p">,</span>  <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span>  <span class="mf">0.9</span><span class="p">,</span>
-               <span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.45</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.3</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.4</span><span class="p">]])</span>
-<span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
-<span class="n">Y_one_hot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">],</span>
+	      <span class="p">[</span><span class="mf">1.3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span>
+	      <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">],</span>
+	      <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8</span><span class="p">],</span>
+	      <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">1.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.45</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">1.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">0.9</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7</span><span class="p">],</span>
+	      <span class="p">[</span><span class="mf">0.4</span> <span class="p">,</span> <span class="o">-</span><span class="mf">1.3</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span>
+	      <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">1.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.4</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.4</span><span class="p">]])</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)[</span><span class="n">y</span><span class="p">]</span>
 <span class="n">colormap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">])</span>
 
-<span class="k">def</span> <span class="nf">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">colormap</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">colormap</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Input 2D points&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">y</span><span class="p">])</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
-<span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">colormap</span><span class="p">,</span> <span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+<span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">colormap</span><span class="p">,</span> <span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.208 seconds.)</div><img class="generated_image" width="600" src="../images/image012.png"/><p>
-In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
-<b>green</b> or <b>blue</b>.
+<div class="executed_in">(Executed in 0.662 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
+In other words, given a point in 2-dimensions, $\mathbf{x} = (x_1, x_2)$, we want to
+output either <b>red</b>, <b>green</b> or <b>blue</b>.
 </p>
 
 <p>
-We can use <b>Softmax Regression</b> for this problem. We first learn <b>weights</b>
-($w_{1,1}, w_{1,2}, w_{2,1}, w_{2,2}, w_{3,1}, w_{3,2}$) and <b>bias</b> ($b_1, b_2, b_3$).
-This phase is called <b>training</b>. Then we use the following formula to predict if the
-new point is red, blue or green. This phase is called <b>prediction</b> or <b>inference</b>.
+We can use <b>Softmax Regression</b> for this problem. We first learn <b>weights</b>,
+$w_{1,1}, w_{1,2}, w_{2,1}, w_{2,2}, w_{3,1}, w_{3,2}$, and <b>bias</b>, $b_1, b_2, b_3$.
+This phase is called <b>training</b>. And then, we will use those weights and the bias
+to predict a new point, $\mathbf{x}$.
 </p>
-
-<h1>One hot vector representation</h1>
-
+<a href="#one_hot_vector_representation" class="header_style">  <h1 id="one_hot_vector_representation">One hot vector representation</h1>  </a>
 <p>
 We represent the output as a one hot vector. In other words, we represent <b>red points</b>
-using $\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$ and similarly for <b>green points</b> using
-$\begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}$ and lastly for <b>blue points</b> using
+using $\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$, similarly for <b>green points</b> using
+$\begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}$, and lastly for <b>blue points</b> using
 $\begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$.
 </p>
-
-<h1>Computation Graph</h1>
-
+<a href="#computation_graph" class="header_style">  <h1 id="computation_graph">Computation Graph</h1>  </a>
 <p>
 Here is a visual representation of our model:
 </p>
@@ -107,89 +120,82 @@ Here is a visual representation of our model:
 <img class="static_image" style="width: 800px;" src="../static_images/image003.png"/>
 
 <p>
-and simply pick the biggest $a_i$ to do the <b>final prediction</b>.
-</p>
-
-<h1>Feed-forward Phase</h1>
-
-<p>
-Let's assume that we are given the weights and bias. How do we calculate the output?
+and we simply pick the biggest $a_i$ as our <b>final prediction</b>.
 </p>
 
 <p>
-We represent $X$ as a matrix. $X$ contains all the points. In our case $X$ contains $M=20$
-samples and for each sample we have $(x,y)$. $Y$ contains all the labels (red, green and blue)
-as a one hot vector. $W$ has the weights. $b$ has the bias:
+The parameters of our Softmax Regression model is:
 </p>
 
 $$
-X =
-\begin{bmatrix}
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-\end{bmatrix}_{2 \times M}, \quad
-Y =
-\begin{bmatrix}
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-\end{bmatrix}_{3 \times M}, \quad
-W =
-\begin{bmatrix}
-0   &  0   \\
-0   &  0   \\
-0   &  0   \\
-\end{bmatrix}_{3 \times 2}
-b =
-\begin{bmatrix}
-0  \\
-0  \\
-0  \\
-\end{bmatrix}_{3 \times 1}
+  \mathbf{W} = \begin{bmatrix}
+w_{1,1}   &  w_{1,2}  \\
+w_{2,1}   &  w_{2,2}  \\
+w_{3,1}   &  w_{3,2}  \\
+\end{bmatrix}, \quad
+
+  \mathbf{b} = \begin{bmatrix}
+b_1 \\
+b_2 \\
+b_3
+\end{bmatrix}
 $$
 
 <p>
-Feed-forward basically means given $X, Y, W$ and $b$, will produce us $a$ and $L$.
-</p>
-
-$$
-Z = W X + b
-$$
-
-<p>
-Here we can see it visually:
-</p>
-
-$$
-\begin{bmatrix}
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-\end{bmatrix}_{3 \times M}
-=
-\begin{bmatrix}
-0   &  0   \\
-0   &  0   \\
-0   &  0   \\
-\end{bmatrix}_{3 \times 2}
-\begin{bmatrix}
-0   &  0   & \dots &  0 \\
-0   &  0   & \dots &  0 \\
-\end{bmatrix}_{2 \times M}
-+
-\begin{bmatrix}
-0  \\
-0  \\
-0  \\
-\end{bmatrix}_{3 \times 1}
-$$
-
-<p>
-As you may realized, the summation here is called <b>broadcasting</b>.
+our goal is to <b>learn</b> these parameters.
 </p>
 
 <p>
-After getting $Z$, we apply softmax function over $Z$:
+We are given the coordinates of the input points in the matrix $\mathbf{X}$
+of size $(20 \times 2)$ and their corresponding class labels in $\mathbf{y}$
+which if of size $20$.
+</p>
+<a href="#feed-forward_phase" class="header_style">  <h1 id="feed-forward_phase">Feed-forward Phase</h1>  </a>
+<p>
+First, let's assume that we are given the weights, $\mathbf{W}$, and, bias,
+$\mathbf{b}$. How do we calculate the output?
+</p>
+
+<p>
+We represent $\mathbf{X}$ as a matrix. $\mathbf{X}$ contains all the points.
+In our case $\mathbf{X}$ contains $m=20$ samples and for each sample we have $(x,y)$.
+$\mathbf{y}$ contains all the labels (red, green and blue). For each of the 20 samples,
+we have an integer $y^{(i)} \in \{0, 1, 2\}$. We convert $\mathbf{y}$ into a matrix
+$\mathbf{Y}$ of one hot vectors. $\mathbf{Y}$ is of size $(20 \times 3)$ where each
+row represents one of the sample's class as a one hot vector.
+</p>
+
+<p>
+As we discussed earlier, $\mathbf{W}$ has the weights. $\mathbf{b}$ has the bias.
+So, the sizes of matrices are:
+</p>
+
+<ul>
+  <li> $\mathbf{X}: 20 \times 2$
+  <li> $\mathbf{Y}: 20 \times 3$
+  <li> $\mathbf{W}: 3 \times 2$
+  <li> $\mathbf{b}: 20$
+</ul>
+
+<p>
+Feed-forward basically means: given $\mathbf{x}, \mathbf{y}, \mathbf{W}$ and $\mathbf{b}$,
+we produce $\mathbf{a}$ and $\text{L}$.
+</p>
+
+<p>
+Here is how we do it:
+</p>
+
+$$
+\mathbf{z} = \mathbf{W} \mathbf{x} + \mathbf{b}
+$$
+
+<p>
+here $\mathbf{x}$ is of size $2 \times 1$. So, $\mathbf{z}$ is of size $3 \times 1$.
+</p>
+
+<p>
+After getting $\mathbf{z}$, we apply softmax function to compute $\mathbf{a}$.
 </p>
 
 <p class="equation">
@@ -199,16 +205,26 @@ a_i = \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
 </p>
 
 <p>
-However, this may be problematic to compute for big values of $z_i$. We call this phenomena
-<b>numerically unstable</b>. Because $e^{z_i}$ easily overflows 64bit (even 128bit).
-We need to approach it slightly differently.
+A nice property about the Softmax function that it produces a legit <b>Probability Distrubition</b>.
+In classification (or more generally in Machine Learning) we often want to assign prababilities to
+categories or classes. Softmax function is known to work well for numereous applications/areas.
 </p>
 
-<h1>Numerical Stability of Softmax function</h1>
+<p>
+Softmax is a vector function -- it takes a vector as an input and returns another vector.
+</p>
 
 <p>
+There is an issue with the naive way of implementing Softmax function we should keep in mind.
+This may be problematic to compute for big values of $z_i$. We call this phenomena
+<b>numerically unstable</b>. Because $e^{z_i}$ can easily overflow 64bit (even 128bit).
+We need to approach it slightly differently.
+</p>
+<a href="#numerical_stability_of_softmax_function" class="header_style">  <h1 id="numerical_stability_of_softmax_function">Numerical Stability of Softmax function</h1>  </a>
+<p>
 The Softmax function takes an N-dimensional vector of real values and
-returns a new N-dimensional vector that sums up to $1$. The exact formula is (Softmax equation):
+returns a new N-dimensional vector that sums up to $1$. In this tutorial, N is 3.
+Please see the softmax function in Equation $\ref{eq:softmax}$.
 </p>
 
 <p>
@@ -224,11 +240,13 @@ Let's make an example:
 <div class="executed_in">(Executed in 0.001 seconds.)</div><div class="code_stdout"><pre>[1. 2. 3.]
 [0.09  0.245 0.665]
 </pre></div><p>
-Intuitively, softmax increases/emphasizes the <b>relative difference</b> between large and small values.
+Intuitively, softmax increases/emphasizes the <b>relative difference</b> between large
+and small values.
 </p>
 
 <p>
-However, let's look at this:
+However, we may have numerical stability issues if we naively try to apply softmax function.
+Let's look at this:
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">softmax</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
   <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
@@ -246,7 +264,15 @@ Simply because:
 <div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1000</span><span class="p">))</span>
 </pre></div>
 <div class="executed_in">(Executed in 0.000 seconds.)</div><div class="code_stdout"><pre>inf
-</pre></div>Instead, we can approach it differently:
+</pre></div>
+<p>
+$e^{1000}$ overflows and numpy returns positive infinity. So, both our numerator and denominator
+becomes inifity, and numpy returns <b>nan</b> for the division.
+</p>
+
+<p>
+There is a nice approach to compute the exact same function with a simple math trick:
+</p>
 
 $$
 a_i = \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}} = \frac{e^{z_i}e^K}{\sum_{j=1}^N e^{z_j} e^K}
@@ -254,11 +280,12 @@ a_i = \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}} = \frac{e^{z_i}e^K}{\sum_{j=1}^N e^{z
 $$
 
 <p>
-for some fixed $K$. And we can pick $K = - max(z_1, z_2, \dots, z_N)$.
+for some fixed $K \in \mathbb{R}$. And we can pick $K = - max(z_1, z_2, \dots, z_N)$.
 </p>
 
 <p>
-More practically:
+So, practically, we compute the same $\mathbf{a}$, using the below code, that does not have
+the same numerical stability issues we had before:
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">softmax</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
   <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="nb">max</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="nb">max</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
@@ -270,169 +297,193 @@ More practically:
 <div class="executed_in">(Executed in 0.001 seconds.)</div><div class="code_stdout"><pre>[1000. 2000. 3000.]
 [0. 0. 1.]
 </pre></div><p>
-As you can see, we still have some numerical issues. First and second value of the softmax
-shouldn't be $0$, they should be very close $0$, but not exactly $0$. Hmmm, but this is
-not as bad as <b>nan</b> issue.
+As you can see, we fixed the <b>nan</b> issues with this simple trick.
 </p>
 
 <p>
-So, to wrap-up the Feed-Forward phase, we can finalize the forward propagation step:
+However, we still have some numerical issues. First and second value of the softmax
+shouldn't be $0$, they should be very close $0$, but not exactly $0$. But this is
+okay for now.
 </p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">stable_softmax</span><span class="p">(</span><span class="n">Z</span><span class="p">):</span>
-  <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">forward_propagate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-  <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
-  <span class="n">A</span> <span class="o">=</span> <span class="n">stable_softmax</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+<p>
+So, to wrap-up the Feed-Forward phase, we can finalize the feed-forward step:
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">stable_softmax</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+  <span class="c1"># z is 3 x 1</span>
+  <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span><span class="n">z</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span><span class="n">z</span><span class="p">)))</span>
+  <span class="c1"># a is 3 x 1</span>
+  <span class="k">return</span> <span class="n">a</span>
 
-  <span class="k">return</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span>
+<span class="k">def</span> <span class="nf">forward_propagate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+  <span class="c1"># W is 3 x 2</span>
+  <span class="c1"># x is 2 x 1</span>
+  <span class="c1"># b is 3 x 1</span>
+  <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+  <span class="n">a</span> <span class="o">=</span> <span class="n">stable_softmax</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+  <span class="c1"># z is 3 x 1</span>
+  <span class="c1"># a is 3 x 1</span>
+  <span class="k">return</span> <span class="n">z</span><span class="p">,</span> <span class="n">a</span>
 
 <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mf">0.31</span><span class="p">,</span> <span class="mf">3.95</span><span class="p">],</span>
-      <span class="p">[</span> <span class="mf">7.07</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.23</span><span class="p">],</span>
-      <span class="p">[</span><span class="o">-</span><span class="mf">6.27</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.35</span><span class="p">]])</span>
+              <span class="p">[</span> <span class="mf">7.07</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.23</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">6.27</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.35</span><span class="p">]])</span>
 
 <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mf">1.2</span>  <span class="p">],</span>
-      <span class="p">[</span> <span class="mf">2.93</span> <span class="p">],</span>
-      <span class="p">[</span><span class="o">-</span><span class="mf">4.14</span> <span class="p">]])</span>
+              <span class="p">[</span> <span class="mf">2.93</span> <span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">4.14</span> <span class="p">]])</span>
 
-<span class="n">Z</span><span class="p">,</span> <span class="n">A</span> <span class="o">=</span> <span class="n">forward_propagate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
-<span class="k">print</span><span class="p">(</span><span class="n">A</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
+<span class="n">z</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">forward_propagate</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.002 seconds.)</div><div class="code_stdout"><pre>[[1. 1. 0. 1. 0. 0. 0. 0. 0. 1.]
- [0. 0. 1. 0. 0. 1. 1. 1. 1. 0.]
- [0. 0. 0. 0. 1. 0. 0. 0. 0. 0.]]
-[[0.992 0.652 0.001 0.963 0.118 0.096 0.186 0.    0.    0.988]
- [0.008 0.19  0.999 0.018 0.    0.904 0.734 1.    1.    0.   ]
- [0.    0.158 0.    0.019 0.882 0.    0.08  0.    0.    0.012]]
+<div class="executed_in">(Executed in 0.002 seconds.)</div><div class="code_stdout"><pre>[[ 6.699]
+ [ 1.901]
+ [-6.803]]
+[[0.992]
+ [0.008]
+ [0.   ]]
+0
 </pre></div><p>
-Above we print the first 10 predictions, and they look pretty good. In fact, we have 100% accuracy.
-So, given the weights, and bias, it is pretty straight-forward to calculate the final predictions.
-The tricky part is to <i>learn</i> those weights properly.
-</p>
-<h1> Defining Loss function using Maximum Likelihood Estimation </h1>
-
-<p>
-In training, our goal is to <b>learn</b> a matrix $W$ of size $(3 \times 2)$  and a $\mathbf{b}$ of size $(3 \times 1)$
-that best <b>discriminates</b> red, green and blue points.
+Above, we feed the first sample of our $m=20$ samples. It is a red point, and our classifier
+produces a one hot vector which confidently says red as well. So, our classifier does a good job
+for this sample. In fact, this classifier correctly classifies all the samples correctly, so it
+has 100% accuracy.
 </p>
 
 <p>
-We want to find $W$ and $\mathbf{b}$ that minimizes some definition of a <b>cost function</b>.
-Let's attempt to write a cost function for this problem.
+So, given the weights, and bias, it is pretty straight-forward to calculate the final prediction.
+The tricky part is to <b>learn</b> the parameters (weights and the bias) properly.
+</p>
+<a href="#defining_loss_function_using_maximum_likelihood_estimation" class="header_style">  <h1 id="defining_loss_function_using_maximum_likelihood_estimation">Defining Loss function using Maximum Likelihood Estimation</h1>  </a>
+<p>
+In training, our goal is to <b>learn</b> a matrix $\mathbf{W}$ of size $3 \times 2$,
+and a $\mathbf{b}$ of size $3 \times 1$ that best <b>discriminates</b> red, green
+and blue points.
+</p>
+
+<p>
+We want to find $\mathbf{W}$ and $\mathbf{\mathbf{b}}$ that minimizes some definition
+of a <b>loss function</b> (or cost function). Let's attempt to write a loss function
+for this problem.
 </p>
 
 <p>
 Let's say we have three points:
 </p>
 
-$$\mathbf{x} = \begin{bmatrix} -0.1 \\ 1.4 \end{bmatrix}, y=0$$
+$$\mathbf{x}^{(1)} = \begin{bmatrix} -0.1 \\ 1.4 \end{bmatrix}, y^{(1)}=0$$
 
-$$\mathbf{x} = \begin{bmatrix} 1.3  \\ 0.9 \end{bmatrix}, y=1$$
+$$\mathbf{x}^{(2)} = \begin{bmatrix} 1.3  \\ 0.9 \end{bmatrix}, y^{(2)}=1$$
 
 <p>
 and similarly,
 </p>
 
-$$\mathbf{x} = \begin{bmatrix} -1.4  \\ -1.1 \end{bmatrix}, y=2$$
+$$\mathbf{x}^{(3)} = \begin{bmatrix} -1.4  \\ -1.1 \end{bmatrix}, y^{(3)}=2$$
 
 <p>
-Now, let's list these $y$ as a <b>one hot vector</b> and, their corresponding <i>imaginary</i> $\mathbf{a}$ values:
+Now, let's list these $y$ as a <b>one hot vector</b> and, their corresponding
+<i>imaginary</i> $\mathbf{a}$ values:
 </p>
 
-$$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix} $$
+$$\mathbf{y}^{(1)} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix},
+	\mathbf{a}^{(1)}= \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix} $$
 
-$$\mathbf{y} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix} $$
+$$\mathbf{y}^{(2)} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix},
+        \mathbf{a}^{(2)} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix} $$
 
-$$\mathbf{y} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix} $$
+$$\mathbf{y}^{(3)} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix},
+        \mathbf{a}^{(3)} = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix} $$
 
 <p>
-Intuitively, we want a classifier that produces <b>similar</b> looking $\mathbf{a}$ and $\mathbf{y}$.
-This means, if
+Intuitively, we want a classifier that produces <b>similar</b> looking $\mathbf{a}$
+and $\mathbf{y}$. This means, if
 $\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$, then, for example, having
-$\mathbf{a} = \begin{bmatrix} 0.8 \\ 0.1 \\ 0.1 \end{bmatrix}$ is <b>more desirable</b> than having
-$\mathbf{a} = \begin{bmatrix} 0.6 \\ 0.2 \\ 0.2 \end{bmatrix}$.
+$\mathbf{a} = \begin{bmatrix} 0.8 \\ 0.1 \\ 0.1 \end{bmatrix}$ is <b>more desirable</b>
+than having $\mathbf{a} = \begin{bmatrix} 0.6 \\ 0.2 \\ 0.2 \end{bmatrix}$.
 
 <p>
 In other words, we want to <b>maximize</b>:
 </p>
 
-$$P(\mathbf{y}|\mathbf{x}) = \prod_{j=1}^{3} a_j^{y_j} $$
+$$ \prod_{j=1}^{3} a_j^{y_j} $$
 
 <p>
-Here, $a_j$ represents the jth item in the vector $\mathbf{a}$, and similarly $y_j$ represents the jth value in $\mathbf{y}$.
-For example, when $\mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix}$, then, $a_1 = 0.9, a_2 = 0.1$ and
-$a_3 = 0.0$.
+Here, $a_j$ represents the jth item in the vector $\mathbf{a}$, and similarly $y_j$
+represents the jth value in $\mathbf{y}$. For example, when
+$\mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix}$, then, $a_1 = 0.9, a_2 = 0.1$
+and $a_3 = 0.0$.
 </p>
 
-$$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix},
-P(\mathbf{y}|\mathbf{x}) = 0.9 \times 1 \times 1 = 0.9 $$
+$$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, \quad
+  \mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix}, \quad
+     9 \times 1 \times 1 = 0.9 $$
 
-$$\mathbf{y} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix},
-P(\mathbf{y}|\mathbf{x}) = 1 \times 0.8 \times 1 = 0.8 $$
+$$\mathbf{y} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, \quad
+  \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix}, \quad
+     1 \times 0.8 \times 1 = 0.8 $$
 
-$$\mathbf{y} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix},
-P(\mathbf{y}|\mathbf{x}) = 1 \times 1 \times 0.7 = 0.7 $$
+$$\mathbf{y} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, \quad
+  \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix}, \quad
+     1 \times 1 \times 0.7 = 0.7 $$
 
 <p>
-<b>Bigger</b> the $P(\mathbf{y}|\mathbf{x})$ is the <b>better</b>.
+Similar to <b>Logistic Regression</b>, we need to define the <b>loss</b> for multiple samples.
+We will apply Maximum Likelihood Estimation again, and try to maximize the
+multiplication for each sample:
 </p>
+
+$$ \prod_{i=1}^{M} \prod_{j=1}^{3}  (a_j^{(i)}) ^ {y_j^{(i)}} $$
 
 <p>
-Similar to <b>Logistic Regression</b>, in order to define the <b>loss</b> for multiple samples, we will simply multiply
-each value for each sample (<b>Maximum Likelihood Estimation</b>):
+here, $y^{(i)}$, $x^{(i)}$ and $a^{(i)}$ corresponds to ith sample in the training set
+out of $M$ training samples.
 </p>
-
-$$J = \prod_{i=1}^{M} P(y^{(i)}|x^{(i)}) $$
-
-<p>
-here, $y^{(i)}$, $x^{(i)}$ and $a^{(i)}$ corresponds to ith sample in the training set out of $M$ training samples. We can rewrite it as:
-</p>
-
-$$J = \prod_{i=1}^{M} \prod_{j=1}^{3}  (a_j^{(i)}) ^ {y_j^{(i)}} $$
 
 <p>
 Maximizing above is equal to maximizing:
 </p>
 
-$$J = log \left( \prod_{i=1}^{M} \prod_{j=1}^{3} (a_j^{(i)}) ^ {y_j^{(i)}} \right ) $$
-
-<p>
-we can write it as:
-</p>
-
-$$J = \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} log(a_j^{(i)}) $$
+$$
+\begin{align*}
+&= \text{log} \left( \prod_{i=1}^{M} \prod_{j=1}^{3} (a_j^{(i)}) ^ {y_j^{(i)}} \right ) \\
+&= \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} \text{log}(a_j^{(i)})
+\end{align*}
+$$
 
 <p>
 since we like to <b>minimize</b> things instead of <b>maximizing</b>:
 </p>
 
-$$J = - \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} log(a_j^{(i)}) $$
+$$J = - \sum_{i=1}^{M} \sum_{j=1}^{3} y_j^{(i)} \text{log}(a_j^{(i)}) $$
 
 <p>
-If we add our <b>Log Loss</b> to our computation graph:
+If we add our <b>Log Loss</b> to our computation graph, for one sample:
 </p>
 
 <img class="static_image" style="width: 900px;" src="../static_images/image004.png"/>
 
 <p>
-Also, this loss function is sometimes called <b>Cross Entropy Loss Function</b> in some contexts.
+Also, this loss function is sometimes called <b>Cross Entropy Loss Function</b> in
+some contexts.
 </p>
-
-<h1>Gradient Descent</h1>
-
+<a href="#gradient_descent" class="header_style">  <h1 id="gradient_descent">Gradient Descent</h1>  </a>
 <p>
-Ideally, we want to start with <b>random</b> parameters and make our parameters
+We want to start with <b>random</b> parameters and make our parameters
 better and better gradually as an iterative manner. Gradient descent is simply:
 </p>
 
 $$
-W = W - \alpha \frac{dL}{dW} \quad \mathbf{b} = \mathbf{b} - \alpha \frac{dL}{d \mathbf{b}}
+\mathbf{W} = \mathbf{W} - \alpha \frac{d L}{d \mathbf{W}},
+  \quad \mathbf{b} = \mathbf{b} - \alpha \frac{d L}{d \mathbf{b}}
 $$
 
 <p>
-The tricky part here is to compute $\frac{dL}{dW}$ and $\frac{dL}{d \mathbf{b}}$. We need
-to do a small scale <b>back propagation</b> of derivatives here.
+The tricky part here is to compute $\frac{d L}{d \mathbf{W}}$ and $\frac{d L}{d \mathbf{b}}$.
+We need to do a small scale <b>back propagation</b> of derivatives here.
 </p>
 
 <p>
@@ -442,7 +493,8 @@ But first, let's see what happens if we change $w_{2, 1}$ in the network, step b
 <img class="static_image" style="width: 900px;" src="../static_images/animation001.gif"/>
 
 <p>
-In order to do gradient descent, we need the derivatives:
+In order to do gradient descent, we need the derivatives, $\frac{d L}{d \mathbf{W}}$ and
+$\frac{d L}{d \mathbf{b}}$:
 </p>
 
 $$
@@ -452,29 +504,55 @@ $$
 $$
 
 <p>
+Let's write an example for $\frac{dL}{d w_{2,1}}$ explicitly:
+</p>
+
+$$
+\begin{align*}
+\frac{dL}{dw_{2,1}} & = \sum_{i=1}^3 \left (\frac{dL}{da_i} \right)
+	\left (\frac{da_i}{dz_2} \right) \left(\frac{dz_2}{dw_{2,1}} \right ) \\
+	            &= \left (\frac{dL}{da_1} \right)
+	\left (\frac{da_1}{dz_2} \right) \left(\frac{dz_2}{dw_{2,1}} \right ) +
+		       \left (\frac{dL}{da_2} \right)
+	\left (\frac{da_2}{dz_2} \right) \left(\frac{dz_2}{dw_{2,1}} \right ) +
+		       \left (\frac{dL}{da_3} \right)
+	\left (\frac{da_3}{dz_2} \right) \left(\frac{dz_2}{dw_{2,1}} \right )
+\end{align*}
+$$
+
+<p>
+Above, we are summing up the contribution of the change of $w_{2,1}$ over
+different "paths": $a_1, a_2, a_3$. In other words: when we change $w_{2,1}$;
+$a_1, a_2$, and $a_3$ changes as a result. Then, the change of $a_1, a_2$ and $a_3$
+effects $L$. We sum up all the changes $w_{2,1}$ produces over each $a_1, a_2$ and
+$a_3$ to $L$.
+</p>
+
+<p>
+So, we need the derivatives: $\frac{dL}{d a_i}, \frac{da_i}{dz_m}$,
+$\frac{dz_m}{dw_{m,n}}$ and $\frac{dz_m}{db_m}$.
+</p>
+
+<p>
 Let's do some calculus:
 <img src="../static_images/evil1.png" style="width:30px; height:30px;">
 <img src="../static_images/evil2.png" style="width:30px; height:30px;">
 </p>
 
 $$
-\frac{dL}{da_i} =  \frac{d}{da_i} \left ( - \sum_{j=1}^3 y_j log(a_j) \right ) =
-\frac{d}{da_i} \left ( - y_i log(a_i) \right ) = \frac{-y_i}{a_i}
+\frac{dL}{da_i} =  \frac{d}{da_i} \left ( - \sum_{j=1}^3 y_j \text{log}(a_j) \right ) =
+\frac{d}{da_i} \left ( - y_i \text{log}(a_i) \right ) = \frac{-y_i}{a_i}
 $$
 
 $$
 \frac{dz_m}{dw_{m,n}} = x_n, \quad
-\frac{dz_m}{b_m} = 1
+\frac{d z_m}{d b_m} = 1
 $$
 
-<h1>Derivative of Softmax Function</h1>
-
 <p>
-A nice property about the Softmax function that it produces a legit <b>Probability Distrubition</b>.
-In classification (or more generally in Machine Learning) we often want to assign prababilities to
-categories or classes. Softmax function is known to work well numereous applications/areas.
+Now, we only missing the derivative of the Softmax function: $\frac{d a_i}{d z_m}$.
 </p>
-
+<a href="#derivative_of_softmax_function" class="header_style">  <h1 id="derivative_of_softmax_function">Derivative of Softmax Function</h1>  </a>
 <p>
 Softmax is a vector function -- it takes a vector as an input and returns another vector. Therefore, we
 cannot just ask for <b>the derivative of softmax</b>, we can only ask the derivative of softmax regarding
@@ -494,7 +572,11 @@ refers to how much $a_1$ will change if play with $z_2$.
 </p>
 
 <p>
-Using the same logic for each element for $a_i$ and $z_j$ would produce us $N \times N$ matrix of derivatives.
+Using the same logic for each element for $a_i$ and $z_j$ would produce us $N \times N$ matrix
+of derivatives. This is sometimes called a Jacobian matrix. Let's think there is a function $f$
+, in this case this is the softmax function, takes an array and returns an array:
+$f: \mathbb{R}^n \rightarrow \mathbb{R}^m $. The derivative matrix, Jacobian matrix,
+$\mathbf{J} \in \mathbb{R}^{m \times n}$.
 </p>
 
 <p>
@@ -521,15 +603,18 @@ $$
 f(x) = e^{z_i}, \quad g(x) = \sum_{j=1}^N e^{z_j}
 $$
 
-<p>
-Let's apply <b>Quotient Rule</b>, if $i=m$:
-</p>
+<p>Let's apply <b>Quotient Rule</b>:</p>
+
+<p>if $i=m$:</p>
 
 $$
-\frac{d}{d z_m} a_i = \frac{d}{d z_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}} =
-\frac{ (e^{z_i})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } =
-\frac{ e^{z_i} \sum_{j=1}^N e^{z_j} - e^{z_m} e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } =
-\frac{ e^{z_i} } { \sum_{j=1}^N e^{z_j} }  \frac{ \sum_{j=1}^N e^{z_j} - e^{z_m} } { \sum_{j=1}^N e^{z_j} } = (a_i)(1-a_m)
+\begin{align*}
+\frac{d}{d z_m} a_i & = \frac{d}{d z_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
+= \frac{ (e^{z_i})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } \\
+& = \frac{ e^{z_i} \sum_{j=1}^N e^{z_j} - e^{z_m} e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 }
+= \frac{ e^{z_i} } { \sum_{j=1}^N e^{z_j} }  \frac{ \sum_{j=1}^N e^{z_j} - e^{z_m} } { \sum_{j=1}^N e^{z_j} } \\
+& = (a_i)(1-a_m)
+\end{align*}
 $$
 
 <p>
@@ -541,11 +626,13 @@ Similarly, if $i \neq m$:
 </p>
 
 $$
-\frac{d}{d z_m} a_i = \frac{d}{d z_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
-= \frac{ (e^{z_i})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 }
-= \frac{ 0 - e^{z_m} e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 }
-= -\frac{ e^{z_m} } { \sum_{j=1}^N e^{z_j} } \frac{ e^{z_i} }{ \sum_{j=1}^N e^{z_j} }
-= - (a_m) (a_i)
+\begin{align*}
+\frac{d}{d z_m} a_i & = \frac{d}{d z_m} \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
+= \frac{ (e^{z_i})' \sum_{j=1}^N e^{z_j}  - (\sum_{j=1}^N e^{z_j})' e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 } \\
+& = \frac{ 0 - e^{z_m} e^{z_i} }{ [\sum_{j=1}^N e^{z_j}] ^ 2 }
+= -\frac{ e^{z_m} } { \sum_{j=1}^N e^{z_j} } \frac{ e^{z_i} }{ \sum_{j=1}^N e^{z_j} } \\
+& = - (a_m) (a_i)
+\end{align*}
 $$
 
 <p>
@@ -573,8 +660,8 @@ where $\delta_{i,m} = 1$ if $i=m$, and $0$ otherwise.
 </p>
 
 <p>
-The reason we want to write it this way is that we don't want to use any <b>loops</b>. And we can
-execute the above using matrix operations like:
+The reason we want to write it this way is that we don't want to use any <b>loops</b> to create
+this matrix, instead we can simply do:
 </p>
 
 $$
@@ -582,8 +669,12 @@ $$
 $$
 
 <p>
-where $\mathbf{e}$ is a vector of $1$'s of size $K\times1$ for a suitable $K$ and $\circ$ represents Hadamard product,
-in other words element-wise product of matrices. And it is of size $(3 \times 3)$. We plug this below:
+where $\mathbf{e}$ is a vector of $1$'s of size $K\times1$ for a suitable $K$. $\circ$ represents Hadamard product,
+in other words element-wise product of matrices.
+</p>
+
+<p>
+$\frac{d}{dz} a$ is of size 3 \times 3.
 </p>
 
 $$
@@ -614,79 +705,78 @@ approach works using loops. After, we will see how to convert this to fully matr
 <p>
 We will <i>learn</i> the weights using <b>Back Propagation</b>.
 </p>
-<div class="highlight"><pre><span></span><span class="n">ALPHA</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="c1"># learning rate</span>
+ALPHA = 2.0 # learning rate
 
-<span class="c1"># this simple implementation is numerically unstable, because:</span>
-<span class="c1"># np.log() returns -inf for small inputs very close to 0</span>
-<span class="k">def</span> <span class="nf">get_loss</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">):</span>
-  <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Y_one_hot</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">loss</span>
+# this simple implementation is numerically unstable, because:
+# np.log() returns -inf for small inputs very close to 0
+def get_loss(A, Y_one_hot):
+  loss = -1 * np.sum(Y_one_hot * np.log(A))
+  return loss
 
-<span class="c1"># semantically same with above function, and numerically stable.</span>
-<span class="k">def</span> <span class="nf">get_loss_numerically_stable</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">):</span>
-  <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Y_one_hot</span> <span class="o">*</span> <span class="p">(</span> <span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span> <span class="o">-</span>
-			    <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span>
-			 <span class="p">))</span>
-  <span class="k">return</span> <span class="n">loss</span>
+# semantically same with above function, and numerically stable.
+def get_loss_numerically_stable(Z, Y_one_hot):
+  loss = -1 * np.sum(Y_one_hot * ( (Z - Z.max(axis = 0)) -
+			    np.log(np.sum(np.exp(Z - Z.max(axis = 0)), axis = 0))
+			 ))
+  return loss
 
-<span class="k">def</span> <span class="nf">get_gradients</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>
-  <span class="n">dA</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">Y_one_hot</span> <span class="o">/</span> <span class="n">A</span><span class="p">)</span>
+def get_gradients(Y_one_hot, Z, A):
+  dA = (-Y_one_hot / A)
 
-  <span class="n">dZ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
-    <span class="n">da</span> <span class="o">=</span> <span class="n">dA</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
-    <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
-    <span class="n">dZ</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">da</span><span class="p">)</span>
+  dZ = np.zeros((3, 20))
+  for i in range(20):
+    a = A[:, [i]]
+    da = dA[:, [i]]
+    matrix = np.matmul(a, np.ones((1, 3))) * (np.identity(3) - np.matmul(np.ones((3, 1)), a.T))
+    dZ[:, [i]] = np.matmul(matrix, da)
 
-  <span class="n">dW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
-  <span class="n">db</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
-    <span class="n">dz</span> <span class="o">=</span> <span class="n">dZ</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]]</span>
-    <span class="n">dw</span> <span class="o">=</span> <span class="n">dz</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
-    <span class="n">dW</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">dw</span>
-    <span class="n">db</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">dz</span>
+  dW = np.zeros((3,2))
+  db = np.zeros((3,1))
+  for i in range(20):
+    x = X[:, [i]]
+    dz = dZ[:, [i]]
+    dw = dz * np.tile(x, 3).T
+    dW += (1.0/20) * dw
+    db += (1.0/20) * dz
 
-  <span class="k">return</span> <span class="n">dZ</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span>
+  return dZ, dW, db
 
-<span class="k">def</span> <span class="nf">gradient_descent</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
-  <span class="n">W</span> <span class="o">=</span> <span class="n">W</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dW</span>
-  <span class="n">b</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">db</span>
-  <span class="k">return</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span>
+def gradient_descent(W, b, dW, db, alpha):
+  W = W - alpha * dW
+  b = b - alpha * db
+  return W, b
 
-<span class="c1"># random initialization</span>
-<span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+# random initialization
+W = np.random.rand(3, 2)
+b = np.zeros((3, 1))
 
-<span class="n">W_cache</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">b_cache</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">L_cache</span> <span class="o">=</span> <span class="p">[]</span>
+W_cache = []
+b_cache = []
+L_cache = []
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">40</span><span class="p">):</span>
-  <span class="n">Z</span><span class="p">,</span> <span class="n">A</span> <span class="o">=</span> <span class="n">forward_propagate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-  <span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">get_loss_numerically_stable</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">Y_one_hot</span><span class="p">)</span>
+for i in range(40):
+  Z, A = forward_propagate(X, W, b)
+  L = (1.0 / 20) * get_loss_numerically_stable(Z, Y_one_hot)
 
-  <span class="n">W_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
-  <span class="n">b_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-  <span class="n">L_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+  W_cache.append(W)
+  b_cache.append(b)
+  L_cache.append(L)
 
-  <span class="n">dZ</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span> <span class="o">=</span> <span class="n">get_gradients</span><span class="p">(</span><span class="n">Y_one_hot</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
-  <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dW</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">ALPHA</span><span class="p">)</span>
+  dZ, dW, db = get_gradients(Y_one_hot, Z, A)
+  W, b = gradient_descent(W, b, dW, db, ALPHA)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Number of iterations&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">L_cache</span><span class="p">)</span>
+plt.grid()
+plt.title('Loss', size=18)
+plt.xlabel('Number of iterations', size=15)
+plt.ylabel('Loss', size=15)
+plt.plot(L_cache)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+plt.savefig('image.png')
 
-<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-</pre></div>
-<div class="executed_in">(Executed in 0.240 seconds.)</div><img class="generated_image" width="600" src="../images/image013.png"/><h1> Decision Boundary </h1>
+plt.close()
+plt.clf()
+plt.cla()
+<h1> Decision Boundary </h1>
 
 <p>
 So, essentially, we have 3 equations:
@@ -719,34 +809,35 @@ $$
 <p>
 If we plot these three lines:
 </p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_decision_boundary</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Decision boundary&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
 
-  <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+def plot_decision_boundary(X, Y, W, b, path):
+  plt.grid()
+  plt.xlim([-2.0, 2.0])
+  plt.ylim([-2.0, 2.0])
+  plt.xlabel('$x_1$', size=20)
+  plt.ylabel('$x_2$', size=20)
+  plt.title('Decision boundary', size = 18)
 
-  <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-  <span class="n">ys1</span> <span class="o">=</span> <span class="p">((</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">xs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-  <span class="n">ys2</span> <span class="o">=</span> <span class="p">((</span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">xs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-  <span class="n">ys3</span> <span class="o">=</span> <span class="p">((</span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">xs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+  plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
 
-  <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys3</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+  xs = np.array([-2.0, 2.0])
+  ys1 = ((b[1, 0] - b[0, 0]) - (W[0, 0] - W[1, 0]) * xs) / (W[0, 1] - W[1, 1])
+  ys2 = ((b[2, 0] - b[0, 0]) - (W[0, 0] - W[2, 0]) * xs) / (W[0, 1] - W[2, 1])
+  ys3 = ((b[2, 0] - b[1, 0]) - (W[1, 0] - W[2, 0]) * xs) / (W[1, 1] - W[2, 1])
 
-  <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+  plt.plot(xs, ys1, c='black')
+  plt.plot(xs, ys2, c='black')
+  plt.plot(xs, ys3, c='black')
 
-<span class="n">plot_decision_boundary</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+  plt.savefig(path)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-</pre></div>
-<div class="executed_in">(Executed in 0.204 seconds.)</div><img class="generated_image" width="600" src="../images/image014.png"/><p>
+plot_decision_boundary(X, Y, W, b, 'image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
+
+<p>
 Above, we simply find the boundaries and plot them. The definition of the boundary is that
 the region in which the predictions are equally confident for both of the classifiers. Since
 we have three classes, there are 3 choose 2 = 3 boundaries.
@@ -756,51 +847,48 @@ we have three classes, there are 3 choose 2 = 3 boundaries.
 Similarly, we can plot the same as our classifier progresses through the learning process.
 As you may guess, it should start from a random point and get smarter in each step.
 </p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.animation</span> <span class="kn">as</span> <span class="nn">animation</span>
+import matplotlib.animation as animation
 
-<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+fig = plt.figure()
 
-<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+ax = fig.add_subplot(111)
+ax.set_xlim([-2.0, 2.0])
+ax.set_ylim([-2.0, 2.0])
+ax.set_xlabel('$x_1$', size=20)
+ax.set_ylabel('$x_2$', size=20)
 
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Decision boundary - Animated&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
+ax.set_title('Decision boundary - Animated', size = 18)
 
-<span class="k">def</span> <span class="nf">animate</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
-  <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-  <span class="n">W</span> <span class="o">=</span> <span class="n">W_cache</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-  <span class="n">b</span> <span class="o">=</span> <span class="n">b_cache</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+def animate(i):
+  xs = np.array([-2.0, 2.0])
+  W = W_cache[i]
+  b = b_cache[i]
 
-  <span class="n">ys1</span> <span class="o">=</span> <span class="p">((</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">xs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-  <span class="n">ys2</span> <span class="o">=</span> <span class="p">((</span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">xs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-  <span class="n">ys3</span> <span class="o">=</span> <span class="p">((</span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">xs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">W</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+  ys1 = ((b[1, 0] - b[0, 0]) - (W[0, 0] - W[1, 0]) * xs) / (W[0, 1] - W[1, 1])
+  ys2 = ((b[2, 0] - b[0, 0]) - (W[0, 0] - W[2, 0]) * xs) / (W[0, 1] - W[2, 1])
+  ys3 = ((b[2, 0] - b[1, 0]) - (W[1, 0] - W[2, 0]) * xs) / (W[1, 1] - W[2, 1])
 
-  <span class="n">lines1</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys1</span><span class="p">)</span>
-  <span class="n">lines2</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys2</span><span class="p">)</span>
-  <span class="n">lines3</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys3</span><span class="p">)</span>
+  lines1.set_data(xs, ys1)
+  lines2.set_data(xs, ys2)
+  lines3.set_data(xs, ys3)
 
-  <span class="n">text_box</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s1">&#39;Iteration: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">lines1</span><span class="p">,</span> <span class="n">lines2</span><span class="p">,</span> <span class="n">lines3</span><span class="p">,</span> <span class="n">text_box</span>
+  text_box.set_text('Iteration: {}'.format(i))
+  return lines1, lines2, lines3, text_box
 
-<span class="n">lines1</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
-<span class="n">lines2</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
-<span class="n">lines3</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+lines1, = ax.plot([], [], c='black')
+lines2, = ax.plot([], [], c='black')
+lines3, = ax.plot([], [], c='black')
 
-<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
-<span class="n">text_box</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="s1">&#39;Iteration 0&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+ax.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+text_box = ax.text(1.1, 1.6, 'Iteration 0', size = 16)
 
-<span class="n">anim</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">animate</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">W_cache</span><span class="p">),</span> <span class="n">blit</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-<span class="n">anim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;animation.mp4&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;avconv&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">codec</span><span class="o">=</span><span class="s2">&quot;libx264&quot;</span><span class="p">)</span>
+anim = animation.FuncAnimation(fig, animate, len(W_cache), blit=False, interval=500)
+anim.save('animation.mp4', writer='avconv', fps=6, codec="libx264")
 
-<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-</pre></div>
-<div class="executed_in">(Executed in 1.720 seconds.)</div><video class="generated_video" width="600" controls>
-<source src="../animations/animation004.mp4" type="video/mp4">
-</video><p>
+plt.close()
+plt.clf()
+plt.cla()
+<p>
 As you can see, it starts from a random classifier that does not seem to be working well in the
 beginning. And the learning process figures out where to go next to find a better classifier.
 After the learning is done, the final classifier is pretty good, in fact it has 100% accuracy.
@@ -813,35 +901,34 @@ contour plot shows the prediction of every single point in the grid in the final
 classifiers parameters. On the other hand, the previous animation shows the parameters step by
 step through the gradient descent iterations.
 </p>
-<div class="highlight"><pre><span></span><span class="n">NX</span> <span class="o">=</span> <span class="mi">100</span>
-<span class="n">NY</span> <span class="o">=</span> <span class="mi">100</span>
+NX = 100
+NY = 100
 
-<span class="k">def</span> <span class="nf">plot_decision_boundary_lazy</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Decision boundary - Contour plot&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
+def plot_decision_boundary_lazy(X, Y, W, b):
+  plt.grid()
+  plt.xlim([-2.0, 2.0])
+  plt.ylim([-2.0, 2.0])
+  plt.xlabel('$x_1$', size=20)
+  plt.ylabel('$x_2$', size=20)
+  plt.title('Decision boundary - Contour plot', size = 18)
 
-  <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">NX</span><span class="p">)</span>
-  <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">NY</span><span class="p">)</span>
-  <span class="n">xv</span><span class="p">,</span> <span class="n">yv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
-  <span class="n">X_fake</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">xv</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">yv</span><span class="o">.</span><span class="n">flatten</span><span class="p">()),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-  <span class="n">_</span><span class="p">,</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">forward_propagate</span><span class="p">(</span><span class="n">X_fake</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+  xs = np.linspace(-2.0, 2.0, NX)
+  ys = np.linspace(2.0, -2.0, NY)
+  xv, yv = np.meshgrid(xs, ys)
+  X_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
+  _, predictions = forward_propagate(X_fake, W, b)
 
-  <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">predictions</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">NX</span><span class="p">,</span> <span class="n">NY</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+  plt.imshow(predictions.T.reshape(NX, NY, 3), extent=[-2.0, 2.0, -2.0, 2.0])
+  plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
 
-  <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+  plt.savefig('image.png')
 
-<span class="n">plot_decision_boundary_lazy</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">W_cache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">b_cache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+plot_decision_boundary_lazy(X, Y, W_cache[-1], b_cache[-1])
 
-<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-</pre></div>
-<div class="executed_in">(Executed in 0.224 seconds.)</div><img class="generated_image" width="600" src="../images/image015.png"/><p>
+plt.close()
+plt.clf()
+plt.cla()
+<p>
 Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
 is $\mathbf{a}$ and it is three dimensional. So, we simply convert that vector to RGB space. So, for example
 if the prediction is: $[0.98, 0.01, 0.01]$, it will be almost a perfect <b>red</b>, and so on.
@@ -856,56 +943,53 @@ and blue which gives us purple. Similar phenomena happens between other decision
 <h1> Gradient Descent Parameter Updates </h1>
 
 <p> Here we see the updates of parameters step by step in the gradient descent. </p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.animation</span> <span class="kn">as</span> <span class="nn">animation</span>
+import matplotlib.animation as animation
 
-<span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;Parameter Updates vs Loss - Animated&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8), sharex=False, sharey=False)
+fig.suptitle('Parameter Updates vs Loss - Animated', size=24)
 
-<span class="n">ax1</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">8.6</span><span class="p">])</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">])</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Parameter&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Value&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Parameter Values&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
+ax1.grid()
+ax1.set_xlim([-0.5, 8.6])
+ax1.set_ylim([-5.0, 5.0])
+ax1.set_xlabel('Parameter', size=20)
+ax1.set_ylabel('Value', size=20)
+ax1.set_title('Parameter Values', size = 18)
 
-<span class="n">xlabels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;$w_{1,1}$&#39;</span><span class="p">,</span> <span class="s1">&#39;$w_{1,2}$&#39;</span><span class="p">,</span> <span class="s1">&#39;$w_{2,1}$&#39;</span><span class="p">,</span> <span class="s1">&#39;$w_{2,2}$&#39;</span><span class="p">,</span>
-   <span class="s1">&#39;$w_{3,1}$&#39;</span><span class="p">,</span> <span class="s1">&#39;$w_{3,2}$&#39;</span><span class="p">,</span> <span class="s1">&#39;$b_1$&#39;</span><span class="p">,</span> <span class="s1">&#39;$b_2$&#39;</span><span class="p">,</span> <span class="s1">&#39;$b_3$&#39;</span><span class="p">]</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">))</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">xlabels</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+xlabels = ['$w_{1,1}$', '$w_{1,2}$', '$w_{2,1}$', '$w_{2,2}$',
+   '$w_{3,1}$', '$w_{3,2}$', '$b_1$', '$b_2$', '$b_3$']
+ax1.set_xticks(range(9))
+ax1.set_xticklabels(xlabels, size=20)
 
-<span class="n">ax2</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">40</span><span class="p">])</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">L_cache</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.1</span><span class="p">])</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Number of iterations&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+ax2.grid()
+ax2.set_xlim([0.0, 40])
+ax2.set_ylim([0, max(L_cache) * 1.1])
+ax2.set_xlabel('Number of iterations', size=20)
+ax2.set_ylabel('Loss', size=20)
+ax2.set_title('Loss', size=18)
 
-<span class="k">def</span> <span class="nf">animate</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
-  <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">W_cache</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">b_cache</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()))</span>
-  <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ys</span><span class="p">))</span>
+def animate(i):
+  ys = np.concatenate((W_cache[i].flatten(), b_cache[i].flatten()))
+  xs = np.arange(len(ys))
 
-  <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ys</span><span class="p">)):</span>
-    <span class="n">bars</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">set_height</span><span class="p">(</span><span class="n">ys</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+  for j in range(len(ys)):
+    bars[j].set_height(ys[j])
 
-  <span class="n">lines</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">L_cache</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+  lines.set_data(range(i+1), L_cache[0:i+1])
 
-  <span class="n">text_box</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s1">&#39;Iteration: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">bars</span><span class="p">,</span> <span class="n">text_box</span>
+  text_box.set_text('Iteration: {}'.format(i))
+  return bars, text_box
 
-<span class="n">bars</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">9</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
-<span class="n">text_box</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">6.2</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">,</span> <span class="s1">&#39;Iteration 0&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
-<span class="n">lines</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+bars = ax1.bar(range(9), np.zeros(9), color='blue', align='center')
+text_box = ax1.text(6.2, 3.6, 'Iteration 0', size = 16)
+lines, = ax2.plot([], [], c='black')
 
-<span class="n">anim</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">animate</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">W_cache</span><span class="p">),</span> <span class="n">blit</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-<span class="n">anim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;animation.mp4&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;avconv&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">codec</span><span class="o">=</span><span class="s2">&quot;libx264&quot;</span><span class="p">)</span>
+anim = animation.FuncAnimation(fig, animate, len(W_cache), blit=False, interval=500)
+anim.save('animation.mp4', writer='avconv', fps=4, codec="libx264")
 
-<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-</pre></div>
-<div class="executed_in">(Executed in 2.933 seconds.)</div><video class="generated_video" width="1000" controls>
-<source src="../animations/animation005.mp4" type="video/mp4">
-</video><p>
+plt.close()
+plt.clf()
+plt.cla()
+<p>
 This is a nice animation that shows the progress of our parameters $W$ and $\mathbf{b}$
 in each iteration of gradient descent along with the corresponding loss value using the
 given parameters.
@@ -917,169 +1001,6 @@ w_{3,1}, w_{3,2}$. We start with all $0$ values for $b_1, b_2, b_3$. Then, we st
 gradient descent. Every step we take in the gradient descent is giving us a better set of parameters
 so that we see that the loss is decreasing.
 </p>
-<h1> Computing Derivatives using Matrix Operations </h1>
-
-<p>
-Recall that we are trying to convert this to matrix operations:
-</p>
-
-$$
-\mathbf{a} \mathbf{e^T} \circ (\mathbf{I} - \mathbf{e} \mathbf{a^T})
-$$
-
-<p>
-Now, instead of $\mathbf{a}$, we have $A$:
-</p>
-
-$$
-A =
-\left[
-\begin{array}{c|c|c|c}
-\mathbf{a}^{(1)} & \mathbf{a}^{(2)} & \dots & \mathbf{a}^{(20)} \\
-\end{array}
-\right]_{3 \times 20}
-$$
-
-<p>
-where each $\mathbf{a}$ of size $(3 \times 1)$.
-</p>
-
-<p>
-Similarly, we also have:
-</p>
-
-$$
-\frac{dL}{dA} =
-\left[
-\begin{array}{c|c|c|c}
-\frac{dL}{d \mathbf{a}^{(1)}} & \frac{dL}{d \mathbf{a}^{(2)}} & \dots & \frac{dL}{d \mathbf{a}^{(20)}} \\
-\end{array}
-\right]_{3 \times 20}
-$$
-
-<p>
-again, each $\frac{dL}{d \mathbf{a}}$ of size $(3 \times 1)$.
-</p>
-
-<p>
-<b>Goal:</b> calculate $\frac{dL}{dZ}$ of size $(3 \times 20)$ using only matrix operations.
-</p>
-
-$$
-\left[
-\begin{array}{c|c|c|c}
-\mathcal{A}_1 & \mathcal{A}_2 & \dots & \mathcal{A}_{20} \\
-\end{array}
-\right]_{3 \times (3 \times 20)}
-\left[
-\begin{array}{c|c|c|c}
-\frac{dL}{d\mathbf{a}^{(1)}} & 0                 & \dots  & 0                  \\ \hline
-0                 & \frac{dL}{d\mathbf{a}^{(2)}} & \dots  & 0                  \\ \hline
-\vdots            & \vdots            & \vdots & \vdots             \\ \hline
-0                 & 0                 & \dots  & \frac{dL}{d\mathbf{a}^{(20)}} \\
-\end{array}
-\right]_{(3 \times 20) \times 20}
-=
-\left[
-\begin{array}{c|c|c|c}
-\frac{dL}{d\mathbf{z}^{(1)}} & \frac{dL}{d\mathbf{z}^{(2)}} & \dots & \frac{dL}{d\mathbf{z}^{(20)}}
-\end{array}
-\right]_{3 \times 20}
-$$
-
-<p>
-where each $\mathcal{A}_i$ of size $(3 \times 3)$ and each $\frac{dL}{d\mathbf{a}^{(i)}}$ of size $(3 \times 1)$.
-</p>
-
-<p>
-We are almost done, if we can define a proper $\mathcal{A}$. Here it comes: $\mathcal{A}_{3 \times (3 \times 20)}$
-</p>
-
-$$
-\left (
-A_{3 \times 20}
-\left[
-\begin{array}{c|c|c|c|c}
-e^T & 0 & 0 & \dots & 0 \\ \hline
-0 & e^T & 0 & \dots & 0 \\ \hline
-\vdots & \vdots & \vdots & \vdots & \vdots \\ \hline
-0 & 0 & 0 & \dots & e^T \\
-\end{array}
-\right]_{20 \times (3 \times 20)}
-\right )
-\circ
-\left (
-\left[
-\begin{array}{c|c|c|c}
-I & I & \dots & I
-\end{array}
-\right]_{3 \times (3 \times 20)}
--
-ee^T_{3 \times 20}
-\left[
-\begin{array}{c|c|c|c|c}
-a_1^T & 0 & 0 & \dots & 0 \\ \hline
-0 & a_2^T & 0 & \dots & 0 \\ \hline
-\vdots & \vdots & \vdots & \vdots & \vdots \\ \hline
-0 & 0 & 0 & \dots & a_{20}^T \\
-\end{array}
-\right]_{20 \times (3 \times 20)}
-\right )
-$$
-
-<p>
-where all $e$ of size $(K \times 1)$ containing all $1$s for a suitable $K$ and all $I$ is of size ($3 \times 3$) identity
-matrix.
-</p>
-
-<p>
-Or equivalently, we can write this as:
-</p>
-
-$$
-\left (
-\left[
-\begin{array}{c|c|c|c|c|c|c|c}
-a_1 & a_1 & a_1 & a_2 & a_2 & a_2 & \dots & a_{20}
-\end{array}
-\right]_{3 \times (3 \times 20)}
-\right )
-\circ
-\left (
-
-\left[
-\begin{array}{c|c|c|c}
-I & I & \dots & I
-\end{array}
-\right]_{3 \times (3 \times 20)}
--
-\left[
-\begin{array}{c|c|c|c}
-a_1^T & a_2^T & \dots & a_{20}^T \\ \hline
-a_1^T & a_2^T & \dots & a_{20}^T \\ \hline
-a_1^T & a_2^T & \dots & a_{20}^T
-\end{array}
-\right]_{3 \times (3 \times 20)}
-\right )
-
-$$
-<p>
-Note that this calculates <b>exact same</b> gradients with the function <b>get_gradients()</b> which uses a for loop instead.
-The advantage of the matrix operations approach is being more parallelizable compared to the <b>for loop</b> approach.
-</p>
-
-<p>
-However, in order to be able to appreciate the speed of matrix approach, we should implement it carefully.
-This includes initializing <b>sparse matrices</b> without using any explicit for loops.
-Applying the above matrix operations using Numpy/Scipy carefully to make sure it is faster than the
-for loop approach is beyond the scope of this tutorial, so we leave this as an exercise to the reader.
-</p>
-
-<p>
-Also keep in mind that the speed advantage of the matrix operations may not be obvious in a small
-sample of $20$ elements. You may want to compare both approaches using more sample points and also
-a higher dimensional feature space.
-</p>
 
 <h1> Applying Softmax Regression using low-level Tensorflow APIs </h1>
 
@@ -1088,47 +1009,47 @@ Here is how to train the same classifier for the above red, green and blue point
 It produces <b>almost exact</b> output with our own hand crafted model. Be aware that there may be small differences
 because of the initial random start of both models. (Remember that $W$ is initialized with random values.)
 </p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 
-<span class="n">t_X</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-<span class="n">t_Y</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+import tensorflow as tf
 
-<span class="n">t_W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span>
-<span class="n">t_b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span>
+t_X = tf.placeholder(tf.float32, [None, 2])
+t_Y = tf.placeholder(tf.float32, [None, 3])
 
-<span class="n">t_logits</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">t_X</span><span class="p">,</span> <span class="n">t_W</span><span class="p">)</span> <span class="o">+</span> <span class="n">t_b</span>
-<span class="n">t_Softmax</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">t_logits</span><span class="p">)</span>
-<span class="n">t_Accuracy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">accuracy</span><span class="p">(</span><span class="n">labels</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">t_Y</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-                                         <span class="n">predictions</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">t_Softmax</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+t_W = tf.Variable(tf.random_uniform((2, 3)))
+t_b = tf.Variable(tf.zeros((1, 3)))
 
-<span class="n">t_Loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax_cross_entropy_with_logits</span><span class="p">(</span>
-                         <span class="n">labels</span><span class="o">=</span><span class="n">t_Y</span><span class="p">,</span> <span class="n">logits</span><span class="o">=</span><span class="n">t_logits</span><span class="p">))</span>
+t_logits = tf.matmul(t_X, t_W) + t_b
+t_Softmax = tf.nn.softmax(t_logits)
+t_Accuracy = tf.contrib.metrics.accuracy(labels = tf.argmax(t_Y, axis=1),
+                                         predictions = tf.argmax(t_Softmax, axis=1))
 
-<span class="n">train</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">GradientDescentOptimizer</span><span class="p">(</span><span class="n">ALPHA</span><span class="p">)</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">t_Loss</span><span class="p">)</span>
-<span class="n">init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">()</span>
+t_Loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
+                         labels=t_Y, logits=t_logits))
 
-<span class="n">losses</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">accs</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-   <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init</span><span class="p">)</span>
-   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">40</span><span class="p">):</span>
-      <span class="n">ttrain</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">acc</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">train</span><span class="p">,</span> <span class="n">t_Loss</span><span class="p">,</span> <span class="n">t_Accuracy</span><span class="p">],</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="n">t_X</span><span class="p">:</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">t_Y</span><span class="p">:</span><span class="n">Y_one_hot</span><span class="o">.</span><span class="n">T</span><span class="p">})</span>
-      <span class="n">losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
-      <span class="n">accs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
+train = tf.train.GradientDescentOptimizer(ALPHA).minimize(t_Loss)
+init = tf.global_variables_initializer()
 
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Number of iterations&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">losses</span><span class="p">)</span>
+losses = []
+accs = []
+with tf.Session() as session:
+   session.run(init)
+   for i in range(40):
+      ttrain, loss, acc = session.run([train, t_Loss, t_Accuracy], feed_dict={t_X:X.T, t_Y:Y_one_hot.T})
+      losses.append(loss)
+      accs.append(acc)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+plt.grid()
+plt.title('Loss', size=18)
+plt.xlabel('Number of iterations', size=15)
+plt.ylabel('Loss', size=15)
+plt.plot(losses)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-</pre></div>
-<div class="executed_in">(Executed in 0.407 seconds.)</div><img class="generated_image" width="600" src="../images/image016.png"/>
+plt.savefig('image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
+
 <h1>Exercises</h1>
 <ol>
   <li>
