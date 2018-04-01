@@ -32,10 +32,10 @@ plt.style.use('classic')
 np.set_printoptions(precision=3, suppress=True)
 
 X = np.array([[-0.1, 1.4],
-              [-0.5, -0.1],
+              [-0.5, 0.2],
 	      [1.3, 0.9],
 	      [-0.6, 0.4],
-	      [-1.5, 0.4],
+	      [-1.6, 0.2],
 	      [0.2, 0.2],
 	      [-0.3, -0.4],
 	      [0.7, -0.8],
@@ -493,6 +493,65 @@ some contexts.
 </p>
 
 # HEADER
+{'header': 'Numerical Stability of the Loss function'}
+
+# HTML
+{}
+
+<p>
+We need to be careful when computing the loss function.
+</p>
+
+<p>
+Here is the loss function we came up with:
+</p>
+
+$$
+\text{L} = \sum_{j=1}^{3} -y_j \text{log}(a_j)
+$$
+
+<p>
+Notice that $y \in \{0, 1\}$ and $0 < a < 1$. What are the possible values for $\text{L}$?
+</p>
+
+<p>
+We have seen the natural logarithm function in the previous tutorial, and remember that it
+is not numerically stable for small values of $a$.
+</p>
+
+<p>
+So, we will try to: come up with mathematically equal way that is numerically okay.
+</p>
+
+$$
+\begin{align*}
+\text{L} & = \sum_{i=1}^{3} -y_i \text{log}(a_i) \\
+         & = \sum_{i=1}^{3} -y_i \text{log} \left (  \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}   \right ) \\
+         & = \sum_{i=1}^{3} -y_i \text{log} \left ( \frac{e^{z_i + K}}{\sum_{j=1}^N e^{z_j + K}} \right ) \\
+\end{align*}
+$$
+
+<p>
+for some fixed $K \in \mathbb{R}$. And we can pick $K = - max(z_1, z_2, \dots, z_N)$. As we have
+done before.
+</p>
+
+$$
+\begin{align*}
+\text{L} & = \sum_{i=1}^{3} -y_i \left [ \text{log} \left ( e^{z_i + K} \right ) -
+                                 \text{log} \left (\sum_{j=1}^N e^{z_j + K} \right ) \right ] \\
+         & = \sum_{i=1}^{3} -y_i \left [ z_i + K -
+                                 \text{log} \left (\sum_{j=1}^N e^{z_j + K} \right ) \right ] \\
+
+\end{align*}
+$$
+
+<p>
+This is way better, because we got rid of the first $\text{log}$, and the domain of the
+second $\text{log}$ function is $[1, \infty )$, hence, it is numerically stable.
+</p>
+
+# HEADER
 {'header': 'Gradient Descent'}
 
 # HTML
@@ -636,7 +695,7 @@ $$
 f(x) = e^{z_i}, \quad g(x) = \sum_{j=1}^N e^{z_j}
 $$
 
-<p>Let's apply <b>Quotient Rule</b>:</p>
+<p>Let's apply <b>Quotient Rule</b>.</p>
 
 <p>if $i=m$:</p>
 
@@ -698,16 +757,71 @@ this matrix, instead we can simply do:
 </p>
 
 $$
-\frac{d}{dz} a = \mathbf{a} \mathbf{e^T} \circ (\mathbf{I} - \mathbf{e} \mathbf{a^T})
+\frac{d}{d \mathbf{z}} \mathbf{a} = \mathbf{a} \mathbf{e^T} \circ (\mathbf{I} - \mathbf{e} \mathbf{a^T})
 $$
 
 <p>
-where $\mathbf{e}$ is a vector of $1$'s of size $K\times1$ for a suitable $K$. $\circ$ represents Hadamard product,
+where $\mathbf{e}$ is a vector of $1$'s of size $K\times1$ for a suitable $K$. And $\circ$ represents Hadamard product,
 in other words element-wise product of matrices.
 </p>
 
 <p>
-$\frac{d}{dz} a$ is of size $3 \times 3$.
+Let's look at this more closely:
+</p>
+
+$$
+\begin{align*}
+\frac{d}{d \mathbf{z}} \mathbf{a} & = \mathbf{a} \mathbf{e^T} \circ (\mathbf{I} - \mathbf{e} \mathbf{a^T})
+= \begin{bmatrix} a_1 \\ a_2 \\ a_3 \end{bmatrix}  \begin{bmatrix} 1 & 1 & 1 \end{bmatrix} \circ
+\left (     \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix} -
+            \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix} \begin{bmatrix} a_1 & a_2 & a_3 \end{bmatrix}
+\right ) \\
+& = \begin{bmatrix} a_1 & a_1 & a_1 \\ a_2 & a_2 & a_2 \\ a_3 & a_3 & a_3 \end{bmatrix} \circ
+\left (     \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix} -
+            \begin{bmatrix} a_1 & a_2 & a_3 \\ a_1 & a_2 & a_3 \\ a_1 & a_2 & a_3 \end{bmatrix}
+\right ) \\
+& = \begin{bmatrix} a_1 & a_1 & a_1 \\ a_2 & a_2 & a_2 \\ a_3 & a_3 & a_3 \end{bmatrix} \circ
+\left (     \begin{bmatrix} 1 - a_1 & -a_2 & -a_3 \\ -a_1 & 1 - a_2 & -a_3 \\ -a_1 & -a_2 & 1 - a_3 \end{bmatrix}
+\right ) \\
+& = \begin{bmatrix} a_1 (1-a_1) & a_1 (-a_2)  & a_1 (-a_3) \\
+                    a_2 (-a_1)  & a_2 (1-a_2) & a_2 (-a_3) \\
+		    a_3 (-a_1)  & a_3 (-a_2)  & a_3 (1-a_3)
+    \end{bmatrix}
+\end{align*}
+$$
+
+<p>
+So, we are essentially computing:
+</p>
+
+$$
+\frac{d}{d \mathbf{z}} \mathbf{a} =
+     \begin{bmatrix} \frac{da_1}{dz_1} \frac{da_2}{dz_1} \frac{da_3}{dz_1} \\
+	\frac{da_1}{dz_2} \frac{da_2}{dz_2} \frac{da_3}{dz_2} \\
+	\frac{da_1}{dz_3} \frac{da_2}{dz_3} \frac{da_3}{dz_3}
+     \end{bmatrix}
+$$
+
+<p>
+We have derived the derivatives for each layer. Now, we need to combine them and propagate
+the error from the last layer to the first layer step by step.
+</p>
+
+# HEADER
+{'header': 'Back propagation Phase'}
+
+# HTML
+{}
+
+In back propagation, we will start from $\frac{d L}{d \mathbf{a}}$ and iteratively compute:
+$\frac{d L}{d \mathbf{W}}$ and $\frac{d L}{d \mathbf{b}}$:
+
+$$
+\frac{d L}{d a_i} = \frac{-y_i}{a_i}
+$$
+
+<p>
+Notice that we can compute $\frac{dL}{d\mathbf{z}}$ using:
 </p>
 
 $$
@@ -727,84 +841,90 @@ $$
 $$
 
 <p>
-This is exactly what we are going to do. However, this is defined for only one sample. We don't want
-to loop over each sample and compute this sequantially. Ideally, we want to do everything using
-matrix operations including this step. However, it is a bit trickier. So, first let's see if this
-approach works using loops. After, we will see how to convert this to fully matrix operations.
+This is the explicit implementation of the chain rule. We sum up all the contributions of the change
+of $z_i$ to $L$ over different paths: $a_1, a_2$ and $a_3$.
 </p>
-
-<h1> Back propagation Phase </h1>
 
 <p>
-We will <i>learn</i> the weights using <b>Back Propagation</b>.
+After computing $\frac{dL}{d\mathbf{z}}$, the rest is easy.
 </p>
 
-# HTML
+$$
+\frac{dz_m}{dw_{m,n}} = x_n, \quad \frac{dz_m}{db_m} = 1
+$$
+
+<p>
+Let's apply these:
+</p>
+
+# CODE
 {'width': 600}
-ALPHA = 2.0 # learning rate
 
-# this simple implementation is numerically unstable, because:
-# np.log() returns -inf for small inputs very close to 0
-def get_loss(A, Y_one_hot):
-  loss = -1 * np.sum(Y_one_hot * np.log(A))
-  return loss
+LEARNING_RATE = 2.0
+NUM_EPOCHS = 40
 
-# semantically same with above function, and numerically stable.
-def get_loss_numerically_stable(Z, Y_one_hot):
-  loss = -1 * np.sum(Y_one_hot * ( (Z - Z.max(axis = 0)) -
-			    np.log(np.sum(np.exp(Z - Z.max(axis = 0)), axis = 0))
-			 ))
-  return loss
+def get_loss(y, a):
+  return -1 * np.sum(y * np.log(a))
 
-def get_gradients(Y_one_hot, Z, A):
-  dA = (-Y_one_hot / A)
+def get_loss_numerically_stable(y, z):
+   return -1 * np.sum(y * (z + (-z.max() - np.log(np.sum(np.exp(z-z.max()))))))
 
-  dZ = np.zeros((3, 20))
-  for i in range(20):
-    a = A[:, [i]]
-    da = dA[:, [i]]
-    matrix = np.matmul(a, np.ones((1, 3))) * (np.identity(3) - np.matmul(np.ones((3, 1)), a.T))
-    dZ[:, [i]] = np.matmul(matrix, da)
+def get_gradients(x, z, a, y):
+  da = (-y / a)
 
-  dW = np.zeros((3,2))
-  db = np.zeros((3,1))
-  for i in range(20):
-    x = X[:, [i]]
-    dz = dZ[:, [i]]
-    dw = dz * np.tile(x, 3).T
-    dW += (1.0/20) * dw
-    db += (1.0/20) * dz
+  matrix = np.matmul(a, np.ones((1, 3))) * (np.identity(3) - np.matmul(np.ones((3, 1)), a.T))
+  dz = np.matmul(matrix, da)
 
-  return dZ, dW, db
+  dW = dz * x.T
+  db = dz.copy()
 
-def gradient_descent(W, b, dW, db, alpha):
-  W = W - alpha * dW
-  b = b - alpha * db
+  return dz, dW, db
+
+def gradient_descent(W, b, dW, db, learning_rate):
+  W = W - learning_rate * dW
+  b = b - learning_rate * db
   return W, b
 
 # random initialization
-W = np.random.rand(3, 2)
+W_initial = np.random.rand(3, 2)
+W = W_initial.copy()
 b = np.zeros((3, 1))
 
 W_cache = []
 b_cache = []
 L_cache = []
 
-for i in range(40):
-  Z, A = forward_propagate(X, W, b)
-  L = (1.0 / 20) * get_loss_numerically_stable(Z, Y_one_hot)
+for i in range(NUM_EPOCHS):
+  dW = np.zeros(W.shape)
+  db = np.zeros(b.shape)
+  L = 0
+  for j in range(X.shape[0]):
+    x_j = X[j,:].reshape(2,1)
+    y_j = Y[j,:].reshape(3,1)
+
+    z_j, a_j = forward_propagate(x_j, W, b)
+    loss_j = get_loss_numerically_stable(y_j, z_j)
+    dZ_j, dW_j, db_j = get_gradients(x_j, z_j, a_j, y_j)
+
+    dW += dW_j
+    db += db_j
+    L += loss_j
+
+  dW *= (1.0/20)
+  db *= (1.0/20)
+  L *= (1.0/20)
+
+  W, b = gradient_descent(W, b, dW, db, LEARNING_RATE)
 
   W_cache.append(W)
   b_cache.append(b)
   L_cache.append(L)
 
-  dZ, dW, db = get_gradients(Y_one_hot, Z, A)
-  W, b = gradient_descent(W, b, dW, db, ALPHA)
-
 plt.grid()
 plt.title('Loss', size=18)
 plt.xlabel('Number of iterations', size=15)
 plt.ylabel('Loss', size=15)
+plt.ylim([0, max(L_cache) * 1.1])
 plt.plot(L_cache)
 
 plt.savefig('image.png')
@@ -849,7 +969,7 @@ $$
 If we plot these three lines:
 </p>
 
-# HTML
+# CODE
 {'type': 'image', 'width': 600}
 
 def plot_decision_boundary(X, Y, W, b, path):
@@ -860,7 +980,7 @@ def plot_decision_boundary(X, Y, W, b, path):
   plt.ylabel('$x_2$', size=20)
   plt.title('Decision boundary', size = 18)
 
-  plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+  plt.scatter(X[:, 0], X[:, 1], s=50, c=colormap[y])
 
   xs = np.array([-2.0, 2.0])
   ys1 = ((b[1, 0] - b[0, 0]) - (W[0, 0] - W[1, 0]) * xs) / (W[0, 1] - W[1, 1])
@@ -883,9 +1003,9 @@ plt.cla()
 # HTML
 {}
 <p>
-Above, we simply find the boundaries and plot them. The definition of the boundary is that
+Above, we simply find the boundaries and plot them. The definition of the boundary is
 the region in which the predictions are equally confident for both of the classifiers. Since
-we have three classes, there are 3 choose 2 = 3 boundaries.
+we have three classes, there are (3 choose 2) = 3 boundaries.
 </p
 
 <p>
@@ -893,7 +1013,7 @@ Similarly, we can plot the same as our classifier progresses through the learnin
 As you may guess, it should start from a random point and get smarter in each step.
 </p>
 
-# HTML
+# CODE
 {'width': 600}
 import matplotlib.animation as animation
 
@@ -927,7 +1047,8 @@ lines1, = ax.plot([], [], c='black')
 lines2, = ax.plot([], [], c='black')
 lines3, = ax.plot([], [], c='black')
 
-ax.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+ax.grid()
+ax.scatter(X[:, 0], X[:, 1], s=50, c=colormap[y])
 text_box = ax.text(1.1, 1.6, 'Iteration 0', size = 16)
 
 anim = animation.FuncAnimation(fig, animate, len(W_cache), blit=False, interval=500)
@@ -953,7 +1074,7 @@ classifiers parameters. On the other hand, the previous animation shows the para
 step through the gradient descent iterations.
 </p>
 
-# HTML
+# CODE
 {'width': 600}
 NX = 100
 NY = 100
@@ -969,11 +1090,16 @@ def plot_decision_boundary_lazy(X, Y, W, b):
   xs = np.linspace(-2.0, 2.0, NX)
   ys = np.linspace(2.0, -2.0, NY)
   xv, yv = np.meshgrid(xs, ys)
-  X_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
-  _, predictions = forward_propagate(X_fake, W, b)
+  X_fake = np.stack((xv.flatten(), yv.flatten()), axis=1)
 
-  plt.imshow(predictions.T.reshape(NX, NY, 3), extent=[-2.0, 2.0, -2.0, 2.0])
-  plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+  A = []
+  for j in range(X_fake.shape[0]):
+    x_j = X_fake[j,:].reshape(2,1)
+    z_j, a_j = forward_propagate(x_j, W, b)
+    A.append(a_j)
+
+  plt.imshow(np.array(A).reshape(NX, NY, 3), extent=[-2.0, 2.0, -2.0, 2.0])
+  plt.scatter(X[:, 0], X[:, 1], s=50, c=colormap[y])
 
   plt.savefig('image.png')
 
@@ -997,11 +1123,15 @@ the predictions in that region is something similar to $[0.45, 0.1, 0.45]$. And 
 and blue which gives us purple. Similar phenomena happens between other decision boundary intersections.
 </p>
 
-<h1> Gradient Descent Parameter Updates </h1>
+# HEADER
+{'header': 'Gradient Descent Parameter Updates'}
+
+# HTML
+{}
 
 <p> Here we see the updates of parameters step by step in the gradient descent. </p>
 
-# HTML
+# CODE
 {'width': 1000}
 import matplotlib.animation as animation
 
@@ -1053,7 +1183,7 @@ plt.cla()
 # HTML
 {}
 <p>
-This is a nice animation that shows the progress of our parameters $W$ and $\mathbf{b}$
+This is a nice animation that shows the progress of our parameters $\mathbf{W}$ and $\mathbf{b}$
 in each iteration of gradient descent along with the corresponding loss value using the
 given parameters.
 </p>
@@ -1065,15 +1195,19 @@ gradient descent. Every step we take in the gradient descent is giving us a bett
 so that we see that the loss is decreasing.
 </p>
 
-<h1> Applying Softmax Regression using low-level Tensorflow APIs </h1>
+# HEADER
+{'header': 'Applying Softmax Regression using low-level Tensorflow APIs'}
+
+# HTML
+{}
 
 <p>
 Here is how to train the same classifier for the above red, green and blue points using low-level TensorFlow API.
 It produces <b>almost exact</b> output with our own hand crafted model. Be aware that there may be small differences
-because of the initial random start of both models. (Remember that $W$ is initialized with random values.)
+because of the initial random start of both models. (Remember that $\mathbf{W}$ is initialized with random values.)
 </p>
 
-# HTML
+# CODE
 {'width': 600}
 
 import tensorflow as tf
@@ -1081,7 +1215,8 @@ import tensorflow as tf
 t_X = tf.placeholder(tf.float32, [None, 2])
 t_Y = tf.placeholder(tf.float32, [None, 3])
 
-t_W = tf.Variable(tf.random_uniform((2, 3)))
+# t_W = tf.Variable(tf.random_uniform((2, 3)))
+t_W = tf.Variable(W_initial.T.astype('f'))
 t_b = tf.Variable(tf.zeros((1, 3)))
 
 t_logits = tf.matmul(t_X, t_W) + t_b
@@ -1092,23 +1227,24 @@ t_Accuracy = tf.contrib.metrics.accuracy(labels = tf.argmax(t_Y, axis=1),
 t_Loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
                          labels=t_Y, logits=t_logits))
 
-train = tf.train.GradientDescentOptimizer(ALPHA).minimize(t_Loss)
+train = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(t_Loss)
 init = tf.global_variables_initializer()
 
 losses = []
 accs = []
 with tf.Session() as session:
-   session.run(init)
-   for i in range(40):
-      ttrain, loss, acc = session.run([train, t_Loss, t_Accuracy], feed_dict={t_X:X.T, t_Y:Y_one_hot.T})
-      losses.append(loss)
-      accs.append(acc)
+  session.run(init)
+  for i in range(NUM_EPOCHS):
+    ttrain, loss, acc = session.run([train, t_Loss, t_Accuracy], feed_dict={t_X:X, t_Y:Y})
+    losses.append(loss)
+    accs.append(acc)
 
 plt.grid()
 plt.title('Loss', size=18)
 plt.xlabel('Number of iterations', size=15)
 plt.ylabel('Loss', size=15)
 plt.plot(losses)
+plt.ylim([0, max(losses) * 1.1])
 
 plt.savefig('image.png')
 
