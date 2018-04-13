@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 2: Softmax Regression <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: March 31 2018</center><p>
+<center>Last updated: April 07 2018</center><p>
 "What I cannot create, I do not understand."
 -- Richard Feynman
 </p>
@@ -94,7 +94,7 @@ and <b>blue</b> points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.646 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
+<div class="executed_in">(Executed in 0.195 seconds.)</div><img class="generated_image" width="600" src="../images/image012.png"/><p>
 In other words, given a point in 2-dimensions, $\mathbf{x} = (x_1, x_2)$, we want to
 output either <b>red</b>, <b>green</b> or <b>blue</b>.
 </p>
@@ -104,6 +104,12 @@ We can use <b>Softmax Regression</b> for this problem. We first learn <b>weights
 $w_{1,1}, w_{1,2}, w_{2,1}, w_{2,2}, w_{3,1}, w_{3,2}$, and <b>bias</b>, $b_1, b_2, b_3$.
 This phase is called <b>training</b>. And then, we will use those weights and the bias
 to predict a new point, $\mathbf{x}$.
+</p>
+
+<p>
+We will use Softmax Regression or sometimes called <b>Multinomial logistic regression</b>
+to solve this problem. This is a simple generalization of Logistic Regression (binary) to
+arbitrary number of classes.
 </p>
 <a href="#one_hot_vector_representation" class="header_style">  <h1 id="one_hot_vector_representation">One hot vector representation</h1>  </a>
 <p>
@@ -124,7 +130,7 @@ and we simply pick the biggest $a_i$ as our <b>final prediction</b>.
 </p>
 
 <p>
-The parameters of our Softmax Regression model is:
+The parameters of our Softmax Regression model are:
 </p>
 
 $$
@@ -142,13 +148,13 @@ b_3
 $$
 
 <p>
-our goal is to <b>learn</b> these parameters.
+So, our goal is to <b>learn</b> these parameters.
 </p>
 
 <p>
 We are given the coordinates of the input points in the matrix $\mathbf{X}$
 of size $(20 \times 2)$ and their corresponding class labels in $\mathbf{y}$
-which if of size $20$.
+which is a vector of size $20$.
 </p>
 <a href="#feed-forward_phase" class="header_style">  <h1 id="feed-forward_phase">Feed-forward Phase</h1>  </a>
 <p>
@@ -158,7 +164,7 @@ $\mathbf{b}$. How do we calculate the output?
 
 <p>
 We represent $\mathbf{X}$ as a matrix. $\mathbf{X}$ contains all the points.
-In our case $\mathbf{X}$ contains $m=20$ samples and for each sample we have $(x,y)$.
+In our case $\mathbf{X}$ contains $m=20$ samples and for each sample we have $(\mathbf{x},y)$.
 $\mathbf{y}$ contains all the labels (red, green and blue). For each of the 20 samples,
 we have an integer $y^{(i)} \in \{0, 1, 2\}$. We convert $\mathbf{y}$ into a matrix
 $\mathbf{Y}$ of one hot vectors. $\mathbf{Y}$ is of size $(20 \times 3)$ where each
@@ -167,14 +173,14 @@ row represents one of the sample's class as a one hot vector.
 
 <p>
 As we discussed earlier, $\mathbf{W}$ has the weights. $\mathbf{b}$ has the bias.
-So, the sizes of matrices are:
+So, to summarize the sizes of the matrices:
 </p>
 
 <ul>
   <li> $\mathbf{X}: 20 \times 2$
   <li> $\mathbf{Y}: 20 \times 3$
   <li> $\mathbf{W}: 3 \times 2$
-  <li> $\mathbf{b}: 20$
+  <li> $\mathbf{b}: 3 \times 1$
 </ul>
 
 <p>
@@ -205,7 +211,7 @@ a_i = \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
 </p>
 
 <p>
-A nice property about the Softmax function that it produces a legit <b>Probability Distrubition</b>.
+A nice property of the Softmax function that it produces a legit <b>Probability Distrubition</b>.
 In classification (or more generally in Machine Learning) we often want to assign prababilities to
 categories or classes. Softmax function is known to work well for numereous applications/areas.
 </p>
@@ -215,10 +221,10 @@ Softmax is a vector function -- it takes a vector as an input and returns anothe
 </p>
 
 <p>
-There is an issue with the naive way of implementing Softmax function we should keep in mind.
-This may be problematic to compute for big values of $z_i$. We call this phenomena
-<b>numerically unstable</b>. Because $e^{z_i}$ can easily overflow 64bit (even 128bit).
-We need to approach it slightly differently.
+There is an issue with the naive implementation of Softmax function we should keep in mind.
+The Equation $\ref{eq:softmax}$ may be problematic to compute for big values of $z_i$.
+We call this phenomena <b>numerically unstable</b>. Because $e^{z_i}$ can easily overflow
+64bit (even 128bit). We need to approach this computation slightly differently.
 </p>
 <a href="#numerical_stability_of_softmax_function" class="header_style">  <h1 id="numerical_stability_of_softmax_function">Numerical Stability of Softmax function</h1>  </a>
 <p>
@@ -228,7 +234,7 @@ Please see the softmax function in Equation $\ref{eq:softmax}$.
 </p>
 
 <p>
-Let's make an example:
+Let's look at an example:
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">softmax</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
   <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
@@ -303,7 +309,7 @@ As you can see, we fixed the <b>nan</b> issues with this simple trick.
 <p>
 However, we still have some numerical issues. First and second value of the softmax
 shouldn't be $0$, they should be very close $0$, but not exactly $0$. But this is
-okay for now.
+good enough for now.
 </p>
 
 <p>
@@ -374,28 +380,24 @@ for this problem.
 Let's say we have three points:
 </p>
 
-$$\mathbf{x}^{(1)} = \begin{bmatrix} -0.1 \\ 1.4 \end{bmatrix}, y^{(1)}=0$$
+$$\mathbf{x}^{(1)} = \begin{bmatrix} -0.1 \\ 1.4 \end{bmatrix}, \quad y^{(1)}=0$$
 
-$$\mathbf{x}^{(2)} = \begin{bmatrix} 1.3  \\ 0.9 \end{bmatrix}, y^{(2)}=1$$
+$$\mathbf{x}^{(2)} = \begin{bmatrix} 1.3  \\ 0.9 \end{bmatrix}, \quad y^{(2)}=1$$
 
-<p>
-and similarly,
-</p>
-
-$$\mathbf{x}^{(3)} = \begin{bmatrix} -1.4  \\ -1.1 \end{bmatrix}, y^{(3)}=2$$
+$$\mathbf{x}^{(3)} = \begin{bmatrix} -1.4  \\ -1.1 \end{bmatrix}, \quad y^{(3)}=2$$
 
 <p>
 Now, let's list these $y$ as a <b>one hot vector</b> and, their corresponding
 <i>imaginary</i> $\mathbf{a}$ values:
 </p>
 
-$$\mathbf{y}^{(1)} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix},
+$$\mathbf{y}^{(1)} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, \quad
 	\mathbf{a}^{(1)}= \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix} $$
 
-$$\mathbf{y}^{(2)} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix},
+$$\mathbf{y}^{(2)} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, \quad
         \mathbf{a}^{(2)} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix} $$
 
-$$\mathbf{y}^{(3)} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix},
+$$\mathbf{y}^{(3)} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}, \quad
         \mathbf{a}^{(3)} = \begin{bmatrix} 0.1 \\ 0.2 \\ 0.7 \end{bmatrix} $$
 
 <p>
@@ -406,7 +408,8 @@ $\mathbf{a} = \begin{bmatrix} 0.8 \\ 0.1 \\ 0.1 \end{bmatrix}$ is <b>more desira
 than having $\mathbf{a} = \begin{bmatrix} 0.6 \\ 0.2 \\ 0.2 \end{bmatrix}$.
 
 <p>
-In other words, we want to <b>maximize</b>:
+One simple way of encoding this intuition using a maximization problem is as follows.
+We want to <b>maximize</b>:
 </p>
 
 $$ \prod_{j=1}^{3} a_j^{y_j} $$
@@ -420,7 +423,7 @@ and $a_3 = 0.0$.
 
 $$\mathbf{y} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}, \quad
   \mathbf{a} = \begin{bmatrix} 0.9 \\ 0.1 \\ 0.0 \end{bmatrix}, \quad
-     9 \times 1 \times 1 = 0.9 $$
+     0.9 \times 1 \times 1 = 0.9 $$
 
 $$\mathbf{y} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}, \quad
   \mathbf{a} = \begin{bmatrix} 0.1 \\ 0.8 \\ 0.1 \end{bmatrix}, \quad
@@ -484,16 +487,16 @@ $$
 $$
 
 <p>
-Notice that $y \in \{0, 1\}$ and $0 < a < 1$. What are the possible values for $\text{L}$?
+Notice that $y \in \{0, 1\}$ and $0 < a_j < 1$. What are the possible values for $\text{L}$?
 </p>
 
 <p>
 We have seen the natural logarithm function in the previous tutorial, and remember that it
-is not numerically stable for small values of $a$.
+is not numerically stable for small input values.
 </p>
 
 <p>
-So, we will try to: come up with mathematically equal way that is numerically okay.
+So, let's try to: come up with mathematically equal way that is numerically okay.
 </p>
 
 $$
@@ -884,7 +887,7 @@ Let's apply these:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.200 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><h1> Decision Boundary </h1>
+<div class="executed_in">(Executed in 0.216 seconds.)</div><img class="generated_image" width="600" src="../images/image013.png"/><h1> Decision Boundary </h1>
 
 <p>
 So, essentially, we have 3 equations:
@@ -944,7 +947,7 @@ If we plot these three lines:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.180 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/><p>
+<div class="executed_in">(Executed in 0.182 seconds.)</div><img class="generated_image" width="600" src="../images/image014.png"/><p>
 Above, we simply find the boundaries and plot them. The definition of the boundary is
 the region in which the predictions are equally confident for both of the classifiers. Since
 we have three classes, there are (3 choose 2) = 3 boundaries.
@@ -997,8 +1000,8 @@ As you may guess, it should start from a random point and get smarter in each st
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.030 seconds.)</div><video class="generated_video" width="600" controls>
-<source src="../animations/animation000.mp4" type="video/mp4">
+<div class="executed_in">(Executed in 2.067 seconds.)</div><video class="generated_video" width="600" controls>
+<source src="../animations/animation004.mp4" type="video/mp4">
 </video><p>
 As you can see, it starts from a random classifier that does not seem to be working well in the
 beginning. And the learning process figures out where to go next to find a better classifier.
@@ -1007,8 +1010,8 @@ After the learning is done, the final classifier is pretty good, in fact it has 
 
 <p>
 Let's see the decision boundary in a more lazy setting. Here, we simply classify every single point
-in the grid and then give the predictions to a contour plot. Comparing to the previous animation,
-contour plot shows the prediction of every single point in the grid in the final version of the
+in the grid and then give the predictions to some sort of heat map. Comparing to the previous animation,
+heatmap shows the prediction of every single point in the grid in the final version of the
 classifiers parameters. On the other hand, the previous animation shows the parameters step by
 step through the gradient descent iterations.
 </p>
@@ -1021,7 +1024,7 @@ step through the gradient descent iterations.
   <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
   <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
   <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-  <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Decision boundary - Contour plot&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Decision boundary - Heatmap&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
 
   <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">NX</span><span class="p">)</span>
   <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">NY</span><span class="p">)</span>
@@ -1045,7 +1048,7 @@ step through the gradient descent iterations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.327 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/><p>
+<div class="executed_in">(Executed in 0.384 seconds.)</div><img class="generated_image" width="600" src="../images/image015.png"/><p>
 Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
 is $\mathbf{a}$ and it is three dimensional. So, we simply convert that vector to RGB space. So, for example
 if the prediction is: $[0.98, 0.01, 0.01]$, it will be almost a perfect <b>red</b>, and so on.
@@ -1105,8 +1108,8 @@ and blue which gives us purple. Similar phenomena happens between other decision
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.838 seconds.)</div><video class="generated_video" width="1000" controls>
-<source src="../animations/animation001.mp4" type="video/mp4">
+<div class="executed_in">(Executed in 3.167 seconds.)</div><video class="generated_video" width="1000" controls>
+<source src="../animations/animation005.mp4" type="video/mp4">
 </video><p>
 This is a nice animation that shows the progress of our parameters $\mathbf{W}$ and $\mathbf{b}$
 in each iteration of gradient descent along with the corresponding loss value using the
@@ -1122,8 +1125,9 @@ so that we see that the loss is decreasing.
 <a href="#applying_softmax_regression_using_low-level_tensorflow_apis" class="header_style">  <h1 id="applying_softmax_regression_using_low-level_tensorflow_apis">Applying Softmax Regression using low-level Tensorflow APIs</h1>  </a>
 <p>
 Here is how to train the same classifier for the above red, green and blue points using low-level TensorFlow API.
-It produces <b>almost exact</b> output with our own hand crafted model. Be aware that there may be small differences
-because of the initial random start of both models. (Remember that $\mathbf{W}$ is initialized with random values.)
+It produces <b>exact</b> output with our own hand crafted model. The reason we have the exact output is that we
+are starting from the same initial $\mathbf{W}$ with our hand-crafted model and also using the same exact learning
+parameters.
 </p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 
@@ -1167,7 +1171,7 @@ because of the initial random start of both models. (Remember that $\mathbf{W}$ 
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.914 seconds.)</div><img class="generated_image" width="600" src="../images/image004.png"/>
+<div class="executed_in">(Executed in 0.585 seconds.)</div><img class="generated_image" width="600" src="../images/image016.png"/>
 <h1>Exercises</h1>
 <ol>
   <li>

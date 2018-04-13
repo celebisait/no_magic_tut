@@ -99,7 +99,7 @@ Here is the visual representation of our model:
 <img class="static_image" style="width: 800px;" src="../static_images/image006.png"/>
 
 <p>
-and decide if $a^{[3]} > 0.5$ for our <b>final prediction</b>.
+and decide if $a^{(3)} > 0.5$ for our <b>final prediction</b>.
 </p>
 
 <h1>Feed-forward Phase</h1>
@@ -121,43 +121,43 @@ Here is the sizes of the matrices:
 <ul>
   <li> $\mathbf{X}: 20 \times 2$ </li>
   <li> $\mathbf{y}: 20 \times 1$ </li>
-  <li> $\mathbf{W}^{[1]}: 3 \times 2$ </li>
-  <li> $\mathbf{b}^{[1]}: 3 \times 1$ </li>
-  <li> $\mathbf{W}^{[2]}: 3 \times 3$ </li>
-  <li> $\mathbf{b}^{[2]}: 3 \times 1$ </li>
-  <li> $\mathbf{W}^{[3]}: 1 \times 3$ </li>
-  <li> $b^{[3]}: 1 \times 1$ </li>
+  <li> $\mathbf{W}^{(1)}: 3 \times 2$ </li>
+  <li> $\mathbf{b}^{(1)}: 3 \times 1$ </li>
+  <li> $\mathbf{W}^{(2)}: 3 \times 3$ </li>
+  <li> $\mathbf{b}^{(2)}: 3 \times 1$ </li>
+  <li> $\mathbf{W}^{(3)}: 1 \times 3$ </li>
+  <li> $b^{(3)}: 1 \times 1$ </li>
 </ul>
 
 <p>
 Feed-forward basically means given:
-$\mathbf{x}, y, \mathbf{W}^{[1]}, \mathbf{W}^{[2]}, \mathbf{W}^{[3]}$
-and $\mathbf{b}^{[1]}, \mathbf{b}^{[2]}, b^{[3]}$
-will produce us $a^{[3]}$. Here is step by step how we do the feed forward phase.
+$\mathbf{x}, y, \mathbf{W}^{(1)}, \mathbf{W}^{(2)}, \mathbf{W}^{(3)}$
+and $\mathbf{b}^{(1)}, \mathbf{b}^{(2)}, b^{(3)}$
+will produce us $a^{(3)}$. Here is step by step how we do the feed forward phase.
 </p>
 
 $$
-\mathbf{z}^{[1]} = \mathbf{W}^{[1]} \mathbf{x} + \mathbf{b}^{[1]}
+\mathbf{z}^{(1)} = \mathbf{W}^{(1)} \mathbf{x} + \mathbf{b}^{(1)}
 $$
 
 $$
-\mathbf{a}^{[1]} = g(\mathbf{z}^{[1]})
+\mathbf{a}^{(1)} = g(\mathbf{z}^{(1)})
 $$
 
 $$
-\mathbf{z}^{[2]} = \mathbf{W}^{[2]} \mathbf{a}^{[1]} + \mathbf{b}^{[2]}
+\mathbf{z}^{(2)} = \mathbf{W}^{(2)} \mathbf{a}^{(1)} + \mathbf{b}^{(2)}
 $$
 
 $$
-\mathbf{a}^{[2]} = g(\mathbf{z}^{[2]})
+\mathbf{a}^{(2)} = g(\mathbf{z}^{(2)})
 $$
 
 $$
-z^{[3]} = \mathbf{W}^{[3]} \mathbf{a}^{[2]} + b^{[3]}
+z^{(3)} = \mathbf{W}^{(3)} \mathbf{a}^{(2)} + b^{(3)}
 $$
 
 $$
-a^{[3]} = g(z^{[3]})
+a^{(3)} = g(z^{(3)})
 $$
 
 <p>
@@ -216,8 +216,8 @@ The tricky part is to <i>learn</i> those weights properly.
 # HTML
 {}
 <p>
-In training, our goal is to <b>learn</b>: $\mathbf{W}^{[1]}, \mathbf{W}^{[2]},
-\mathbf{W}^{[3]}, \mathbf{b}^{[1]}, \mathbf{b}^{[2]}, \mathbf{b}^{[3]}$
+In training, our goal is to <b>learn</b>: $\mathbf{W}^{(1)}, \mathbf{W}^{(2)},
+\mathbf{W}^{(3)}, \mathbf{b}^{(1)}, \mathbf{b}^{(2)}, \mathbf{b}^{(3)}$
 that best <b>discriminates</b> red and green points. These are called the
 <b>parameters</b> of our model.
 </p>
@@ -227,10 +227,11 @@ We want to find parameters that minimizes some definition of a <b>cost function<
 cost function we have used before in Logistic Regression and Softmax Regression:
 </p>
 
-$$ \text{L} = - \sum_{i=1}^{M} y^{(i)} \text{log}( a^{[3](i)} ) + (1 - y^{(i)}) \text{log}( 1 - a^{[3](i)} )$$
+$$ \text{L} = - \sum_{i=1}^{M} y_{i} \text{log}( a^{(i)} ) + (1 - y^{(i)}) \text{log}( 1 - a^{(i)} )$$
 
 <p>
-where $a^{[3](i)}$ is the last layer's activation value corresponding to the $i$ th item in the dataset.
+where $a^{(i)}$ is the last layer's activation value corresponding to the $i$ th item in the dataset.
+Keep in mind that last layer is $a^{(3)}$.
 </p>
 
 <p>
@@ -243,11 +244,8 @@ If we add our <b>loss</b> to our computation graph:
 
 <img class="static_image" style="width: 800px;" src="../static_images/image007.png"/>
 
-# HEADER
-{'header': 'Backpropagation'}
+<h1>Backpropagation</h1>
 
-# HTML
-{} 
 <p>
 Now, we are going to have some <b>fun</b>.
 </p>
@@ -266,7 +264,7 @@ The parameters of the model we want to compute with backprop is:
 
 
 $$
-\frac{d \text{L}}{d \mathbf{W}^{[i]}}, \quad \frac{d \text{L}}{d \mathbf{b}^{[i]}} \quad \forall i \in \{1,2,3\}
+\frac{d \text{L}}{d \mathbf{W}^{(i)}}, \quad \frac{d \text{L}}{db^{(i)}}
 $$
 
 <p>
@@ -287,7 +285,7 @@ Recall that we already calculated the first step of derivatives:
 </p>
 
 $$
-\frac{dL}{dz^{[3]}} = a^{[3]} - y
+\frac{dL}{dZ^{(3)}} = A^{(3)} - Y
 $$
 
 <p>
@@ -296,29 +294,22 @@ in Logistic Regression tutorial. Notice that we are using <b>exactly</b> the sam
 </p>
 
 <p>
-Notice that this is defined <b>per sample</b>. So, we have a different $\frac{d \text{L}}{d z^{[3]}}$
-value for each sample.
+Let's try to go one step further and calculate $\frac{dL}{dW^{(3)}}$ by keeping in mind that
+we already know $\frac{dL}{dZ^{(3)}}$. (This sentence mimicks why we need <b>Chain Rule</b>)
 </p>
 
 <p>
-Let's try to go one step further and calculate $\frac{d \text{L}}{d \mathbf{W}^{[3]}}$ by keeping
-in mind that we already know $\frac{d \text{L}}{dz^{[3]}}$. (This sentence mimicks why we need
-<b>Chain Rule</b>)
+In other words, we know how much $L$ changes if we play
+with $Z^{(3)}$ and we are trying to find out how much $L$ changes if we play with $W^{(3)}$.
 </p>
 
 <p>
-In other words, we know how much $\text{L}$ changes if we play
-with $z^{[3]}$ and we are trying to find out how much $\text{L}$ changes if we play with
-$\mathbf{W}^{[3]}$.
-</p>
-
-<p>
-Let's look at how we calculate $z^{[3]}$:
+Let's look at how we calculate $Z^{(3)}$:
 </p>
 
 $$
 \begin{matrix}
-(\mathbf{W}^{[3]}) \\
+(W^{(3)}) \\
 \begin{bmatrix} 0 & 0 & 0 \end{bmatrix}
 \\
 \\
@@ -326,7 +317,7 @@ $$
 \end{matrix}
 
 \begin{matrix}
-(\mathbf{a}^{[2]}) \\
+(A^{(2)}) \\
 \begin{bmatrix}
 0  \\
 0  \\
@@ -337,7 +328,7 @@ $$
 +
 
 \begin{matrix}
-(b^{[3]})
+(b^{(3)})
 \\
 \begin{bmatrix}
 0
@@ -349,7 +340,7 @@ $$
 =
 
 \begin{matrix}
-(z^{[3]})
+(Z^{(3)})
 \\
 \begin{bmatrix}
 0
@@ -360,53 +351,50 @@ $$
 $$
 
 <p>
-Let's look at this equation very carefully. Our simpler task for now is: "How much
-$z^{[3]}$ will be affected if we play with $\mathbf{W}^{[3]}$?", i.e.,
+Let's look this equation very carefully. Our simpler task for now is: "How much $Z^{(3)}$ will be affected if we
+play with $W^{(3)}$?", i.e.,
 </p>
 
 $$
-\frac{d z^{[3]}}{d \mathbf{W}^{[3]}}
+\frac{dZ^{(3)}}{dW^{(3)}}
 $$
 
 <p>
-After finding out what the above is, we will extend it and find:
-$\frac{d \text{L}}{d \mathbf{W}^{[3]}}$ using the Chain Rule.
+After finding out what the above is, we will extend it and find: $\frac{dL}{dW^{(3)}}$ using the Chain Rule.
 </p>
 
 <p>
-It seems obvious <b>visually</b> that if we change, say,
-$\mathbf{W}^{[3]}_1$, $z^{[3]}$ will change proportional to $\mathbf{a}^{[2]}_1$.
-Notice that we are assuming that $\mathbf{a}^{[2]}$ and $b^{[3]}$ is fixed and frozen.
-Using similar logic for the other items of $\mathbf{W}^{[3]}$, we can conclude:
+It seems obvious <b>visually</b> that if we change, say, $W^{(3)}_1$, $Z^{(3)}$ will change proportional to $A^{(2)}_1$.
+Notice that we are assuming that $A^{(2)}$ and $b^{(3)}$ is fixed and frozen. Using similar logic for the other items
+of $W^{(3)}$, we can conclude:
 </p>
 
 $$
-\frac{d z^{[3]}}{d \mathbf{W}^{[3]}} = \mathbf{a}^{[2]}.\text{T}
+\frac{dZ^{(3)}}{dW^{(3)}} = A^{(2)}.T
 $$
 
 <p>
-Similarly, if we change $b^{[3]}$ a small amount, $z^{[3]}$ will also change as same amount
-in the same direction, so:
+Similarly, if we change $b^{(3)}$ a small amount, $Z^{(3)}$ will also change as same amount in the same direction, so:
 </p>
 
 $$
-\frac{d z^{[3]}}{d b^{[3]}} = 1
+\frac{dZ^{(3)}}{db^{(3)}} = 1
 $$
 
 <p>
-To finalize the calculation of $\frac{d \text{L}}{d \mathbf{W}^{[3]}}$, <b>for one sample</b>:
+To finalize the calculation of $\frac{dL}{dW^{(3)}}$, <b>for one sample</b>:
 </p>
 
 $$
-\frac{d \text{L}}{d \mathbf{W}^{[3]}} = \frac{d \text{L}}{d z^{[3]}} \frac{d z^{[3]}}{d \mathbf{W}^{[3]}}
+\frac{dL}{dW^{(3)}} = \frac{dL}{dZ^{(3)}} \frac{dZ^{(3)}}{dW^{(3)}}
 $$
 
 <p>
-and similarly for $\frac{d \text{L}}{d b^{[3]}}$:
+and similarly for $\frac{dL}{db^{(3)}}$:
 </p>
 
 $$
-\frac{d \text{L}}{d b^{[3]}} = \frac{d \text{L}}{d z^{[3]}}
+\frac{dL}{db^{(3)}} = \frac{dL}{dZ^{(3)}}
 $$
 
 <p>
@@ -414,51 +402,44 @@ Nice.
 </p>
 
 <p>
-At this moment, we calculated $\frac{d \text{L}}{d \mathbf{W}^{[3]}}$ and
-$\frac{d \text{L}}{d b^{[3]}}$. Now, we want to calculate
-$\frac{d \text{L}}{d \mathbf{W}^{[2]}}$ and $\frac{d \text{L}}{d \mathbf{b}^{[2]}}$.
-In order to calculate them, we need $\frac{d \text{L}}{d \mathbf{a}^{[2]}}$ and
-$\frac{d \text{L}}{d \mathbf{z}^{[2]}}$.
+At this moment, we calculated $\frac{dL}{dW^{(3)}}$ and $\frac{dL}{db^{(3)}}$.
+Now, we want to calculate $\frac{dL}{dW^{(2)}}$ and $\frac{dL}{db^{(2)}}$.
+In order to calculate them, we need $\frac{dL}{dA^{(2)}}$ and $\frac{dL}{dZ^{(2)}}$.
 </p>
 
 <p>
-Looking to the same figure above visually, and using a similar logic, it looks obvious
-<b>for one sample</b>:
+Looking to the same figure above visually, and using a similar logic, it looks obvious <b>for one sample</b>:
 </p>
 
 $$
-\frac{d z^{[3]}}{d \mathbf{a}^{[2]}} = \mathbf{W}^{[3]}.\text{T}
+\frac{dZ^{(3)}}{dA^{(2)}} = W^{(3)}.T
 $$
 
 <p>
-To finalize the calculation of $\frac{d \text{L}}{d \mathbf{a}^{[2]}}$:
+To finalize the calculation of $\frac{dL}{dA^{(2)}}$:
 </p>
 
 $$
-\frac{d \text{L}}{d \mathbf{a}^{[2]}} = \frac{d \text{L}}{d z^{[3]}} \frac{d z^{[3]}}{d \mathbf{a}^{[2]}}
+\frac{dL}{dA^{(2)}} = \frac{dL}{dZ^{(3)}} \frac{dZ^{(3)}}{dA^{(2)}}
 $$
 
 <p>
-Given $\frac{d \text{L}}{d \mathbf{a}^{[2]}}$, it is easy to get
-$\frac{d \text{L}}{d \mathbf{z}^{[2]}}$. We just need to apply
+Given $\frac{dL}{dA^{(2)}}$, it is easy to get $\frac{dL}{dZ^{(2)}}$. We just need to apply
 the gradient of <b>sigmoid</b> function.
 </p>
 
 $$
-\frac{d \text{L}}{d \mathbf{z}^{[2]}} =
-  \frac{d \text{L}}{d \mathbf{a}^{[2]}} \circ \left
-     ( \mathbf{a}^{[2]} \circ \left ( 1 - \mathbf{a}^{[2]} \right ) \right )
+\frac{dL}{dZ^{(2)}} = \frac{dL}{dA^{(2)}} \circ \left ( A^{(2)} \circ \left ( 1 - A^{(2)} \right ) \right )
 $$
 
 <p>
-Now, with knowing $\frac{d \text{L}}{d \mathbf{z}^{[2]}}$, we are set to calculate
-$\frac{d \text{L}}{d \mathbf{W}^{[2]}}$ and $\frac{d \text{L}}{d \mathbf{b}^{[2]}}$.
-Here is how we compute $\mathbf{z}^{[2]}$:
+Now, with knowing $\frac{dL}{dZ2}$, we are set to calculate $\frac{dL}{dW2}$ and $\frac{dL}{db2}$.
+Here is how we compute $Z^{(2)}$:
 </p>
 
 $$
 \begin{matrix}
-(\mathbf{W}^{[2]}) \\
+(W^{(2)}) \\
 \begin{bmatrix}
 0 & 0 & 0 \\
 0 & 0 & 0 \\
@@ -467,7 +448,7 @@ $$
 \end{matrix}
 
 \begin{matrix}
-(\mathbf{a}^{[1]}) \\
+(A^{(1)}) \\
 \begin{bmatrix}
 0  \\
 0  \\
@@ -478,7 +459,7 @@ $$
 +
 
 \begin{matrix}
-(\mathbf{b}^{[2]})
+(b^{(2)})
 \\
 \begin{bmatrix}
 0 \\
@@ -490,7 +471,7 @@ $$
 =
 
 \begin{matrix}
-(\mathbf{z}^{[2]})
+(Z^{(2)})
 \\
 \begin{bmatrix}
 0 \\
@@ -812,6 +793,127 @@ We are doing pretty good on inference (100%).
 Z1, A1, Z2, A2, Z3, A3 = forward_propagate(X, W1, b1, W2, b2, W3, b3)
 print(Y)
 print(A3)
+
+# HTML
+{}
+<h1>Backpropagation using Matrix Operations</h1>
+
+Now, we will try to make things faster by applying matrix operations to do the backprop.
+We will eliminate the inside for loops by doing this.
+
+<p>
+To calculate $\frac{dL}{dW^{(3)}}$, using <b>matrix operations</b>:
+</p>
+
+$$
+\frac{dL}{dW3}
+=
+\begin{matrix}
+(\frac{dL}{dZ^{(3)}}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{1 \times 20}
+\end{matrix}
+
+\begin{matrix}
+(A^{(2)}.T) \\
+\begin{bmatrix}
+0   &  0   &  0  \\
+0   &  0   &  0  \\
+\vdots   &  \vdots   &  \vdots  \\
+0   &  0   &  0  \\
+\end{bmatrix}_{20 \times 3}
+\end{matrix}
+=
+\begin{matrix}
+(\frac{dL}{dW^{(3)}}) \\
+\begin{bmatrix}
+0 & 0 & 0 \\
+\end{bmatrix}_{1 \times 3}
+\end{matrix}
+$$
+
+and similarly for $\frac{dL}{db^{(3)}}$:
+
+$$
+\begin{matrix}
+(\frac{dL}{dZ^{(3)}}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{1 \times 20}
+\end{matrix}
+
+\stackrel{\text{average}}{\rightarrow}
+
+\begin{matrix}
+(\frac{dL}{db^{(3)}}) \\
+\begin{bmatrix}
+0  \\
+\end{bmatrix}_{1 \times 1}
+\end{matrix}
+$$
+
+<p>
+Similarly, using <b>matrix operations</b>: (Again, assuming $W^{(3)}$ and $b^{(3)}$ is fixed and frozen.)
+</p>
+
+$$
+\frac{dL}{dA^{(2)}} =
+\begin{matrix}
+(W^{(3)}.T)\\
+\begin{bmatrix}
+0   \\
+0   \\
+0   \\
+\end{bmatrix}_{3 \times 1}
+\end{matrix}
+
+\begin{matrix}
+(\frac{dL}{dZ^{(3)}})\\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{1 \times 20}
+\end{matrix}
+
+=
+
+\begin{matrix}
+(\frac{dL}{dA^{(2)}}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{3 \times 20}
+\end{matrix}
+$$
+
+<p>
+And, finally, using matrix operations:
+</p>
+
+$$
+\frac{dL}{dW2}
+=
+\begin{matrix}
+(\frac{dL}{dZ^{(2)}}) \\
+\begin{bmatrix}
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+0   &  0  & ... &  0  \\
+\end{bmatrix}_{3 \times 20}
+\end{matrix}
+
+\begin{matrix}
+(A1.T) \\
+\begin{bmatrix}
+0   &  0   &  0  \\
+0   &  0   &  0  \\
+\vdots   &  \vdots   &  \vdots  \\
+0   &  0   &  0  \\
+\end{bmatrix}_{20 \times 3}
+\end{matrix}
+$$
+
 
 
 # HTML
