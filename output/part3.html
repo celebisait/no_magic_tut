@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 3: Building a Simple Neural Network <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: April 12 2018</center><p>
+<center>Last updated: April 24 2018</center><p>
 "Truth is ever to be found in the simplicity, and not in the multiplicity and confusion of things."
 -- Sir Isaac Newton
 </p>
@@ -94,7 +94,7 @@ points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.782 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
+<div class="executed_in">(Executed in 0.779 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
 In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
 or <b>green</b>. (In this tutorial 0.0 means red and 1.0 means green.)
 </p>
@@ -215,8 +215,8 @@ Let's try to apply the above equations using an <b>initial</b> random set of wei
 <span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="k">print</span><span class="p">(</span><span class="n">a3</span><span class="p">)</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.004 seconds.)</div><div class="code_stdout"><pre>0
-[[0.832]]
+<div class="executed_in">(Executed in 0.003 seconds.)</div><div class="code_stdout"><pre>0
+[[0.7]]
 </pre></div><p>
 Above we print our prediction for the first point out of 20 points.
 We use random initial set of weights and bias. We are <b>randomly
@@ -292,12 +292,12 @@ Recall that we already calculated the first step of derivatives:
 </p>
 
 $$
-\frac{dL}{dz^{[3]}} = a^{[3]} - y
+\frac{d \text{L}}{dz^{[3]}} = a^{[3]} - y
 $$
 
 <p>
-in Logistic Regression tutorial. Notice that we are using <b>exactly</b> the same loss function.
-(Both Logistic Regression and the model discussed in this tutorial is a binary classification task.)
+in Logistic Regression tutorial. Notice that we are using <b>exactly</b> same loss function.
+(Both Logistic Regression and the model discussed in this tutorial are a binary classification task.)
 </p>
 
 <p>
@@ -415,6 +415,11 @@ $$
 $$
 
 <p>
+Notice that $\frac{d \text{L}}{dz^{[3]}} \in \mathbb{R}$ and $\frac{dz^{[3]}}{d \mathbf{W}^{[3]}} \in \mathbb{R}^3$.
+So, it is a scalar multiplication.
+</p>
+
+<p>
 Nice.
 </p>
 
@@ -451,7 +456,8 @@ the gradient of <b>sigmoid</b> function.
 
 $$
 \frac{d \text{L}}{d \mathbf{z}^{[2]}} =
-  \frac{d \text{L}}{d \mathbf{a}^{[2]}} \circ \left
+  \frac{d \text{L}}{d \mathbf{a}^{[2]}} \circ \frac{d \mathbf{a}^{[2]}}{d \mathbf{z}^{[2]}} =
+     \frac{d \text{L}}{d \mathbf{a}^{[2]}} \circ \left
      ( \mathbf{a}^{[2]} \circ \left ( 1 - \mathbf{a}^{[2]} \right ) \right )
 $$
 
@@ -511,25 +517,25 @@ It is easy to observe:
 
 $$
 
-\frac{dZ^{(2)}_{1}}{dW^{(2)}} =
+\frac{d \mathbf{z}^{[2]}_{1}}{d \mathbf{W}^{[2]}} =
 \begin{bmatrix}
-  & A^{(1)}.T & \\
+  & \mathbf{a}^{[1]}.T & \\
 0 & 0 & 0 \\
 0 & 0 & 0 \\
 \end{bmatrix},
 \quad
-\frac{dZ^{(2)}_{2}}{dW^{(2)}} =
+\frac{d \mathbf{z}^{[2]}_{2}}{d \mathbf{W}^{[2]}} =
 \begin{bmatrix}
 0 & 0 & 0 \\
-& A^{(1)}.T & \\
+& \mathbf{a}^{[1]}.T & \\
 0 & 0 & 0 \\
 \end{bmatrix},
 \quad
-\frac{dZ^{(2)}_{3}}{dW^{(2)}} =
+\frac{d \mathbf{z}^{[2]}_{3}}{d \mathbf{W}^{[2]}} =
 \begin{bmatrix}
 0 & 0 & 0 \\
 0 & 0 & 0 \\
-& A^{(1)}.T & \\
+& \mathbf{a}^{[1]}.T & \\
 \end{bmatrix}
 
 $$
@@ -539,7 +545,9 @@ Applying the chain rule, we should do something like:
 </p>
 
 $$
-\frac{dL}{dW^{(2)}} = \sum_{i=1}^{3} \frac{dL}{dZ^{(2)}_i} \frac{dZ^{(2)}_i}{dW^{(2)}}
+\frac{d \text{L}}{d \mathbf{W}^{[2]}} =
+  \sum_{i=1}^{3} \frac{d \text{L}}{d \mathbf{z}^{[2]}_i}
+     \frac{d \mathbf{z}^{[2]}_i}{d \mathbf{W}^{[2]}}
 $$
 
 <p>
@@ -547,29 +555,28 @@ which is a more fancy way of writing:
 </p>
 
 $$
-\frac{dL}{dW^{(2)}} =
+\frac{d \text{L}}{d \mathbf{W}^{[2]}} =
 
-\frac{dL}{dZ^{(2)}_1}
+\frac{d \text{L}}{d \mathbf{z}^{[2]}_1}
 \begin{bmatrix}
-  & A^{(1)}.T & \\
+  & \mathbf{a}^{[1]}.T & \\
 0 & 0 & 0 \\
 0 & 0 & 0 \\
 \end{bmatrix}
 +
-\frac{dL}{dZ^{(2)}_2}
+\frac{d \text{L}}{d \mathbf{z}^{[2]}_2}
 \begin{bmatrix}
 0 & 0 & 0 \\
-  & A^{(1)}.T & \\
+  & \mathbf{a}^{[1]}.T & \\
 0 & 0 & 0 \\
 \end{bmatrix}
 +
-\frac{dL}{dZ^{(2)}_3}
+\frac{d \text{L}}{d \mathbf{z}^{[2]}_3}
 \begin{bmatrix}
 0 & 0 & 0 \\
 0 & 0 & 0 \\
-  & A^{(1)}.T & \\
+  & \mathbf{a}^{[1]}.T & \\
 \end{bmatrix}
-
 $$
 
 <p>
@@ -577,18 +584,17 @@ which is idential to:
 </p>
 
 $$
-\frac{dL}{dW^{(2)}} =
+\frac{d \text{L}}{d \mathbf{W}^{[2]}} =
 
 \begin{bmatrix}
 \\
- \frac{dL}{dZ^{(2)}} \\
+ \frac{d \text{L}}{d \mathbf{z}^{[2]}} \\
 \\
 \end{bmatrix}
 
 \begin{bmatrix}
- A^{(1)}.T \\
+ \mathbf{a}^{[1]}.T \\
 \end{bmatrix}
-
 $$
 
 <p>
@@ -596,13 +602,14 @@ We are half-way there in terms of finishing the backprop.
 </p>
 
 <p>
-We need to calcualte $\frac{dL}{dA^{(1)}}$. Let's look at $\frac{dZ^{(2)}}{dA^{(1)}}$.
+We need to calcualte $\frac{d \text{L}}{d \mathbf{a}^{[1]}}$.
+Let's look at $\frac{d \mathbf{z}^{[2]}}{d \mathbf{a}^{[1]}}$.
 </p>
 
 $$
-\frac{dL}{A^{(1)}_1} = W^{(2)}_{:,1} \frac{dL}{dZ^{(2)}}.T, \quad
-\frac{dL}{A^{(1)}_2} = W^{(2)}_{:,2} \frac{dL}{dZ^{(2)}}.T, \quad
-\frac{dL}{A^{(1)}_3} = W^{(2)}_{:,3} \frac{dL}{dZ^{(2)}}.T
+\frac{d \text{L}}{\mathbf{a}^{[1]}_1} = \mathbf{W}^{[2]}_{:,1} \frac{d \text{L}}{d \mathbf{z}^{[2]}}.T, \quad
+\frac{d \text{L}}{\mathbf{a}^{[1]}_2} = \mathbf{W}^{[2]}_{:,2} \frac{d \text{L}}{d \mathbf{z}^{[2]}}.T, \quad
+\frac{d \text{L}}{\mathbf{a}^{[1]}_3} = \mathbf{W}^{[2]}_{:,3} \frac{d \text{L}}{d \mathbf{z}^{[2]}}.T
 $$
 
 <p>
@@ -610,7 +617,7 @@ or, equivalently:
 </p>
 
 $$
-\frac{dL}{A^{(1)}} = W^{(2)}.T \frac{dL}{dZ^{(2)}}
+\frac{d \text{L}}{\mathbf{a}^{[1]}} = \mathbf{W}^{[2]}.T \frac{d \text{L}}{d \mathbf{z}^{[2]}}
 $$
 
 <p>
