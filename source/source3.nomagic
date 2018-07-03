@@ -247,7 +247,7 @@ If we add our <b>loss</b> to our computation graph:
 {'header': 'Backpropagation'}
 
 # HTML
-{} 
+{}
 <p>
 Now, we are going to have some <b>fun</b>.
 </p>
@@ -616,12 +616,13 @@ $$
 $$
 
 <p>
-Now we only missing $\frac{dL}{dW^{(1)}}$ and $\frac{dL}{db^{(1)}}$. Let's look how we calculate $Z^{(1)}$:
+Now we only missing $\frac{d \text{L}}{d \mathbf{W}^{[1]}}$ and $\frac{d \text{L}}{db^{[1]}}$.
+Let's look how we calculate $\mathbf{z}^{[1]}$:
 </p>
 
 $$
 \begin{matrix}
-(W^{(1)}) \\
+(\mathbf{W}^{[1]}) \\
 \begin{bmatrix}
 0 & 0  \\
 0 & 0  \\
@@ -630,7 +631,7 @@ $$
 \end{matrix}
 
 \begin{matrix}
-(X) \\
+(\mathbf{x}) \\
 \begin{bmatrix}
 0  \\
 0  \\
@@ -640,7 +641,7 @@ $$
 +
 
 \begin{matrix}
-(b^{(1)})
+(\mathbf{b}^{[1]})
 \\
 \begin{bmatrix}
 0 \\
@@ -652,7 +653,7 @@ $$
 =
 
 \begin{matrix}
-(Z^{(1)})
+(\mathbf{z}^{[1]})
 \\
 \begin{bmatrix}
 0 \\
@@ -667,9 +668,9 @@ Now, let's look at:
 </p>
 
 $$
-\frac{dL}{dW^{(1)}_{1,:}} = \frac{dL}{dZ^{(1)}_1} X.T, \quad
-\frac{dL}{dW^{(1)}_{2,:}} = \frac{dL}{dZ^{(1)}_2} X.T, \quad
-\frac{dL}{dW^{(1)}_{3,:}} = \frac{dL}{dZ^{(1)}_3} X.T
+\frac{d \text{L}}{d \mathbf{W}^{[1]}_{1,:}} = \frac{d \text{L}}{d \mathbf{z}^{[1]}_1} \mathbf{x}.\text{T}, \quad
+\frac{d \text{L}}{d \mathbf{W}^{[1]}_{2,:}} = \frac{d \text{L}}{d \mathbf{z}^{[1]}_2} \mathbf{x}.\text{T}, \quad
+\frac{d \text{L}}{d \mathbf{W}^{[1)}_{3,:}} = \frac{d \text{L}}{d \mathbf{z}^{[1]}_3} \mathbf{x}.\text{T}
 $$
 
 <p>
@@ -677,50 +678,25 @@ or equivalently:
 </p>
 
 $$
-\frac{dL}{dW^{(1)}} = \frac{dL}{dZ^{(1)}} X.T
+\frac{d \text{L}}{d \mathbf{W}^{[1]}} = \frac{d \text{L}}{d \mathbf{z}^{[1]}} \mathbf{x}.\text{T}
 $$
 
 <p>
 Let's apply the <b>backprop</b> altogether!
 </p>
 
-# HTML
+# CODE
 {'width': 600}
 ALPHA = 0.3 # learning rate
 Model = collections.namedtuple('Model', ['W1', 'b1', 'W2', 'b2', 'W3', 'b3'])
 
-# this simple implementation is numerically unstable, because:
-# np.log() returns -inf for small inputs very close to 0
-def get_loss(Y, Y_hat):
-  loss = -1 * np.sum(Y * np.log(Y_hat) +
-                     (1-Y) * np.log(1-Y_hat))
-  return loss
+def get_loss(y, a):
+  return -1 * (y * np.log(a) +
+               (1-y) * np.log(1-a))
 
-# semantically same with above function, and numerically stable.
-def get_loss_numerically_stable(Y, Z3):
-  loss = -1 * np.sum(Y * -1 * np.log(1 + np.exp(-Z3)) +
-                     (1-Y) * (-Z3 - np.log(1 + np.exp(-Z3))))
-  return loss
-
-def get_gradients_matrix_ops(Z1, A1, Z2, A2, Z3, A3, Y):
-  dZ3 = A3 - Y  # size (1x20)
-
-  dW3 = (1.0/Y.size) * np.matmul(dZ3, A2.T)  # size (1x3)
-  db3 = (1.0/Y.size) * np.sum(dZ3, axis = 1, keepdims = True)  # size (1x1)
-
-  dA2 = np.matmul(W3.T, dZ3)  # size (3x20)
-  dZ2 = dA2 * (A2 * (1-A2)) # size (3x20)
-
-  dW2 = (1.0/Y.size) * np.matmul(dZ2, A1.T)  # size (3x3)
-  db2 = (1.0/Y.size) * np.sum(dZ2, axis = 1, keepdims= True)  # size (3x1)
-
-  dA1 = np.matmul(W2.T, dZ2)  # size (3x20)
-  dZ1 = dA1 * (A1 * (1 - A1))  # size (3x20)
-
-  dW1 = (1.0/Y.size) * np.matmul(dZ1, X.T)  # size (3x2)
-  db1 = (1.0/Y.size) * np.sum(dZ1, axis = 1, keepdims = True) # size (3x1)
-
-  return dW1, db1, dW2, db2, dW3, db3
+def get_loss_numerically_stable(y, z):
+   return -1 * (y * -1 * np.log(1 + np.exp(-z)) +
+                (1-y) * (-z - np.log(1 + np.exp(-z))))
 
 def get_gradients_loops(Z1, A1, Z2, A2, Z3, A3, Y):
   dZ3 = A3 - Y  # size (1x20)
@@ -779,12 +755,18 @@ L_cache = []
 models_cache = []
 
 for i in range(10000):
-  Z1, A1, Z2, A2, Z3, A3 = forward_propagate(X, W1, b1, W2, b2, W3, b3)
+  for j in range(X.shape[0]):
+    z1, a1, z2, a2, z3, a3 = forward_propagate(X[i, :].reshape(2,1), W1, b1, W2, b2, W3, b3)
+    L = (1.0 / 20) * get_loss_numerically_stable(y[j], z3)
 
-  L = (1.0 / 20) * get_loss_numerically_stable(Y, Z3)
+    dW3 = np.zeros((1, 3))
+    db3 = np.zeros((1, 1))
+    dW2 = np.zeros((3, 3))
+    db2 = np.zeros((3, 1))
+    dW1 = np.zeros((3, 2))
+    db1 = np.zeros((3, 1))
 
-  # dW1, db1, dW2, db2, dW3, db3 = get_gradients_matrix_ops(Z1, A1, Z2, A2, Z3, A3, Y)
-  dW1, db1, dW2, db2, dW3, db3 = get_gradients_loops(Z1, A1, Z2, A2, Z3, A3, Y)
+    dW1, db1, dW2, db2, dW3, db3 = get_gradients_loops(z1, a1, z2, a2, z3, a3, y[j])
 
   W1, b1, W2, b2, W3, b3 = gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, ALPHA)
   m = Model(W1, b1, W2, b2, W3, b3)
@@ -806,6 +788,30 @@ plt.savefig('image.png')
 plt.close()
 plt.clf()
 plt.cla()
+
+# HTML
+{}
+
+def get_gradients_matrix_ops(Z1, A1, Z2, A2, Z3, A3, Y):
+  dZ3 = A3 - Y  # size (1x20)
+
+  dW3 = (1.0/Y.size) * np.matmul(dZ3, A2.T)  # size (1x3)
+  db3 = (1.0/Y.size) * np.sum(dZ3, axis = 1, keepdims = True)  # size (1x1)
+
+  dA2 = np.matmul(W3.T, dZ3)  # size (3x20)
+  dZ2 = dA2 * (A2 * (1-A2)) # size (3x20)
+
+  dW2 = (1.0/Y.size) * np.matmul(dZ2, A1.T)  # size (3x3)
+  db2 = (1.0/Y.size) * np.sum(dZ2, axis = 1, keepdims= True)  # size (3x1)
+
+  dA1 = np.matmul(W2.T, dZ2)  # size (3x20)
+  dZ1 = dA1 * (A1 * (1 - A1))  # size (3x20)
+
+  dW1 = (1.0/Y.size) * np.matmul(dZ1, X.T)  # size (3x2)
+  db1 = (1.0/Y.size) * np.sum(dZ1, axis = 1, keepdims = True) # size (3x1)
+
+  return dW1, db1, dW2, db2, dW3, db3
+
 
 # HTML
 {}
