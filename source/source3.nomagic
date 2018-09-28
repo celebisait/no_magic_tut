@@ -375,7 +375,7 @@ $\frac{d \text{L}}{d \mathbf{W}^{[3]}}$ using the Chain Rule.
 
 <p>
 It seems obvious <b>visually</b> that if we change, say,
-$\mathbf{W}^{[3]}_1$, $z^{[3]}$ will change proportional to $\mathbf{a}^{[2]}_1$.
+$\mathbf{W}^{[3](1)}$, $z^{[3]}$ will change proportional to $\mathbf{a}^{[2](1)}$.
 Notice that we are assuming that $\mathbf{a}^{[2]}$ and $b^{[3]}$ is fixed and frozen.
 Using similar logic for the other items of $\mathbf{W}^{[3]}$, we can conclude:
 </p>
@@ -512,21 +512,21 @@ It is easy to observe:
 
 $$
 
-\frac{d \mathbf{z}^{[2]}_{1}}{d \mathbf{W}^{[2]}} =
+\frac{d \mathbf{z}^{[2](1)}}{d \mathbf{W}^{[2]}} =
 \begin{bmatrix}
   & \mathbf{a}^{[1]}.T & \\
 0 & 0 & 0 \\
 0 & 0 & 0 \\
 \end{bmatrix},
 \quad
-\frac{d \mathbf{z}^{[2]}_{2}}{d \mathbf{W}^{[2]}} =
+\frac{d \mathbf{z}^{[2](2)}}{d \mathbf{W}^{[2]}} =
 \begin{bmatrix}
 0 & 0 & 0 \\
 & \mathbf{a}^{[1]}.T & \\
 0 & 0 & 0 \\
 \end{bmatrix},
 \quad
-\frac{d \mathbf{z}^{[2]}_{3}}{d \mathbf{W}^{[2]}} =
+\frac{d \mathbf{z}^{[2](3)}}{d \mathbf{W}^{[2]}} =
 \begin{bmatrix}
 0 & 0 & 0 \\
 0 & 0 & 0 \\
@@ -541,8 +541,8 @@ Applying the chain rule, we should do something like:
 
 $$
 \frac{d \text{L}}{d \mathbf{W}^{[2]}} =
-  \sum_{i=1}^{3} \frac{d \text{L}}{d \mathbf{z}^{[2]}_i}
-     \frac{d \mathbf{z}^{[2]}_i}{d \mathbf{W}^{[2]}}
+  \sum_{i=1}^{3} \frac{d \text{L}}{d \mathbf{z}^{[2](i)}}
+     \frac{d \mathbf{z}^{[2](i)}}{d \mathbf{W}^{[2]}}
 $$
 
 <p>
@@ -552,21 +552,21 @@ which is a more fancy way of writing:
 $$
 \frac{d \text{L}}{d \mathbf{W}^{[2]}} =
 
-\frac{d \text{L}}{d \mathbf{z}^{[2]}_1}
+\frac{d \text{L}}{d \mathbf{z}^{[2](1)}}
 \begin{bmatrix}
   & \mathbf{a}^{[1]}.T & \\
 0 & 0 & 0 \\
 0 & 0 & 0 \\
 \end{bmatrix}
 +
-\frac{d \text{L}}{d \mathbf{z}^{[2]}_2}
+\frac{d \text{L}}{d \mathbf{z}^{[2](2)}}
 \begin{bmatrix}
 0 & 0 & 0 \\
   & \mathbf{a}^{[1]}.T & \\
 0 & 0 & 0 \\
 \end{bmatrix}
 +
-\frac{d \text{L}}{d \mathbf{z}^{[2]}_3}
+\frac{d \text{L}}{d \mathbf{z}^{[2](3)}}
 \begin{bmatrix}
 0 & 0 & 0 \\
 0 & 0 & 0 \\
@@ -602,9 +602,9 @@ Let's look at $\frac{d \mathbf{z}^{[2]}}{d \mathbf{a}^{[1]}}$.
 </p>
 
 $$
-\frac{d \text{L}}{\mathbf{a}^{[1]}_1} = \mathbf{W}^{[2]}_{:,1} \frac{d \text{L}}{d \mathbf{z}^{[2]}}.T, \quad
-\frac{d \text{L}}{\mathbf{a}^{[1]}_2} = \mathbf{W}^{[2]}_{:,2} \frac{d \text{L}}{d \mathbf{z}^{[2]}}.T, \quad
-\frac{d \text{L}}{\mathbf{a}^{[1]}_3} = \mathbf{W}^{[2]}_{:,3} \frac{d \text{L}}{d \mathbf{z}^{[2]}}.T
+\frac{d \text{L}}{\mathbf{a}^{[1](1)}} = \mathbf{W}^{[2](:,1)} \frac{d \text{L}}{d \mathbf{z}^{[2]}}.T, \quad
+\frac{d \text{L}}{\mathbf{a}^{[1](2)}} = \mathbf{W}^{[2](:,2)} \frac{d \text{L}}{d \mathbf{z}^{[2]}}.T, \quad
+\frac{d \text{L}}{\mathbf{a}^{[1](3)}} = \mathbf{W}^{[2](:,3)} \frac{d \text{L}}{d \mathbf{z}^{[2]}}.T
 $$
 
 <p>
@@ -668,9 +668,9 @@ Now, let's look at:
 </p>
 
 $$
-\frac{d \text{L}}{d \mathbf{W}^{[1]}_{1,:}} = \frac{d \text{L}}{d \mathbf{z}^{[1]}_1} \mathbf{x}.\text{T}, \quad
-\frac{d \text{L}}{d \mathbf{W}^{[1]}_{2,:}} = \frac{d \text{L}}{d \mathbf{z}^{[1]}_2} \mathbf{x}.\text{T}, \quad
-\frac{d \text{L}}{d \mathbf{W}^{[1)}_{3,:}} = \frac{d \text{L}}{d \mathbf{z}^{[1]}_3} \mathbf{x}.\text{T}
+\frac{d \text{L}}{d \mathbf{W}^{[1](1,:)}} = \frac{d \text{L}}{d \mathbf{z}^{[1](1)}} \mathbf{x}.\text{T}, \quad
+\frac{d \text{L}}{d \mathbf{W}^{[1](2,:)}} = \frac{d \text{L}}{d \mathbf{z}^{[1](2)}} \mathbf{x}.\text{T}, \quad
+\frac{d \text{L}}{d \mathbf{W}^{[1](3,:)}} = \frac{d \text{L}}{d \mathbf{z}^{[1](3)}} \mathbf{x}.\text{T}
 $$
 
 <p>
@@ -682,62 +682,46 @@ $$
 $$
 
 <p>
+and as expected:
+</p>
+
+$$
+\frac{d \text{L}}{d \mathbf{b}^{[1]}} = \frac{d \text{L}}{d \mathbf{z}^{[1]}}
+$$
+
+
+<p>
 Let's apply the <b>backprop</b> altogether!
 </p>
 
 # CODE
 {'width': 600}
 ALPHA = 0.3 # learning rate
-Model = collections.namedtuple('Model', ['W1', 'b1', 'W2', 'b2', 'W3', 'b3'])
 
 def get_loss(y, a):
   return -1 * (y * np.log(a) +
                (1-y) * np.log(1-a))
 
 def get_loss_numerically_stable(y, z):
-   return -1 * (y * -1 * np.log(1 + np.exp(-z)) +
-                (1-y) * (-z - np.log(1 + np.exp(-z))))
+  return -1 * (y * -1 * np.log(1 + np.exp(-z)) +
+               (1-y) * (-z - np.log(1 + np.exp(-z))))
 
-def get_gradients_loops(Z1, A1, Z2, A2, Z3, A3, Y):
-  dZ3 = A3 - Y  # size (1x20)
+def get_gradients_loops(z1, a1, z2, a2, z3, a3, x, y, W1, b1, W2, b2, W3, b3):
+  dz3 = a3 - y
+  db3 = dz3
 
-  dW3 = np.zeros((1, 3))
-  db3 = np.zeros((1, 1))
-  for i in range(20):
-    a2 = A2[:, [i]]
-    dz3 = dZ3[:, [i]]
-    dW3 += (1.0/20) * np.matmul(dz3, a2.T)
-    db3 += (1.0/20) * dz3
+  dW3 = dz3 * a2.T
+  da2 = dz3 * W3.T
 
-  dA2 = np.zeros((3, 20))
-  for i in range(20):
-    dz3 = dZ3[:, [i]]
-    dA2[:, [i]] = dz3 * W3.T
+  dz2 = da2 * (a2 * (1-a2))
+  db2 = dz2
 
-  dZ2 = dA2 * (A2 * (1-A2)) # size (3x20)
+  dW2 = np.matmul(dz2, a1.T)
+  da1 = np.matmul(W2.T, dz2)
 
-  dW2 = np.zeros((3, 3))
-  db2 = np.zeros((3, 1))
-  for i in range(20):
-    a1 = A1[:, [i]]
-    dz2 = dZ2[:, [i]]
-    dW2 += (1.0/20) * np.matmul(dz2, a1.T)
-    db2 += (1.0/20) * dz2
-
-  dA1 = np.zeros((3, 20))
-  for i in range(20):
-    dz2 = dZ2[:, [i]]
-    dA1[:, [i]] = np.matmul(W2.T, dz2)
-
-  dZ1 = dA1 * (A1 * (1-A1)) # size (3x20)
-
-  dW1 = np.zeros((3, 2))
-  db1 = np.zeros((3, 1))
-  for i in range(20):
-    x = X[:, [i]]
-    dz1 = dZ1[:, [i]]
-    dW1 += (1.0/20) * np.matmul(dz1, x.T)
-    db1 += (1.0/20) * dz1
+  dz1 = da1 * (a1 * (1-a1))
+  dW1 = np.matmul(dz1, x.T)
+  db1 = dz1
 
   return dW1, db1, dW2, db2, dW3, db3
 
@@ -754,28 +738,47 @@ def gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, alpha
 L_cache = []
 models_cache = []
 
+W1_initial = np.random.rand(3, 2)
+W1 = W1_initial.copy()
+b1 = np.zeros((3, 1))
+W2_initial = np.random.rand(3, 3)
+W2 = W2_initial.copy()
+b2 = np.zeros((3, 1))
+W3_initial = np.random.rand(1, 3)
+W3 = W3_initial.copy()
+b3 = np.zeros((1, 1))
+
 for i in range(10000):
   for j in range(X.shape[0]):
-    z1, a1, z2, a2, z3, a3 = forward_propagate(X[i, :].reshape(2,1), W1, b1, W2, b2, W3, b3)
+    z1, a1, z2, a2, z3, a3 = forward_propagate(X[j, :].reshape(2,1), W1, b1, W2, b2, W3, b3)
+
     L = (1.0 / 20) * get_loss_numerically_stable(y[j], z3)
+    print('L')
+    print(L)
 
-    dW3 = np.zeros((1, 3))
-    db3 = np.zeros((1, 1))
-    dW2 = np.zeros((3, 3))
-    db2 = np.zeros((3, 1))
-    dW1 = np.zeros((3, 2))
-    db1 = np.zeros((3, 1))
+    dW1, db1, dW2, db2, dW3, db3 = get_gradients_loops(z1, a1, z2, a2, z3, a3, X[j, :].reshape(2,1), y[j], W1, b1, W2, b2, W3, b3)
+    print('dW1')
+    print(dW1)
 
-    dW1, db1, dW2, db2, dW3, db3 = get_gradients_loops(z1, a1, z2, a2, z3, a3, y[j])
+    W1, b1, W2, b2, W3, b3 = gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, ALPHA)
+    
+    print('W1')
+    print(W1)
 
-  W1, b1, W2, b2, W3, b3 = gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, ALPHA)
-  m = Model(W1, b1, W2, b2, W3, b3)
+    print(j)
 
-  models_cache.append(m)
-  L_cache.append(L)
+  print('HERE')
+  print('HERE')
+  print('HERE')
+  print(i,j)
 
-  if L < 0.02:
+  models_cache.append((W1, b1, W2, b2, W3, b3))
+  L_cache.append(L[0,0])
+
+  if L[0,0] < 0.002:
     break
+
+print(L)
 
 plt.grid()
 plt.title('Loss', size=18)
