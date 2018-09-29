@@ -696,7 +696,7 @@ Let's apply the <b>backprop</b> altogether!
 
 # CODE
 {'width': 600}
-ALPHA = 0.3 # learning rate
+ALPHA = 0.4 # learning rate
 
 def get_loss(y, a):
   return -1 * (y * np.log(a) +
@@ -726,14 +726,33 @@ def get_gradients_loops(z1, a1, z2, a2, z3, a3, x, y, W1, b1, W2, b2, W3, b3):
   return dW1, db1, dW2, db2, dW3, db3
 
 def gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, alpha):
-  W1 = W1 - alpha * dW1
-  b1 = b1 - alpha * db1
-  W2 = W2 - alpha * dW2
-  b2 = b2 - alpha * db2
-  W3 = W3 - alpha * dW3
-  b3 = b3 - alpha * db3
+  W1 -= alpha * (1.0/20) * dW1
+  b1 -= alpha * (1.0/20) * db1
+  W2 -= alpha * (1.0/20) * dW2
+  b2 -= alpha * (1.0/20) * db2
+  W3 -= alpha * (1.0/20) * dW3
+  b3 -= alpha * (1.0/20) * db3
 
   return W1, b1, W2, b2, W3, b3
+
+def get_zero_gradients(W1, b1, W2, b2, W3, b3):
+  tdW1 = np.zeros_like(W1)
+  tdb1 = np.zeros_like(b1)
+  tdW2 = np.zeros_like(W2)
+  tdb2 = np.zeros_like(b2)
+  tdW3 = np.zeros_like(W3)
+  tdb3 = np.zeros_like(b3)
+  return tdW1, tdb1, tdW2, tdb2, tdW3, tdb3
+
+def add_gradients(tdW1, tdb1, tdW2, tdb2, tdW3, tdb3,
+                  dW1, db1, dW2, db2, dW3, db3):
+  tdW1 += dW1
+  tdb1 += db1
+  tdW2 += dW2
+  tdb2 += db2
+  tdW3 += dW3
+  tdb3 += db3
+  return tdW1, tdb1, tdW2, tdb2, tdW3, tdb3
 
 L_cache = []
 models_cache = []
@@ -748,37 +767,23 @@ W3_initial = np.random.rand(1, 3)
 W3 = W3_initial.copy()
 b3 = np.zeros((1, 1))
 
-for i in range(10000):
+for i in range(20000):
+  totalL = 0
+  tdW1, tdb1, tdW2, tdb2, tdW3, tdb3 = get_zero_gradients(W1, b1, W2, b2, W3, b3)
   for j in range(X.shape[0]):
-    z1, a1, z2, a2, z3, a3 = forward_propagate(X[j, :].reshape(2,1), W1, b1, W2, b2, W3, b3)
-
+    x = X[j, :].reshape(2,1)
+    z1, a1, z2, a2, z3, a3 = forward_propagate(x, W1, b1, W2, b2, W3, b3)
     L = (1.0 / 20) * get_loss_numerically_stable(y[j], z3)
-    print('L')
-    print(L)
+    totalL += L
+    dW1, db1, dW2, db2, dW3, db3 = get_gradients_loops(z1, a1, z2, a2, z3, a3, x, y[j], W1, b1, W2, b2, W3, b3)
+    tdW1, tdb1, tdW2, tdb2, tdW3, tdb3 = add_gradients(tdW1, tdb1, tdW2, tdb2, tdW3, tdb3,
+                                                        dW1, db1, dW2, db2, dW3, db3)
+  W1, b1, W2, b2, W3, b3 = gradient_descent(W1, b1, W2, b2, W3, b3, tdW1, tdb1, tdW2, tdb2, tdW3, tdb3, ALPHA)
+  models_cache.append((W1.copy(), b1.copy(), W2.copy(), b2.copy(), W3.copy(), b3.copy()))
+  L_cache.append(totalL[0,0])
 
-    dW1, db1, dW2, db2, dW3, db3 = get_gradients_loops(z1, a1, z2, a2, z3, a3, X[j, :].reshape(2,1), y[j], W1, b1, W2, b2, W3, b3)
-    print('dW1')
-    print(dW1)
-
-    W1, b1, W2, b2, W3, b3 = gradient_descent(W1, b1, W2, b2, W3, b3, dW1, db1, dW2, db2, dW3, db3, ALPHA)
-    
-    print('W1')
-    print(W1)
-
-    print(j)
-
-  print('HERE')
-  print('HERE')
-  print('HERE')
-  print(i,j)
-
-  models_cache.append((W1, b1, W2, b2, W3, b3))
-  L_cache.append(L[0,0])
-
-  if L[0,0] < 0.002:
+  if totalL[0,0] < 0.005:
     break
-
-print(L)
 
 plt.grid()
 plt.title('Loss', size=18)
@@ -794,44 +799,26 @@ plt.cla()
 
 # HTML
 {}
-
-def get_gradients_matrix_ops(Z1, A1, Z2, A2, Z3, A3, Y):
-  dZ3 = A3 - Y  # size (1x20)
-
-  dW3 = (1.0/Y.size) * np.matmul(dZ3, A2.T)  # size (1x3)
-  db3 = (1.0/Y.size) * np.sum(dZ3, axis = 1, keepdims = True)  # size (1x1)
-
-  dA2 = np.matmul(W3.T, dZ3)  # size (3x20)
-  dZ2 = dA2 * (A2 * (1-A2)) # size (3x20)
-
-  dW2 = (1.0/Y.size) * np.matmul(dZ2, A1.T)  # size (3x3)
-  db2 = (1.0/Y.size) * np.sum(dZ2, axis = 1, keepdims= True)  # size (3x1)
-
-  dA1 = np.matmul(W2.T, dZ2)  # size (3x20)
-  dZ1 = dA1 * (A1 * (1 - A1))  # size (3x20)
-
-  dW1 = (1.0/Y.size) * np.matmul(dZ1, X.T)  # size (3x2)
-  db1 = (1.0/Y.size) * np.sum(dZ1, axis = 1, keepdims = True) # size (3x1)
-
-  return dW1, db1, dW2, db2, dW3, db3
-
-
-# HTML
-{}
 <p>
 Let's see our <b>inferences</b> on the same points using our classifier.
-We are doing pretty good on inference (100%).
 </p>
 
-# HTML
+# CODE
 {}
-Z1, A1, Z2, A2, Z3, A3 = forward_propagate(X, W1, b1, W2, b2, W3, b3)
-print(Y)
-print(A3)
+a3s = []
+for j in range(X.shape[0]):
+  x = X[j, :].reshape(2,1)
+  z1, a1, z2, a2, z3, a3 = forward_propagate(x, W1, b1, W2, b2, W3, b3)
+  a3s.append(a3[0,0])
+
+for i,j in zip(y, a3s):
+  print(i, j, (j >= 0.5) == (i == 1))
 
 
 # HTML
 {}
+If you see all "True"s above, then, we have 100% accuracy!
+
 <h1> Decision Boundary </h1>
 
 <p>
@@ -844,12 +831,12 @@ were linear. However, the decision boundary of this lecture is not linear, for o
 Thanks to our non-linear sigmoid function. (Please see Exercise 1)
 </p>
 
-# HTML
+# CODE
 {'type': 'image', 'width': 600}
-NX = 100
-NY = 100
+NX = 40
+NY = 40
 
-def plot_decision_boundary_lazy(X, Y, W1, b1, W2, b2, W3, b3):
+def plot_decision_boundary_lazy(X, y, W1, b1, W2, b2, W3, b3):
   plt.grid()
   plt.xlim([-2.0, 2.0])
   plt.ylim([-2.0, 2.0])
@@ -859,18 +846,24 @@ def plot_decision_boundary_lazy(X, Y, W1, b1, W2, b2, W3, b3):
 
   xs = np.linspace(-2.0, 2.0, NX)
   ys = np.linspace(2.0, -2.0, NY)
-  xv, yv = np.meshgrid(xs, ys)
-  X_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
-  _, _, _, _, _, predictions = forward_propagate(X_fake, W1, b1, W2, b2, W3, b3)
 
+  xv, yv = np.meshgrid(xs, ys)
+
+  predictions = []
+  for x1, x2 in zip(xv.flatten(), yv.flatten()):
+    x = np.array([x1, x2]).reshape(2,1)
+    z1, a1, z2, a2, z3, a3 = forward_propagate(x, W1, b1, W2, b2, W3, b3)
+    predictions.append(a3)
+
+  predictions = np.array(predictions).reshape(1, NX * NY)
   predictions = np.stack( (1.0 - predictions, predictions, np.zeros((1, NX * NY))) )
 
   plt.imshow(predictions.T.reshape(NX, NY, 3), extent=[-2.0, 2.0, -2.0, 2.0])
-  plt.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+  plt.scatter(X[:,0], X[:,1], s=50, c=colormap[y])
 
   plt.savefig('image.png')
 
-plot_decision_boundary_lazy(X, Y, W1, b1, W2, b2, W3, b3)
+plot_decision_boundary_lazy(X, y, W1, b1, W2, b2, W3, b3)
 
 plt.close()
 plt.clf()
@@ -895,20 +888,25 @@ Similarly, we can plot the same as our classifier progresses through the learnin
 As you may guess, it should start from a random point and get smarter in each step.
 </p>
 
-# HTML
+# CODE
 {'width': 600}
 import matplotlib.animation as animation
 
-NX = 100
-NY = 100
+NX = 40
+NY = 40
 
 xs = np.linspace(-2.0, 2.0, NX)
 ys = np.linspace(2.0, -2.0, NY)
 xv, yv = np.meshgrid(xs, ys)
-X_fake = np.stack((xv.flatten(), yv.flatten()), axis=0)
 
-def get_predictions(X_fake, model):
-  _, _, _, _, _, predictions = forward_propagate(X_fake, *model)
+def get_predictions(xv, yv, model):
+  predictions = []
+  for x1, x2 in zip(xv.flatten(), yv.flatten()):
+    x = np.array([x1, x2]).reshape(2,1)
+    z1, a1, z2, a2, z3, a3 = forward_propagate(x, *model)
+    predictions.append(a3)
+
+  predictions = np.array(predictions).reshape(1, NX * NY)
   predictions = np.stack( (1.0 - predictions, predictions, np.zeros((1, NX * NY))) )
   return predictions.T.reshape(NX, NY, 3)
 
@@ -923,13 +921,14 @@ ax.set_ylabel('$x_2$', size=20)
 ax.set_title('Decision boundary - Animated', size = 18)
 
 def animate(i):
-  im.set_array(get_predictions(X_fake, models_cache[i * 50]))
+  im.set_array(get_predictions(xv, yv, models_cache[i * 50]))
   text_box.set_text('Iteration: {}'.format(i * 50))
   return im, text_box
 
-im = ax.imshow(get_predictions(X_fake, models_cache[0]), extent=[-2.0, 2.0, -2.0, 2.0], animated = True)
+im = ax.imshow(get_predictions(xv, yv, models_cache[0]),
+               extent=[-2.0, 2.0, -2.0, 2.0], animated = True)
 
-ax.scatter(X[0], X[1], s=50, c=colormap[Y[0]])
+ax.scatter(X[:,0], X[:,1], s=50, c=colormap[y])
 text_box = ax.text(0.6, 1.6, 'Iteration 0', size = 16)
 
 anim = animation.FuncAnimation(fig, animate, len(models_cache) / 50, blit=True, interval=500)
@@ -955,7 +954,7 @@ It produces <b>exact</b> same output with our own hand crafted model. Notice tha
 models from the same initial random starting point (same $W$ and same $b$) using the same <b>learning rate</b>.
 </p>
 
-# HTML
+# CODE
 {'width': 600}
 import tensorflow as tf
 
@@ -989,14 +988,14 @@ train = tf.train.GradientDescentOptimizer(ALPHA).minimize(t_Loss)
 init = tf.global_variables_initializer()
 
 with tf.Session() as session:
-   session.run(init)
-   losses = []
-   for i in range(10000):
-      ttrain, ttloss = session.run([train, t_Loss], feed_dict={t_X:X, t_Y:Y})
-      losses.append(ttloss)
+  session.run(init)
+  losses = []
+  for i in range(20000):
+    ttrain, ttloss = session.run([train, t_Loss], feed_dict={t_X:X.T, t_Y:y.reshape(1,20)})
+    losses.append(ttloss)
 
-      if ttloss < 0.02:
-        break
+    if ttloss < 0.005:
+      break
 
 plt.grid()
 plt.plot(losses)
