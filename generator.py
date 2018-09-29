@@ -175,15 +175,15 @@ def main():
   output_file = 'output/part1.html'
   title = 'Part 1: Logistic Regression'
 
-  # print('Generating: %s' % title)
-  # write_one_file(input_file, output_file, title)
+  print('Generating: %s' % title)
+  write_one_file(input_file, output_file, title)
 
   input_file = 'source/source2.nomagic'
   output_file = 'output/part2.html'
   title = 'Part 2: Softmax Regression'
 
-  # print('Generating: %s' % title)
-  # write_one_file(input_file, output_file, title)
+  print('Generating: %s' % title)
+  write_one_file(input_file, output_file, title)
 
   input_file = 'source/source3.nomagic'
   output_file = 'output/part3.html'

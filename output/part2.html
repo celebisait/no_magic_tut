@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 2: Softmax Regression <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: April 07 2018</center><p>
+<center>Last updated: September 29 2018</center><p>
 "What I cannot create, I do not understand."
 -- Richard Feynman
 </p>
@@ -55,24 +55,24 @@ and <b>blue</b> points in 2-dimensional space:
 
 <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">],</span>
               <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
-	      <span class="p">[</span><span class="mf">1.3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span>
+	      <span class="p">[</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span>
 	      <span class="p">[</span><span class="o">-</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span>
 	      <span class="p">[</span><span class="o">-</span><span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
-	      <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
-	      <span class="p">[</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">],</span>
-	      <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8</span><span class="p">],</span>
-	      <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">],</span>
+	      <span class="p">[</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span><span class="o">-</span><span class="mf">0.4</span><span class="p">],</span>
+	      <span class="p">[</span> <span class="mf">0.7</span><span class="p">,</span><span class="o">-</span><span class="mf">0.8</span><span class="p">],</span>
+	      <span class="p">[</span> <span class="mf">1.1</span><span class="p">,</span><span class="o">-</span><span class="mf">1.5</span><span class="p">],</span>
 	      <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span>
 	      <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span>
-	      <span class="p">[</span><span class="o">-</span><span class="mf">1.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.45</span><span class="p">],</span>
-	      <span class="p">[</span><span class="o">-</span><span class="mf">1.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span>
-	      <span class="p">[</span><span class="o">-</span><span class="mf">0.9</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7</span><span class="p">],</span>
-	      <span class="p">[</span><span class="mf">0.4</span> <span class="p">,</span> <span class="o">-</span><span class="mf">1.3</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">1.3</span><span class="p">,</span><span class="o">-</span><span class="mf">0.4</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">1.4</span><span class="p">,</span><span class="o">-</span><span class="mf">1.2</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">0.9</span><span class="p">,</span><span class="o">-</span><span class="mf">0.7</span><span class="p">],</span>
+	      <span class="p">[</span> <span class="mf">0.4</span><span class="p">,</span><span class="o">-</span><span class="mf">1.3</span><span class="p">],</span>
 	      <span class="p">[</span><span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span>
-	      <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">],</span>
-	      <span class="p">[</span><span class="o">-</span><span class="mf">1.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7</span><span class="p">],</span>
-	      <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.4</span><span class="p">],</span>
-	      <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.4</span><span class="p">]])</span>
+	      <span class="p">[</span> <span class="mf">0.3</span><span class="p">,</span><span class="o">-</span><span class="mf">0.5</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">1.6</span><span class="p">,</span><span class="o">-</span><span class="mf">0.7</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="o">-</span><span class="mf">1.4</span><span class="p">],</span>
+	      <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span><span class="o">-</span><span class="mf">1.4</span><span class="p">]])</span>
 
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)[</span><span class="n">y</span><span class="p">]</span>
@@ -94,7 +94,7 @@ and <b>blue</b> points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.195 seconds.)</div><img class="generated_image" width="600" src="../images/image012.png"/><p>
+<div class="executed_in">(Executed in 0.188 seconds.)</div><img class="generated_image" width="600" src="../images/image012.png"/><p>
 In other words, given a point in 2-dimensions, $\mathbf{x} = (x_1, x_2)$, we want to
 output either <b>red</b>, <b>green</b> or <b>blue</b>.
 </p>
@@ -887,7 +887,7 @@ Let's apply these:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.216 seconds.)</div><img class="generated_image" width="600" src="../images/image013.png"/><h1> Decision Boundary </h1>
+<div class="executed_in">(Executed in 0.218 seconds.)</div><img class="generated_image" width="600" src="../images/image013.png"/><h1> Decision Boundary </h1>
 
 <p>
 So, essentially, we have 3 equations:
@@ -947,7 +947,7 @@ If we plot these three lines:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.182 seconds.)</div><img class="generated_image" width="600" src="../images/image014.png"/><p>
+<div class="executed_in">(Executed in 0.202 seconds.)</div><img class="generated_image" width="600" src="../images/image014.png"/><p>
 Above, we simply find the boundaries and plot them. The definition of the boundary is
 the region in which the predictions are equally confident for both of the classifiers. Since
 we have three classes, there are (3 choose 2) = 3 boundaries.
@@ -1000,7 +1000,7 @@ As you may guess, it should start from a random point and get smarter in each st
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.067 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 2.035 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation004.mp4" type="video/mp4">
 </video><p>
 As you can see, it starts from a random classifier that does not seem to be working well in the
@@ -1048,7 +1048,7 @@ step through the gradient descent iterations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.384 seconds.)</div><img class="generated_image" width="600" src="../images/image015.png"/><p>
+<div class="executed_in">(Executed in 0.395 seconds.)</div><img class="generated_image" width="600" src="../images/image015.png"/><p>
 Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
 is $\mathbf{a}$ and it is three dimensional. So, we simply convert that vector to RGB space. So, for example
 if the prediction is: $[0.98, 0.01, 0.01]$, it will be almost a perfect <b>red</b>, and so on.
@@ -1108,7 +1108,7 @@ and blue which gives us purple. Similar phenomena happens between other decision
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 3.167 seconds.)</div><video class="generated_video" width="1000" controls>
+<div class="executed_in">(Executed in 3.144 seconds.)</div><video class="generated_video" width="1000" controls>
 <source src="../animations/animation005.mp4" type="video/mp4">
 </video><p>
 This is a nice animation that shows the progress of our parameters $\mathbf{W}$ and $\mathbf{b}$
@@ -1171,7 +1171,7 @@ parameters.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.585 seconds.)</div><img class="generated_image" width="600" src="../images/image016.png"/>
+<div class="executed_in">(Executed in 0.477 seconds.)</div><img class="generated_image" width="600" src="../images/image016.png"/>
 <h1>Exercises</h1>
 <ol>
   <li>

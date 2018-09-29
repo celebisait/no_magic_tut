@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 1: Logistic Regression <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: April 07 2018</center><p>
+<center>Last updated: September 29 2018</center><p>
 "If you can't explain it to a six year old, you don't understand it yourself."
 -- Albert Einstein
 </p>
@@ -53,22 +53,22 @@ points in 2-dimensional space:
 <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">],</span>
-              <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">],</span>
-              <span class="p">[</span><span class="mf">1.3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="o">-</span><span class="mf">0.1</span><span class="p">],</span>
+              <span class="p">[</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span>
               <span class="p">[</span><span class="o">-</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span>
               <span class="p">[</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span>
-              <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
-              <span class="p">[</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">],</span>
-              <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8</span><span class="p">],</span>
-              <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span><span class="o">-</span><span class="mf">1.5</span><span class="p">],</span>
+              <span class="p">[</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span><span class="o">-</span><span class="mf">0.4</span><span class="p">],</span>
+              <span class="p">[</span> <span class="mf">0.7</span><span class="p">,</span><span class="o">-</span><span class="mf">0.8</span><span class="p">],</span>
+              <span class="p">[</span> <span class="mf">1.1</span><span class="p">,</span><span class="o">-</span><span class="mf">1.5</span><span class="p">],</span>
               <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span>
-              <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">],</span>
-              <span class="p">[</span><span class="o">-</span><span class="mf">1.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.45</span><span class="p">],</span>
-              <span class="p">[</span><span class="o">-</span><span class="mf">1.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span>
-              <span class="p">[</span><span class="o">-</span><span class="mf">0.9</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.1</span><span class="p">],</span>
-              <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.3</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="o">-</span><span class="mf">1.5</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">1.3</span><span class="p">,</span><span class="o">-</span><span class="mf">0.4</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">1.4</span><span class="p">,</span><span class="o">-</span><span class="mf">1.2</span><span class="p">],</span>
+              <span class="p">[</span><span class="o">-</span><span class="mf">0.9</span><span class="p">,</span><span class="o">-</span><span class="mf">1.1</span><span class="p">],</span>
+              <span class="p">[</span> <span class="mf">0.4</span><span class="p">,</span><span class="o">-</span><span class="mf">1.3</span><span class="p">],</span>
               <span class="p">[</span><span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span>
-              <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">]])</span>
+              <span class="p">[</span> <span class="mf">0.3</span><span class="p">,</span><span class="o">-</span><span class="mf">0.5</span><span class="p">]])</span>
 
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="n">colormap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">])</span>
@@ -89,7 +89,7 @@ points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.028 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
+<div class="executed_in">(Executed in 0.698 seconds.)</div><img class="generated_image" width="600" src="../images/image000.png"/><p>
 In other words, given a point in 2-dimensions, $\mathbf{x} = (x_1, x_2)$, we want
 to output either $0$ or $1$. (In this tutorial $0$ represents red, $1$ represents blue.)
 
@@ -229,7 +229,7 @@ how $g(z)$ behaves in some useful range.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.209 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><a href="#maximum_likelihood_estimation" class="header_style">  <h1 id="maximum_likelihood_estimation">Maximum Likelihood Estimation</h1>  </a>
+<div class="executed_in">(Executed in 0.192 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><a href="#maximum_likelihood_estimation" class="header_style">  <h1 id="maximum_likelihood_estimation">Maximum Likelihood Estimation</h1>  </a>
 <p>
 In training, our goal is to <b>learn</b> three numbers: $w_1, w_2, b$ that best
 <b>discriminates</b> red and blue points.
@@ -382,7 +382,7 @@ Let's think about how we would minimize $f(x) = x^2 + 6x + 5$, numerically:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.176 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/>
+<div class="executed_in">(Executed in 0.179 seconds.)</div><img class="generated_image" width="600" src="../images/image002.png"/>
 <p>
 Let's say we started with $x=6$ and we want to take step that will make $f(x)$ smaller.
 </p>
@@ -452,7 +452,7 @@ parameter: <b> learning rate </b>. We will use $\alpha$ to denote learning rate.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.951 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 1.524 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation000.mp4" type="video/mp4">
 </video>
 <p>
@@ -491,7 +491,7 @@ What if we had a more complex surface? Maybe two dimensional? For example:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.367 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/>
+<div class="executed_in">(Executed in 0.463 seconds.)</div><img class="generated_image" width="600" src="../images/image003.png"/>
 <p>
 We can apply the same idea here as well.
 </p>
@@ -554,7 +554,7 @@ in the opposite direction of the derivative.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.648 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 2.512 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation001.mp4" type="video/mp4">
 </video><p>
 We simply applied this gradient descent rule:
@@ -689,7 +689,7 @@ $$
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.204 seconds.)</div><img class="generated_image" width="600" src="../images/image004.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far
+<div class="executed_in">(Executed in 0.209 seconds.)</div><img class="generated_image" width="600" src="../images/image004.png"/><p> This intuitively means that the <i>change</i> close to $0$ is fast, but when you get far
 away than $0$ the <i>change</i> gets slower.
 <a href="#numerical_stability_of_the_loss_function" class="header_style">  <h1 id="numerical_stability_of_the_loss_function">Numerical Stability of the Loss function</h1>  </a>
 <p>
@@ -723,7 +723,7 @@ Let's look at the natural logarithm function.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.198 seconds.)</div><img class="generated_image" width="600" src="../images/image005.png"/><p>
+<div class="executed_in">(Executed in 0.194 seconds.)</div><img class="generated_image" width="600" src="../images/image005.png"/><p>
 An important observation is that $\text{log}(0)$ approaches to $- \infty$.
 This is numerically an issue.
 </p>
@@ -841,7 +841,7 @@ unstable range.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.205 seconds.)</div><img class="generated_image" width="600" src="../images/image006.png"/><p>
+<div class="executed_in">(Executed in 0.177 seconds.)</div><img class="generated_image" width="600" src="../images/image006.png"/><p>
 It turns out we just trained a pretty good classifier for this problem.
 We achieved 100% accuracy. Let's try to visualize our <b>decision boundary</b>.
 </p>
@@ -899,7 +899,7 @@ Now, let's see what will be the value of $x_2$ when $x_1=-1.5$ and $x_1 =1.5$.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.184 seconds.)</div><img class="generated_image" width="600" src="../images/image007.png"/>
+<div class="executed_in">(Executed in 0.213 seconds.)</div><img class="generated_image" width="600" src="../images/image007.png"/>
 <p>
 Nice. How do we know we have a linear classifier?
 </p>
@@ -940,7 +940,7 @@ Everybody <i>loves</i> animations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.387 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 1.394 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation002.mp4" type="video/mp4">
 </video><p>
 Let's see the decision boundary in a more <b>lazy</b> setting. Here, we simply classify
@@ -983,7 +983,7 @@ parameters step by step through the gradient descent iterations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.227 seconds.)</div><img class="generated_image" width="600" src="../images/image008.png"/><p>
+<div class="executed_in">(Executed in 0.225 seconds.)</div><img class="generated_image" width="600" src="../images/image008.png"/><p>
 Here, background <b>red</b> means our prediction is very close to $0$ which means
 it is confidently classified as <b>red</b>. And conversely, background <b>blue</b>
 means our prediction is very close to $1$ which means it is confidently classified
@@ -1054,7 +1054,7 @@ being <b>convex</b>.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.907 seconds.)</div><img class="generated_image" width="900" src="../images/image009.png"/><p>
+<div class="executed_in">(Executed in 1.957 seconds.)</div><img class="generated_image" width="900" src="../images/image009.png"/><p>
 Let's see the parameters step by step through the iterations of <b>gradient descent</b>.
 We start from a random initial point and keep iterating to refine our parameters.
 </p>
@@ -1099,7 +1099,7 @@ We start from a random initial point and keep iterating to refine our parameters
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.724 seconds.)</div><video class="generated_video" width="900" controls>
+<div class="executed_in">(Executed in 2.546 seconds.)</div><video class="generated_video" width="900" controls>
 <source src="../animations/animation003.mp4" type="video/mp4">
 </video><a href="#applying_logistic_regression_using_low-level_tensorflow_apis" class="header_style">  <h1 id="applying_logistic_regression_using_low-level_tensorflow_apis">Applying Logistic Regression using low-level Tensorflow APIs</h1>  </a>
 <p>
@@ -1153,7 +1153,7 @@ using low-level TensorFlow API:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.809 seconds.)</div><img class="generated_image" width="600" src="../images/image010.png"/><p>
+<div class="executed_in">(Executed in 0.710 seconds.)</div><img class="generated_image" width="600" src="../images/image010.png"/><p>
 It is maybe worth mentioning that the Logistic Regression we have just built is
 technically can be considered a <b>Neural Network</b> with only one layer.
 The techniques and the idea of building Neural Networks is extremely similar to
@@ -1257,7 +1257,7 @@ then the loss is big, and vice versa. </p>
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.050 seconds.)</div><img class="generated_image" width="600" src="../images/image011.png"/>
+<div class="executed_in">(Executed in 1.166 seconds.)</div><img class="generated_image" width="600" src="../images/image011.png"/>
 <p>
 So, the loss surface is not too bad. However, it is not convex anymore. So, we don't have
 any nice guarantees. Our gradient descent may get stuck at local minimas.

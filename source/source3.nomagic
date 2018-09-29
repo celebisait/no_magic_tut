@@ -90,8 +90,11 @@ number of neurons it contains.
 It's basically a Logistic Regression (or Softmax Regression) with <b>more layers</b>.
 </p>
 
-<h1>Computation Graph</h1>
+# HEADER
+{'header': 'Computation Graph'}
 
+# HTML
+{}
 <p>
 Here is the visual representation of our model:
 </p>
@@ -102,8 +105,11 @@ Here is the visual representation of our model:
 and decide if $a^{[3]} > 0.5$ for our <b>final prediction</b>.
 </p>
 
-<h1>Feed-forward Phase</h1>
+# HEADER
+{'header': 'Feed-forward Phase'}
 
+# HTML
+{}
 <p>
 Let's assume that we are given the weights and biases. How do we calculate the output?
 </p>
@@ -689,7 +695,6 @@ $$
 \frac{d \text{L}}{d \mathbf{b}^{[1]}} = \frac{d \text{L}}{d \mathbf{z}^{[1]}}
 $$
 
-
 <p>
 Let's apply the <b>backprop</b> altogether!
 </p>
@@ -819,8 +824,11 @@ for i,j in zip(y, a3s):
 {}
 If you see all "True"s above, then, we have 100% accuracy!
 
-<h1> Decision Boundary </h1>
+# HEADER
+{'header': 'Decision Boundary'}
 
+# HTML
+{}
 <p>
 Let's try to visualize the decision boundary that error final classifier learns.
 </p>
@@ -946,8 +954,11 @@ beginning. And the learning process figures out where to go next to find a bette
 After the learning is done, the final classifier is pretty good, in fact it has 100% accuracy.
 </p>
 
-<h1> Applying Simple Neural Network using low-level Tensorflow APIs </h1>
+# HEADER
+{'header': 'Applying Simple Neural Network using low-level Tensorflow APIs'}
 
+# HTML
+{}
 <p>
 Here is how to train the same classifier for the above red and green points using low-level TensorFlow API.
 It produces <b>exact</b> same output with our own hand crafted model. Notice that it is because we start both
@@ -1008,10 +1019,11 @@ plt.close()
 plt.clf()
 plt.cla()
 
+# HEADER
+{'header': 'Exercises'}
+
 # HTML
 {}
-
-<h1>Exercises</h1>
 <ol>
   <li> We claim that the decision boundary of the 3-layer simple neural network as it explained
   in this chapter is not linear because using a non-linear activation function (sigmoid). However,
@@ -1023,8 +1035,11 @@ plt.cla()
   </li>
 </ol>
 
-<h1>References</h1>
+# HEADER
+{'header': 'References'}
 
+# HTML
+{}
 <ul>
   <li> http://karpathy.github.io/ </li>
   <li> http://colah.github.io/ </li>
