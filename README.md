@@ -12,9 +12,10 @@ Open source, simple Deep Learning tutorials. Please contribute to make this mate
 $ python generator.py
 ```
 
-4. I use Python 2.7
+4. I use Python 2.7.
 5. The output will be written to `output/` directory. So, please take a look if everything looks good.
 6. Send a pull request if everything looks good.
+7. I will update saitcelebi.com as well with the new material.
 
 ### Prerequisites
 
@@ -24,7 +25,3 @@ What things you need to install the software and how to install them:
 2. Numpy
 3. Tensorflow
 4. Some encoder stuff for videos
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
