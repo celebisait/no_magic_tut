@@ -14,6 +14,7 @@ $ python generator.py
 
 4. I use Python 2.7
 5. The output will be written to `output/` directory. So, please take a look if everything looks good.
+6. Send a pull request if everything looks good.
 
 ### Prerequisites
 
