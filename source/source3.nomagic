@@ -608,9 +608,9 @@ Let's look at $\frac{d \mathbf{z}^{[2]}}{d \mathbf{a}^{[1]}}$.
 </p>
 
 $$
-\frac{d \text{L}}{\mathbf{a}^{[1](1)}} = \mathbf{W}^{[2](:,1)} \frac{d \text{L}}{d \mathbf{z}^{[2]}}.T, \quad
-\frac{d \text{L}}{\mathbf{a}^{[1](2)}} = \mathbf{W}^{[2](:,2)} \frac{d \text{L}}{d \mathbf{z}^{[2]}}.T, \quad
-\frac{d \text{L}}{\mathbf{a}^{[1](3)}} = \mathbf{W}^{[2](:,3)} \frac{d \text{L}}{d \mathbf{z}^{[2]}}.T
+\frac{d \text{L}}{\mathbf{a}^{[1](1)}} = \mathbf{W}^{[2](:,1)}.T \frac{d \text{L}}{d \mathbf{z}^{[2]}}, \quad
+\frac{d \text{L}}{\mathbf{a}^{[1](2)}} = \mathbf{W}^{[2](:,2)}.T \frac{d \text{L}}{d \mathbf{z}^{[2]}}, \quad
+\frac{d \text{L}}{\mathbf{a}^{[1](3)}} = \mathbf{W}^{[2](:,3)}.T \frac{d \text{L}}{d \mathbf{z}^{[2]}}
 $$
 
 <p>

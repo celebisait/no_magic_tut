@@ -672,7 +672,7 @@ $$
 \begin{align*}
 \frac{\partial L}{\partial z} &= \frac{\partial \text{L}}{\partial a} \frac{d a}{d z} =
       \left (  \frac{-y}{a} + \frac{1-y}{1-a}  \right ) \left ( a (1-a) \right ) \\
-      & = \frac{-y}{a} a (1-a) + \frac{1-y}{1-a} a(2-a) =
+      & = \frac{-y}{a} a (1-a) + \frac{1-y}{1-a} a(1-a) =
      -y (1-a) + (1-y) a = -y + ya + a - ya = a - y
 \end{align*}
 $$
@@ -874,9 +874,10 @@ for i in range(NUM_EPOCHS):
     db += db_j
     loss += loss_j
 
-  dw = (1.0/20) * dw
-  db = (1.0/20) * db
-  loss = (1.0/20) * loss
+  # because we have 17 samples
+  dw = (1.0/17) * dw
+  db = (1.0/17) * db
+  loss = (1.0/17) * loss
 
   w -= LEARNING_RATE * dw
   b -= LEARNING_RATE * db
