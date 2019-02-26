@@ -1,0 +1,413 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-51676383-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-51676383-1');
+</script>
+
+<title>Part 4: Convolutional Neural Networks</title>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    TeX: {
+       equationNumbers: { autoNumber: "AMS" },
+       TagSide: "right"
+
+    }
+  });
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<link rel="stylesheet" href="pygments.css">
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="outer">
+    <div id="inner">
+<center><h1>Part 4: Convolutional Neural Networks <span style="color: red">[Draft]</span></h1></center>
+<center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
+<center>Last updated: February 26 2019</center><p>
+"What we observe is not nature itself, but nature exposed to our method of questioning."
+-- Werner Heisenberg
+</p>
+<a href="#introduction" class="header_style">  <h1 id="introduction">Introduction</h1>  </a>
+<p>
+We have built enough classifier to discriminate 2-dimensional points. Let's try to discriminate higher
+dimensional points. More specifically, let's try to discriminate 28x28 gray-scale images:
+</p>
+
+<img class="static_image" style="width: 800px;" src="../static_images/mnist_images.png"/>
+<p>
+These are 28x28 gray-scale images each represents a handwritten digit. It is called
+<a href=http://yann.lecun.com/exdb/mnist/>The MMNIST Dataset</a>. Here is the
+<a href=https://en.wikipedia.org/wiki/MNIST_database>Wikipedia entry</a>.
+The original dataset contains 60,000 train examples, 10,000 test examples.
+It is fair to say this is one of the most famous Machine Learning dataset of all time.
+</p>
+
+<p>
+We can build a simple Deep Neural Network to discriminate these images, however,
+we are going to learn a new technique, called Convolutional Neural Networks (CNN) in this tutorial.
+CNNs are being used very commonly in the literature for a variety of problems, and they are
+initially being used for images with a big success.
+</p>
+<a href="#edge_detection_using_kernels_(filters)" class="header_style">  <h1 id="edge_detection_using_kernels_(filters)">Edge detection using kernels (filters)</h1>  </a><p>
+Historically, in image processing, people have used various filters for various tasks.
+For example, some of the known filters are:
+</p>
+
+<ul>
+  <li>
+    <a href=https://en.wikipedia.org/wiki/Sobel_operator>Sobel operator</a>
+  </li>
+  <li>
+    <a href=https://en.wikipedia.org/wiki/Discrete_Laplace_operator>Laplace operator</a>
+  </li>
+</ul>
+
+<p>
+Here is the 3x3 Sobel operator:
+</p>
+
+$$
+S_x =
+\begin{bmatrix}
+  -1 & 0 & +1 \\
+  -2 & 0 & +2 \\
+  -1 & 0 & +1 \\
+\end{bmatrix}, \quad
+
+S_y =
+\begin{bmatrix}
+  -1 & -2 & -1 \\
+  0 & 0 & 0 \\
+  +1 & +2 & +1 \\
+\end{bmatrix}
+$$
+
+<p>
+and, for the sake of completeness, we can combine both using:
+</p>
+
+$$
+\sqrt{ \text{Conv}(S_x, A) ^2 + \text{Conv}(S_y, A)^2 }
+$$
+
+<p>
+Let's play with the Sobel operator on the following image:
+</p>
+
+<img class="static_image" style="width: 500px;" src="../static_images/valve_original.png"/>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;static_images/valve_original.png&#39;</span><span class="p">)</span>
+<span class="n">pix</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+<span class="n">num_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">3</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+  <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+    <span class="n">average</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])</span><span class="o">/</span><span class="mi">3</span>
+    <span class="n">num_array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">average</span><span class="p">,</span> <span class="n">average</span><span class="p">,</span> <span class="n">average</span><span class="p">)</span>
+
+<span class="n">kernel1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="p">[</span><span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+
+<span class="n">kernel2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                    <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+                    <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">for i in range(1, im.size[0]-1):</span>
+<span class="sd">  for j in range(1, im.size[1]-1):</span>
+<span class="sd">    value1 = sum(sum(num_array[i-1:i+2, j-1:j+2, 0] * kernel1))</span>
+<span class="sd">    value2 = sum(sum(num_array[i-1:i+2, j-1:j+2, 0] * kernel2))</span>
+<span class="sd">    threshold = 60</span>
+<span class="sd">    value = max(int((value1 ** 2 + value2 ** 2) ** 0.5), threshold)</span>
+<span class="sd">    if value == threshold:</span>
+<span class="sd">      value = 0</span>
+<span class="sd">    pix[i,j] = (value, value, value)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>  <span class="c1"># Save the modified pixels as .png</span>
+</pre></div>
+<div class="executed_in">(Executed in 0.444 seconds.)</div><img class="generated_image" width="500" src="../images/image000.png"/><a href="#convolution_operation_in_two_dimensions" class="header_style">  <h1 id="convolution_operation_in_two_dimensions">Convolution operation in two dimensions</h1>  </a><p>
+Let's discuss the convolution operation in 2-dimensions. It is basically moving a kernel on
+an the image and recording values on the corresponding pixels.
+</p>
+
+<p> Convolutional animations are taken from: </p>
+
+<ul>
+  <li>
+    [1] Vincent Dumoulin, Francesco Visin -
+    <a href=https://arxiv.org/pdf/1603.07285.pdf>A guide to convolution arithmetic for deep learning.</a>
+  </li>
+</ul>
+
+<p> Blue maps are inputs, and cyan maps are outputs. </p>
+
+<table class="static_image" style="width: 900px;">
+  <tr>
+    <td><img width="225px" src="../static_images/no_padding_no_strides.gif"></td>
+    <td><img width="225px" src="../static_images/arbitrary_padding_no_strides.gif"></td>
+    <td><img width="225px" src="../static_images/same_padding_no_strides.gif"></td>
+    <td><img width="225px" src="../static_images/full_padding_no_strides.gif"></td>
+  </tr>
+  <tr>
+    <td>No padding, no strides</td>
+    <td>Arbitrary padding, no strides</td>
+    <td>Half padding, no strides</td>
+    <td>Full padding, no strides</td>
+  </tr>
+  <tr>
+    <td><img width="225px" src="../static_images/no_padding_strides.gif"></td>
+    <td><img width="225px" src="../static_images/padding_strides.gif"></td>
+    <td><img width="225px" src="../static_images/padding_strides_odd.gif"></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>No padding, strides</td>
+    <td>Padding, strides</td>
+    <td>Padding, strides (odd)</td>
+    <td></td>
+  </tr>
+</table>
+
+<p>
+Some terminology:
+</p>
+
+<ul>
+  <li>
+    <b> Padding: </b> Padding of the image generally with 0's.
+    Notice that if there is no padding, then, the output size is smaller than the original image size.
+  </li>
+  <li>
+    <b> Stride: </b> Amount of shift after each single convolution operation.
+  </li>
+</ul>
+
+<p>
+Let's go over more examples for (1) Convolution operation and (2) Max pooling over
+<a href=https://arxiv.org/pdf/1603.07285.pdf>this technical document</a>.
+</p>
+<a href="#let's_build_a_simple_deep_neural_network" class="header_style">  <h1 id="let's_build_a_simple_deep_neural_network">Let's build a simple Deep Neural Network</h1>  </a><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+<span class="n">mnist</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">mnist</span>
+
+<span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">=</span> <span class="n">mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+<span class="n">x_train</span><span class="p">,</span> <span class="n">x_test</span> <span class="o">=</span> <span class="n">x_train</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">,</span> <span class="n">x_test</span> <span class="o">/</span> <span class="mf">255.0</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;x_train.shape: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;y_train.shape: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;x_test.shape: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;y_test.shape: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span>
+  <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)),</span>
+  <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">),</span>
+  <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span>
+  <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">)</span>
+<span class="p">])</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;adam&#39;</span><span class="p">,</span>
+              <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;sparse_categorical_crossentropy&#39;</span><span class="p">,</span>
+              <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+<div class="executed_in">(Executed in 9.099 seconds.)</div><div class="code_stdout"><pre>x_train.shape: (60000, 28, 28)
+y_train.shape: (60000,)
+x_test.shape: (10000, 28, 28)
+y_test.shape: (10000,)
+Epoch 1/1
+7s - loss: 0.2209 - acc: 0.9352
+</pre></div><a href="#a_little_bit_history_and_links" class="header_style">  <h1 id="a_little_bit_history_and_links">A little bit history and links</h1>  </a><p>
+Here I want to link couple interesting papers. Not all of these papers are necessarily exclusively
+about CNNs.
+</p>
+
+<p>
+The first couple papers I want to link is about backpropagation.
+Apparently, the <a href=http://people.idsia.ch/~juergen/who-invented-backpropagation.html>history of backpropagation</a>
+goes really back, as early as 1840s. However, I find these couple papers interesting in the context of Neural Networks:
+</p>
+
+<ol>
+  <li>
+    Many preivous papers about backprop...
+  </li>
+  <li>
+    <a href=http://yann.lecun.com/exdb/publis/pdf/lecun-85.pdf>A Learning Scheme For Assymetric Threshold Network, Yann Le Cun 1985 (in French)</a>
+  </li>
+  <li>
+    <a href=http://yann.lecun.com/exdb/publis/pdf/lecun-86.pdf>Learning Process in Asymmetric Threshold Network, Yann Le Cun 1986</a>
+  </li>
+  <li>
+    <a href=https://www.iro.umontreal.ca/~vincentp/ift3395/lectures/backprop_old.pdf>Learning representations by back-propagation errors, Geoffrey Hinton, 1986</a>
+  </li>
+  <li>
+    <a href=http://yann.lecun.com/exdb/publis/pdf/lecun-88.pdf>A Theoretical Framework for Back-Propagation, Yann Le Cun, 1988</a>
+  </li>
+</ol>
+
+<p>
+Couple papers on CNNs:
+</p>
+
+<ol>
+  <li>
+    <a href=http://yann.lecun.com/exdb/publis/pdf/lecun-89e.pdf>Backpropagation Applied to Handwritten Zip Code Recognition, Yann Le Cun 1989 (Weight sharing idea)</a>
+  </li>
+  <li>
+    <a href=http://yann.lecun.com/exdb/publis/pdf/lecun-90c.pdf>Handwritten Digit Recognition with a Back-Propagation Network, Yann Le Cun 1990</a>
+  </li>
+  <li>
+    <a href=https://www.youtube.com/watch?v=FwFduRA_L6Q>Convolutional Network Demo from 1993 (implemented by paper above)</a>
+  </li>
+  <li>
+    <a href=http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf>Gradient-Based Learning Applied to Document Recognition, Yann Le Cun, 1998</a>
+  </li>
+  <li>
+    <a href=https://www.google.com/search?q=lenet-5>Le-net5 image search</a>
+  </li>
+  <li>
+    <a href=https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf>
+        ImageNet Classification with Deep Convolutional Neural Networks (Imagenet record beating paper 2012 aka AlexNet)</a>
+  </li>
+  <li>
+    <a href=https://en.wikipedia.org/wiki/AlexNet>AlexNet Wikipedia</a>
+  </li>
+  <li>
+    <a href=https://www.google.com/search?q=alexnet>AlexNet image search</a>
+  </li>
+</ol>
+
+<p>
+Fairly new review paper on Deep Learning:
+</p>
+
+<ol>
+  <li>
+    <a href=https://www.cs.toronto.edu/~hinton/absps/NatureDeepReview.pdf>Deep Learning, Yann LeCun, Yoshua Bengio & Geoffrey Hinton</a>
+  </li>
+</ol>
+
+<p>
+Kaggle competition on MNIST digits:
+<p>
+
+<ol>
+  <li>
+    <a href=https://www.kaggle.com/c/digit-recognizer>Kaggle Digit Recognizer Competition</a>
+  </li>
+</ol>
+
+<a href="#feed-forward_phase" class="header_style">  <h1 id="feed-forward_phase">Feed-forward Phase</h1>  </a><p>
+Let's assume that we are given the weights and biases. How do we calculate the output?
+</p>
+
+<p>
+We represent $\mathbf{X}$ as a matrix. $\mathbf{X}$ contains all the points.
+In our case $\mathbf{X}$ contains $m=20$ samples. $\mathbf{y}$ contains all the
+labels (red or green):
+</p>
+
+<p>
+Here is the sizes of the matrices:
+</p>
+
+<ul>
+  <li> $\mathbf{X}: 20 \times 2$ </li>
+  <li> $\mathbf{y}: 20 \times 1$ </li>
+  <li> $\mathbf{W}^{[1]}: 3 \times 2$ </li>
+  <li> $\mathbf{b}^{[1]}: 3 \times 1$ </li>
+  <li> $\mathbf{W}^{[2]}: 3 \times 3$ </li>
+  <li> $\mathbf{b}^{[2]}: 3 \times 1$ </li>
+  <li> $\mathbf{W}^{[3]}: 1 \times 3$ </li>
+  <li> $b^{[3]}: 1 \times 1$ </li>
+</ul>
+
+<p>
+Feed-forward basically means given:
+$\mathbf{x}, y, \mathbf{W}^{[1]}, \mathbf{W}^{[2]}, \mathbf{W}^{[3]}$
+and $\mathbf{b}^{[1]}, \mathbf{b}^{[2]}, b^{[3]}$
+will produce us $a^{[3]}$. Here is step by step how we do the feed forward phase.
+</p>
+
+$$
+\mathbf{z}^{[1]} = \mathbf{W}^{[1]} \mathbf{x} + \mathbf{b}^{[1]}
+$$
+
+$$
+\mathbf{a}^{[1]} = g(\mathbf{z}^{[1]})
+$$
+
+$$
+\mathbf{z}^{[2]} = \mathbf{W}^{[2]} \mathbf{a}^{[1]} + \mathbf{b}^{[2]}
+$$
+
+$$
+\mathbf{a}^{[2]} = g(\mathbf{z}^{[2]})
+$$
+
+$$
+z^{[3]} = \mathbf{W}^{[3]} \mathbf{a}^{[2]} + b^{[3]}
+$$
+
+$$
+a^{[3]} = g(z^{[3]})
+$$
+
+<p>
+We are using sigmoid function as the activation $g()$ function as we used before.
+</p>
+
+<p>
+Let's try to apply the above equations using an <b>initial</b> random set of weights and bias.
+</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+<div class="executed_in">(Executed in 0.165 seconds.)</div><div class="code_stdout"><pre>5
+</pre></div><p>
+Let's assume that we are given the weights and biases. How do we calculate the output?
+</p>
+<div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Number of iterations&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
+</pre></div>
+<div class="executed_in">(Executed in 0.322 seconds.)</div><img class="generated_image" width="600" src="../images/image001.png"/><a href="#applying_simple_neural_network_using_low-level_tensorflow_apis" class="header_style">  <h1 id="applying_simple_neural_network_using_low-level_tensorflow_apis">Applying Simple Neural Network using low-level Tensorflow APIs</h1>  </a><a href="#references" class="header_style">  <h1 id="references">References</h1>  </a><ul>
+  <li> https://arxiv.org/pdf/1603.07285.pdf </li>
+</ul>
+    </div>
+</div>
+
+</body>
+</html>

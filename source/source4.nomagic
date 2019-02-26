@@ -1,0 +1,398 @@
+# HTML
+{}
+<center><h1>Part 4: Convolutional Neural Networks <span style="color: red">[Draft]</span></h1></center>
+<center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
+
+# LAST_UPDATED
+{}
+
+# HTML
+{}
+<p>
+"What we observe is not nature itself, but nature exposed to our method of questioning."
+-- Werner Heisenberg
+</p>
+
+# HEADER
+{'header': 'Introduction'}
+
+# HTML
+{}
+
+<p>
+We have built enough classifier to discriminate 2-dimensional points. Let's try to discriminate higher
+dimensional points. More specifically, let's try to discriminate 28x28 gray-scale images:
+</p>
+
+<img class="static_image" style="width: 800px;" src="../static_images/mnist_images.png"/>
+
+# HTML
+{}
+<p>
+These are 28x28 gray-scale images each represents a handwritten digit. It is called
+<a href=http://yann.lecun.com/exdb/mnist/>The MMNIST Dataset</a>. Here is the
+<a href=https://en.wikipedia.org/wiki/MNIST_database>Wikipedia entry</a>.
+The original dataset contains 60,000 train examples, 10,000 test examples.
+It is fair to say this is one of the most famous Machine Learning dataset of all time.
+</p>
+
+<p>
+We can build a simple Deep Neural Network to discriminate these images, however,
+we are going to learn a new technique, called Convolutional Neural Networks (CNN) in this tutorial.
+CNNs are being used very commonly in the literature for a variety of problems, and they are
+initially being used for images with a big success.
+</p>
+
+# HEADER
+{'header': 'Edge detection using kernels (filters)'}
+
+# HTML
+{}
+<p>
+Historically, in image processing, people have used various filters for various tasks.
+For example, some of the known filters are:
+</p>
+
+<ul>
+  <li>
+    <a href=https://en.wikipedia.org/wiki/Sobel_operator>Sobel operator</a>
+  </li>
+  <li>
+    <a href=https://en.wikipedia.org/wiki/Discrete_Laplace_operator>Laplace operator</a>
+  </li>
+</ul>
+
+<p>
+Here is the 3x3 Sobel operator:
+</p>
+
+$$
+S_x =
+\begin{bmatrix}
+  -1 & 0 & +1 \\
+  -2 & 0 & +2 \\
+  -1 & 0 & +1 \\
+\end{bmatrix}, \quad
+
+S_y =
+\begin{bmatrix}
+  -1 & -2 & -1 \\
+  0 & 0 & 0 \\
+  +1 & +2 & +1 \\
+\end{bmatrix}
+$$
+
+<p>
+and, for the sake of completeness, we can combine both using:
+</p>
+
+$$
+\sqrt{ \text{Conv}(S_x, A) ^2 + \text{Conv}(S_y, A)^2 }
+$$
+
+<p>
+Let's play with the Sobel operator on the following image:
+</p>
+
+<img class="static_image" style="width: 500px;" src="../static_images/valve_original.png"/>
+
+# CODE
+{'width': 500}
+
+import numpy as np
+from PIL import Image
+im = Image.open('static_images/valve_original.png')
+pix = im.load()
+
+num_array = np.zeros((im.size[0], im.size[1], 3))
+for i in range(im.size[0]):
+  for j in range(im.size[1]):
+    average = sum(pix[i,j])/3
+    num_array[i,j] = (average, average, average)
+
+kernel1 = np.array([[-1, -2, -1],
+                    [0,  0, 0],
+                    [1, 2, 1]])
+
+kernel2 = np.array([[-1, 0, 1],
+                    [-2, 0, 2],
+                    [-1, 0, 1]])
+
+"""
+for i in range(1, im.size[0]-1):
+  for j in range(1, im.size[1]-1):
+    value1 = sum(sum(num_array[i-1:i+2, j-1:j+2, 0] * kernel1))
+    value2 = sum(sum(num_array[i-1:i+2, j-1:j+2, 0] * kernel2))
+    threshold = 60
+    value = max(int((value1 ** 2 + value2 ** 2) ** 0.5), threshold)
+    if value == threshold:
+      value = 0
+    pix[i,j] = (value, value, value)
+"""
+
+im.save('image.png')  # Save the modified pixels as .png
+
+
+# HEADER
+{'header': 'Convolution operation in two dimensions'}
+
+# HTML
+{}
+<p>
+Let's discuss the convolution operation in 2-dimensions. It is basically moving a kernel on
+an the image and recording values on the corresponding pixels.
+</p>
+
+<p> Convolutional animations are taken from: </p>
+
+<ul>
+  <li>
+    [1] Vincent Dumoulin, Francesco Visin -
+    <a href=https://arxiv.org/pdf/1603.07285.pdf>A guide to convolution arithmetic for deep learning.</a>
+  </li>
+</ul>
+
+<p> Blue maps are inputs, and cyan maps are outputs. </p>
+
+<table class="static_image" style="width: 900px;">
+  <tr>
+    <td><img width="225px" src="../static_images/no_padding_no_strides.gif"></td>
+    <td><img width="225px" src="../static_images/arbitrary_padding_no_strides.gif"></td>
+    <td><img width="225px" src="../static_images/same_padding_no_strides.gif"></td>
+    <td><img width="225px" src="../static_images/full_padding_no_strides.gif"></td>
+  </tr>
+  <tr>
+    <td>No padding, no strides</td>
+    <td>Arbitrary padding, no strides</td>
+    <td>Half padding, no strides</td>
+    <td>Full padding, no strides</td>
+  </tr>
+  <tr>
+    <td><img width="225px" src="../static_images/no_padding_strides.gif"></td>
+    <td><img width="225px" src="../static_images/padding_strides.gif"></td>
+    <td><img width="225px" src="../static_images/padding_strides_odd.gif"></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>No padding, strides</td>
+    <td>Padding, strides</td>
+    <td>Padding, strides (odd)</td>
+    <td></td>
+  </tr>
+</table>
+
+<p>
+Some terminology:
+</p>
+
+<ul>
+  <li>
+    <b> Padding: </b> Padding of the image generally with 0's.
+    Notice that if there is no padding, then, the output size is smaller than the original image size.
+  </li>
+  <li>
+    <b> Stride: </b> Amount of shift after each single convolution operation.
+  </li>
+</ul>
+
+<p>
+Let's go over more examples for (1) Convolution operation and (2) Max pooling over
+<a href=https://arxiv.org/pdf/1603.07285.pdf>this technical document</a>.
+</p>
+
+# HEADER
+{'header': "Let's build a simple Deep Neural Network first"}
+
+# CODE
+{}
+import tensorflow as tf
+mnist = tf.keras.datasets.mnist
+
+(x_train, y_train),(x_test, y_test) = mnist.load_data()
+x_train, x_test = x_train / 255.0, x_test / 255.0
+
+print('x_train.shape: %s' % str(x_train.shape))
+print('y_train.shape: %s' % str(y_train.shape))
+
+print('x_test.shape: %s' % str(x_test.shape))
+print('y_test.shape: %s' % str(y_test.shape))
+
+model = tf.keras.models.Sequential([
+  tf.keras.layers.Flatten(input_shape=(28, 28)),
+  tf.keras.layers.Dense(512, activation=tf.nn.relu),
+  tf.keras.layers.Dropout(0.2),
+  tf.keras.layers.Dense(10, activation=tf.nn.softmax)
+])
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+model.fit(x_train, y_train, epochs=1, verbose=2)
+model.evaluate(x_test, y_test, verbose=2)
+
+# HEADER
+{'header': "Why CNNs work?"}
+
+<p>
+Some simple ideas why CNNs work:
+</p>
+
+<ol>
+  <li>
+    Weight sharing (less parameters), feature locality
+  </li>
+  <li>
+    Translation invariance
+  </li>
+  <li>
+    Learning hiererchical features in different layers (simpler to complex)
+  </li>
+</ol>
+
+
+# HEADER
+{'header': 'A little bit history and links'}
+
+# HTML
+{}
+<p>
+Here I want to link couple interesting papers. Not all of these papers are necessarily exclusively
+about CNNs.
+</p>
+
+<p>
+The first couple papers I want to link is about backpropagation.
+Apparently, the <a href=http://people.idsia.ch/~juergen/who-invented-backpropagation.html>history of backpropagation</a>
+goes really back, as early as 1840s. However, I find these couple papers interesting in the context of Neural Networks:
+</p>
+
+<ol>
+  <li>
+    Many preivous papers about backprop...
+  </li>
+  <li>
+    <a href=http://yann.lecun.com/exdb/publis/pdf/lecun-85.pdf>A Learning Scheme For Assymetric Threshold Network, Yann Le Cun 1985 (in French)</a>
+  </li>
+  <li>
+    <a href=http://yann.lecun.com/exdb/publis/pdf/lecun-86.pdf>Learning Process in Asymmetric Threshold Network, Yann Le Cun 1986</a>
+  </li>
+  <li>
+    <a href=https://www.iro.umontreal.ca/~vincentp/ift3395/lectures/backprop_old.pdf>Learning representations by back-propagation errors, Geoffrey Hinton, 1986</a>
+  </li>
+  <li>
+    <a href=http://yann.lecun.com/exdb/publis/pdf/lecun-88.pdf>A Theoretical Framework for Back-Propagation, Yann Le Cun, 1988</a>
+  </li>
+</ol>
+
+<p>
+Couple papers on CNNs:
+</p>
+
+<ol>
+  <li>
+    <a href=http://yann.lecun.com/exdb/publis/pdf/lecun-89e.pdf>Backpropagation Applied to Handwritten Zip Code Recognition, Yann Le Cun 1989 (Weight sharing idea)</a>
+  </li>
+  <li>
+    <a href=http://yann.lecun.com/exdb/publis/pdf/lecun-90c.pdf>Handwritten Digit Recognition with a Back-Propagation Network, Yann Le Cun 1990</a>
+  </li>
+  <li>
+    <a href=https://www.youtube.com/watch?v=FwFduRA_L6Q>Convolutional Network Demo from 1993 (implemented by paper above)</a>
+  </li>
+  <li>
+    <a href=http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf>Gradient-Based Learning Applied to Document Recognition, Yann Le Cun, 1998</a>
+  </li>
+  <li>
+    <a href=https://www.google.com/search?q=lenet-5>Le-net5 image search</a>
+  </li>
+  <li>
+    <a href=https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf>
+        ImageNet Classification with Deep Convolutional Neural Networks (Imagenet record beating paper 2012 aka AlexNet)</a>
+  </li>
+  <li>
+    <a href=https://en.wikipedia.org/wiki/AlexNet>AlexNet Wikipedia</a>
+  </li>
+  <li>
+    <a href=https://www.google.com/search?q=alexnet>AlexNet image search</a>
+  </li>
+</ol>
+
+<p>
+Fairly new review paper on Deep Learning:
+</p>
+
+<ol>
+  <li>
+    <a href=https://www.cs.toronto.edu/~hinton/absps/NatureDeepReview.pdf>Deep Learning, Yann LeCun, Yoshua Bengio & Geoffrey Hinton</a>
+  </li>
+</ol>
+
+<p>
+Kaggle competition on MNIST digits:
+<p>
+
+<ol>
+  <li>
+    <a href=https://www.kaggle.com/c/digit-recognizer>Kaggle Digit Recognizer Competition</a>
+  </li>
+</ol>
+
+
+# HEADER
+{'header': 'Last notes'}
+
+# HTML
+{}
+<p>
+Some last notes:
+</p>
+
+<ol>
+  <li>
+    Chopping off the last layer and re-training for other tasks
+  </li>
+  <li>
+    Using embeddings vs using raw pixels
+  </li>
+  <li>
+    Karpathy's work regarding tagging pictures
+  </li>
+  <li>
+    <a href=https://arxiv.org/pdf/1311.2901.pdf>Visualizing and understanding Convolutional Networks</a>
+  </li>
+  <li>
+    <a href=https://arxiv.org/pdf/1409.4842.pdf>Going deeper with convolutions</a>
+  </li>
+</ol>
+
+# CODE
+{}
+import numpy as np
+import matplotlib.pyplot as plt
+import collections
+
+a = 5
+print(a)
+
+# CODE
+{'width': 600}
+
+plt.grid()
+plt.title('Loss', size=18)
+plt.xlabel('Number of iterations', size=15)
+plt.ylabel('Loss', size=15)
+plt.plot([1,2,3,4])
+
+plt.savefig('image.png')
+
+plt.close()
+plt.clf()
+plt.cla()
+
+# HEADER
+{'header': 'References'}
+
+# HTML
+{}
+<ul>
+  <li> https://arxiv.org/pdf/1603.07285.pdf </li>
+</ul>
