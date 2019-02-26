@@ -26,8 +26,6 @@ dimensional points. More specifically, let's try to discriminate 28x28 gray-scal
 
 <img class="static_image" style="width: 800px;" src="../static_images/mnist_images.png"/>
 
-# HTML
-{}
 <p>
 These are 28x28 gray-scale images each represents a handwritten digit. It is called
 <a href=http://yann.lecun.com/exdb/mnist/>The MMNIST Dataset</a>. Here is the
@@ -43,6 +41,18 @@ CNNs are being used very commonly in the literature for a variety of problems, a
 initially being used for images with a big success.
 </p>
 
+<p>
+Let's do some imports first, to get ready.
+</p>
+
+# CODE
+{}
+import collections
+import numpy as np
+import matplotlib.pyplot as plt
+import PIL
+import tensorflow as tf
+
 # HEADER
 {'header': 'Edge detection using kernels (filters)'}
 
@@ -54,12 +64,12 @@ For example, some of the known filters are:
 </p>
 
 <ul>
-  <li>
-    <a href=https://en.wikipedia.org/wiki/Sobel_operator>Sobel operator</a>
-  </li>
-  <li>
-    <a href=https://en.wikipedia.org/wiki/Discrete_Laplace_operator>Laplace operator</a>
-  </li>
+<li>
+<a href=https://en.wikipedia.org/wiki/Sobel_operator>Sobel operator</a>
+</li>
+<li>
+<a href=https://en.wikipedia.org/wiki/Discrete_Laplace_operator>Laplace operator</a>
+</li>
 </ul>
 
 <p>
@@ -69,16 +79,16 @@ Here is the 3x3 Sobel operator:
 $$
 S_x =
 \begin{bmatrix}
-  -1 & 0 & +1 \\
-  -2 & 0 & +2 \\
-  -1 & 0 & +1 \\
+-1 & 0 & +1 \\
+-2 & 0 & +2 \\
+-1 & 0 & +1 \\
 \end{bmatrix}, \quad
 
 S_y =
 \begin{bmatrix}
-  -1 & -2 & -1 \\
-  0 & 0 & 0 \\
-  +1 & +2 & +1 \\
+-1 & -2 & -1 \\
+0 & 0 & 0 \\
++1 & +2 & +1 \\
 \end{bmatrix}
 $$
 
@@ -98,10 +108,7 @@ Let's play with the Sobel operator on the following image:
 
 # CODE
 {'width': 500}
-
-import numpy as np
-from PIL import Image
-im = Image.open('static_images/valve_original.png')
+im = PIL.Image.open('static_images/valve_original.png')
 pix = im.load()
 
 num_array = np.zeros((im.size[0], im.size[1], 3))
@@ -111,14 +118,13 @@ for i in range(im.size[0]):
     num_array[i,j] = (average, average, average)
 
 kernel1 = np.array([[-1, -2, -1],
-                    [0,  0, 0],
-                    [1, 2, 1]])
+	    [0,  0, 0],
+	    [1, 2, 1]])
 
 kernel2 = np.array([[-1, 0, 1],
-                    [-2, 0, 2],
-                    [-1, 0, 1]])
+	    [-2, 0, 2],
+	    [-1, 0, 1]])
 
-"""
 for i in range(1, im.size[0]-1):
   for j in range(1, im.size[1]-1):
     value1 = sum(sum(num_array[i-1:i+2, j-1:j+2, 0] * kernel1))
@@ -128,10 +134,8 @@ for i in range(1, im.size[0]-1):
     if value == threshold:
       value = 0
     pix[i,j] = (value, value, value)
-"""
 
-im.save('image.png')  # Save the modified pixels as .png
-
+im.save('image.png')
 
 # HEADER
 {'header': 'Convolution operation in two dimensions'}
@@ -146,39 +150,39 @@ an the image and recording values on the corresponding pixels.
 <p> Convolutional animations are taken from: </p>
 
 <ul>
-  <li>
-    [1] Vincent Dumoulin, Francesco Visin -
-    <a href=https://arxiv.org/pdf/1603.07285.pdf>A guide to convolution arithmetic for deep learning.</a>
-  </li>
+<li>
+[1] Vincent Dumoulin, Francesco Visin -
+<a href=https://arxiv.org/pdf/1603.07285.pdf>A guide to convolution arithmetic for deep learning.</a>
+</li>
 </ul>
 
 <p> Blue maps are inputs, and cyan maps are outputs. </p>
 
 <table class="static_image" style="width: 900px;">
-  <tr>
-    <td><img width="225px" src="../static_images/no_padding_no_strides.gif"></td>
-    <td><img width="225px" src="../static_images/arbitrary_padding_no_strides.gif"></td>
-    <td><img width="225px" src="../static_images/same_padding_no_strides.gif"></td>
-    <td><img width="225px" src="../static_images/full_padding_no_strides.gif"></td>
-  </tr>
-  <tr>
-    <td>No padding, no strides</td>
-    <td>Arbitrary padding, no strides</td>
-    <td>Half padding, no strides</td>
-    <td>Full padding, no strides</td>
-  </tr>
-  <tr>
-    <td><img width="225px" src="../static_images/no_padding_strides.gif"></td>
-    <td><img width="225px" src="../static_images/padding_strides.gif"></td>
-    <td><img width="225px" src="../static_images/padding_strides_odd.gif"></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>No padding, strides</td>
-    <td>Padding, strides</td>
-    <td>Padding, strides (odd)</td>
-    <td></td>
-  </tr>
+<tr>
+<td><img width="225px" src="../static_images/no_padding_no_strides.gif"></td>
+<td><img width="225px" src="../static_images/arbitrary_padding_no_strides.gif"></td>
+<td><img width="225px" src="../static_images/same_padding_no_strides.gif"></td>
+<td><img width="225px" src="../static_images/full_padding_no_strides.gif"></td>
+</tr>
+<tr>
+<td>No padding, no strides</td>
+<td>Arbitrary padding, no strides</td>
+<td>Half padding, no strides</td>
+<td>Full padding, no strides</td>
+</tr>
+<tr>
+<td><img width="225px" src="../static_images/no_padding_strides.gif"></td>
+<td><img width="225px" src="../static_images/padding_strides.gif"></td>
+<td><img width="225px" src="../static_images/padding_strides_odd.gif"></td>
+<td></td>
+</tr>
+<tr>
+<td>No padding, strides</td>
+<td>Padding, strides</td>
+<td>Padding, strides (odd)</td>
+<td></td>
+</tr>
 </table>
 
 <p>
@@ -186,13 +190,13 @@ Some terminology:
 </p>
 
 <ul>
-  <li>
-    <b> Padding: </b> Padding of the image generally with 0's.
-    Notice that if there is no padding, then, the output size is smaller than the original image size.
-  </li>
-  <li>
-    <b> Stride: </b> Amount of shift after each single convolution operation.
-  </li>
+<li>
+<b> Padding: </b> Padding of the image generally with 0's.
+Notice that if there is no padding, then, the output size is smaller than the original image size.
+</li>
+<li>
+<b> Stride: </b> Amount of shift after each single convolution operation.
+</li>
 </ul>
 
 <p>
@@ -201,11 +205,33 @@ Let's go over more examples for (1) Convolution operation and (2) Max pooling ov
 </p>
 
 # HEADER
+{'header': "Why CNNs work?"}
+
+# HTML
+{}
+
+<p>
+Some simple ideas why CNNs work:
+</p>
+
+<ol>
+<li>
+Weight sharing (less parameters), feature locality
+</li>
+<li>
+Translation invariance
+</li>
+<li>
+Learning hiererchical features in different layers (simpler to complex)
+</li>
+</ol>
+
+
+# HEADER
 {'header': "Let's build a simple Deep Neural Network first"}
 
 # CODE
 {}
-import tensorflow as tf
 mnist = tf.keras.datasets.mnist
 
 (x_train, y_train),(x_test, y_test) = mnist.load_data()
@@ -218,36 +244,68 @@ print('x_test.shape: %s' % str(x_test.shape))
 print('y_test.shape: %s' % str(y_test.shape))
 
 model = tf.keras.models.Sequential([
-  tf.keras.layers.Flatten(input_shape=(28, 28)),
-  tf.keras.layers.Dense(512, activation=tf.nn.relu),
-  tf.keras.layers.Dropout(0.2),
-  tf.keras.layers.Dense(10, activation=tf.nn.softmax)
+tf.keras.layers.Flatten(input_shape=(28, 28)),
+tf.keras.layers.Dense(512, activation=tf.nn.relu),
+tf.keras.layers.Dropout(0.2),
+tf.keras.layers.Dense(10, activation=tf.nn.softmax)
 ])
+model.compile(optimizer='adam',
+      loss='sparse_categorical_crossentropy',
+      metrics=['accuracy'])
+
+model.fit(x_train, y_train, epochs=1, verbose=0)
+
+print(model.metrics_names)
+print(model.evaluate(x_train, y_train, verbose=2))
+print(model.evaluate(x_test, y_test, verbose=2))
+
+# HEADER
+{'header': 'Neural Network structure inspired by Le-net 5'}
+
+# HTML
+{}
+<p>
+Original Le-net 5 architecture is here (taken from the paper):
+</p>
+
+<img class="static_image" style="width: 900px;" src="../static_images/lenet5_example.png"/>
+
+# CODE
+{}
+mnist = tf.keras.datasets.mnist
+(x_train, y_train),(x_test, y_test) = mnist.load_data()
+x_train, x_test = x_train / 255.0, x_test / 255.0
+
+img_rows, img_cols = 28, 28
+x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
+x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
+input_shape = (img_rows, img_cols, 1)
+
+model = tf.keras.models.Sequential([
+     # 28x28x1
+     tf.keras.layers.Convolution2D(filters=6, kernel_size=(5,5), activation = 'relu', input_shape=input_shape),
+     # 24x24x6
+     tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+     # 12x12x6
+     tf.keras.layers.Convolution2D(filters=16, kernel_size=(5,5), activation = 'relu'),
+     # 8x8x16
+     tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+     # 4x4x16
+     tf.keras.layers.Flatten(),
+     tf.keras.layers.Dense(128, activation = 'relu'),
+     tf.keras.layers.Dropout(0.2),
+     tf.keras.layers.Dense(84, activation = 'relu'),
+     tf.keras.layers.Dense(10, activation=tf.nn.softmax)])
+
 model.compile(optimizer='adam',
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
-model.fit(x_train, y_train, epochs=1, verbose=2)
-model.evaluate(x_test, y_test, verbose=2)
+model.fit(x_train, y_train, epochs=1, verbose=0)
 
-# HEADER
-{'header': "Why CNNs work?"}
-
-<p>
-Some simple ideas why CNNs work:
-</p>
-
-<ol>
-  <li>
-    Weight sharing (less parameters), feature locality
-  </li>
-  <li>
-    Translation invariance
-  </li>
-  <li>
-    Learning hiererchical features in different layers (simpler to complex)
-  </li>
-</ol>
+print(model.metrics_names)
+print(model.evaluate(x_train, y_train, verbose=2))
+print(model.evaluate(x_test, y_test, verbose=2))
 
 
 # HEADER
@@ -351,10 +409,10 @@ Some last notes:
     Chopping off the last layer and re-training for other tasks
   </li>
   <li>
-    Using embeddings vs using raw pixels
+    Using embeddings vs using raw pixels. <a href=http://cs231n.stanford.edu/slides/2018/cs231n_2018_lecture13.pdf>Visualizing and understanding</a>
   </li>
   <li>
-    Karpathy's work regarding tagging pictures
+    Karpathy's work regarding tagging pictures. <a href=https://cs.stanford.edu/people/karpathy/deepimagesent/>here</a>
   </li>
   <li>
     <a href=https://arxiv.org/pdf/1311.2901.pdf>Visualizing and understanding Convolutional Networks</a>
@@ -364,29 +422,21 @@ Some last notes:
   </li>
 </ol>
 
-# CODE
-{}
-import numpy as np
-import matplotlib.pyplot as plt
-import collections
+# HEADER
+{'header': 'Some known Network Architectures'}
 
-a = 5
-print(a)
+<p>
+Here are some famouse network architectures, would be useful to take a look:
+</p>
 
-# CODE
-{'width': 600}
+<ol>
+  <li> LeNet </li>
+  <li> AlexNet </li>
+  <li> VGGNet </li>
+  <li> ResNet </li>
+</ol>
 
-plt.grid()
-plt.title('Loss', size=18)
-plt.xlabel('Number of iterations', size=15)
-plt.ylabel('Loss', size=15)
-plt.plot([1,2,3,4])
-
-plt.savefig('image.png')
-
-plt.close()
-plt.clf()
-plt.cla()
+For more information, check <a href=http://cs231n.github.io/convolutional-networks/#conv>this</a>.
 
 # HEADER
 {'header': 'References'}
@@ -395,4 +445,7 @@ plt.cla()
 {}
 <ul>
   <li> https://arxiv.org/pdf/1603.07285.pdf </li>
+  <li> http://cs231n.github.io/convolutional-networks/#conv </li>
+  <li> <a href=https://www.youtube.com/watch?v=u6aEYuemt0M>Deep Learning for Computer Vision (Andrej Karpathy, OpenAI)</a> </li>
+  <li> https://github.com/TaavishThaman/LeNet-5-with-Keras </li>
 </ul>

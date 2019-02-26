@@ -123,6 +123,12 @@ def generate_code_html(source, info):
     highlighted += add_executed_in_seconds(time.time() - execution_before_time)
 
     highlighted += add_stdout(s.getvalue())
+  else:
+    highlighted = highlight(source, PythonLexer(), FORMATTER)
+    with stdoutIO() as s:
+      exec (source, globals())
+
+    highlighted += add_executed_in_seconds(time.time() - execution_before_time)
 
   return highlighted
 
