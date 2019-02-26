@@ -64,6 +64,11 @@ a.header_style:hover, a.header_style:visited,
   color: black;
 }
 
+a:hover, a:visited,
+  a:active, a:link {
+  color: blue;
+}
+
 pre code {
   background-color: #f0f0f0;
   display: block;

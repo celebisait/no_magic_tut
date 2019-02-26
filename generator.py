@@ -148,6 +148,8 @@ def generate_html(template, source_lines):
 
 
 def write_one_file(input_file, output_file, title):
+  print('Generating: %s' % title)
+
   with open('source/template.data') as f:
     template = f.read()
     template = template.replace('$TITLE', title)
@@ -167,29 +169,32 @@ def main():
   input_file = 'source/source0.nomagic'
   output_file = 'output/part0.html'
   title = 'Part 0: Introduction and Notation'
-
-  print('Generating: %s' % title)
-  write_one_file(input_file, output_file, title)
+  # write_one_file(input_file, output_file, title)
 
   input_file = 'source/source1.nomagic'
   output_file = 'output/part1.html'
   title = 'Part 1: Logistic Regression'
-
-  print('Generating: %s' % title)
-  write_one_file(input_file, output_file, title)
+  # write_one_file(input_file, output_file, title)
 
   input_file = 'source/source2.nomagic'
   output_file = 'output/part2.html'
   title = 'Part 2: Softmax Regression'
-
-  print('Generating: %s' % title)
-  write_one_file(input_file, output_file, title)
+  # write_one_file(input_file, output_file, title)
 
   input_file = 'source/source3.nomagic'
   output_file = 'output/part3.html'
   title = 'Part 3: Building a Simple Neural Network'
+  # write_one_file(input_file, output_file, title)
 
-  print('Generating: %s' % title)
+  input_file = 'source/source3.nomagic'
+  output_file = 'output/part3.html'
+  title = 'Part 3: Building a Simple Neural Network'
+  # write_one_file(input_file, output_file, title)
+
+  input_file = 'source/source4.nomagic'
+  output_file = 'output/part4.html'
+  title = 'Part 4: Convolutional Neural Networks'
   write_one_file(input_file, output_file, title)
+
 
 main()
