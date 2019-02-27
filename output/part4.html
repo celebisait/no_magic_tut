@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 4: Convolutional Neural Networks <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: February 26 2019</center><p>
+<center>Last updated: February 27 2019</center><p>
 "What we observe is not nature itself, but nature exposed to our method of questioning."
 -- Werner Heisenberg
 </p>
@@ -75,7 +75,7 @@ Let's do some imports first, to get ready.
 <span class="kn">import</span> <span class="nn">PIL</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.762 seconds.)</div><a href="#edge_detection_using_kernels_(filters)" class="header_style">  <h1 id="edge_detection_using_kernels_(filters)">Edge detection using kernels (filters)</h1>  </a><p>
+<div class="executed_in">(Executed in 0.796 seconds.)</div><a href="#edge_detection_using_kernels_(filters)" class="header_style">  <h1 id="edge_detection_using_kernels_(filters)">Edge detection using kernels (filters)</h1>  </a><p>
 Historically, in image processing, people have used various filters for various tasks.
 For example, some of the known filters are:
 </p>
@@ -151,7 +151,7 @@ Let's play with the Sobel operator on the following image:
 
 <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
 </pre></div>
-<div class="executed_in">(Executed in 4.530 seconds.)</div><img class="generated_image" width="500" src="../images/image000.png"/><a href="#convolution_operation_in_two_dimensions" class="header_style">  <h1 id="convolution_operation_in_two_dimensions">Convolution operation in two dimensions</h1>  </a><p>
+<div class="executed_in">(Executed in 4.387 seconds.)</div><img class="generated_image" width="500" src="../images/image000.png"/><a href="#convolution_operations_in_two_dimensions" class="header_style">  <h1 id="convolution_operations_in_two_dimensions">Convolution operations in two dimensions</h1>  </a><p>
 Let's discuss the convolution operation in 2-dimensions. It is basically moving a kernel on
 an the image and recording values on the corresponding pixels.
 </p>
@@ -256,13 +256,13 @@ Learning hiererchical features in different layers (simpler to complex)
 <span class="k">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
-<div class="executed_in">(Executed in 11.327 seconds.)</div><div class="code_stdout"><pre>x_train.shape: (60000, 28, 28)
+<div class="executed_in">(Executed in 11.368 seconds.)</div><div class="code_stdout"><pre>x_train.shape: (60000, 28, 28)
 y_train.shape: (60000,)
 x_test.shape: (10000, 28, 28)
 y_test.shape: (10000,)
 ['loss', 'acc']
-[0.10428335164611538, 0.9673333333333334]
-[0.11185340643897652, 0.9646]
+[0.09829863754461209, 0.97]
+[0.11537680447306484, 0.9631]
 </pre></div><a href="#neural_network_structure_inspired_by_le-net_5" class="header_style">  <h1 id="neural_network_structure_inspired_by_le-net_5">Neural Network structure inspired by Le-net 5</h1>  </a><p>
 Original Le-net 5 architecture is here (taken from the paper):
 </p>
@@ -303,9 +303,9 @@ Original Le-net 5 architecture is here (taken from the paper):
 <span class="k">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
-<div class="executed_in">(Executed in 23.812 seconds.)</div><div class="code_stdout"><pre>['loss', 'acc']
-[0.06531468068864196, 0.9793833333333334]
-[0.061513287249207495, 0.9802]
+<div class="executed_in">(Executed in 23.196 seconds.)</div><div class="code_stdout"><pre>['loss', 'acc']
+[0.06140229160723587, 0.9811833333333333]
+[0.057579306676797566, 0.9824]
 </pre></div><a href="#a_little_bit_history_and_links" class="header_style">  <h1 id="a_little_bit_history_and_links">A little bit history and links</h1>  </a><p>
 Here I want to link couple interesting papers. Not all of these papers are necessarily exclusively
 about CNNs.
@@ -408,7 +408,19 @@ Some last notes:
     <a href=https://arxiv.org/pdf/1409.4842.pdf>Going deeper with convolutions</a>
   </li>
 </ol>
-<a href="#some_known_network_architectures" class="header_style">  <h1 id="some_known_network_architectures">Some known Network Architectures</h1>  </a><a href="#references" class="header_style">  <h1 id="references">References</h1>  </a><ul>
+<a href="#some_known_network_architectures" class="header_style">  <h1 id="some_known_network_architectures">Some known Network Architectures</h1>  </a><p>
+Here are some famouse network architectures, would be useful to take a look:
+</p>
+
+<ol>
+  <li> LeNet </li>
+  <li> AlexNet </li>
+  <li> VGGNet </li>
+  <li> ResNet </li>
+</ol>
+
+For more information, check <a href=http://cs231n.github.io/convolutional-networks/#conv>this</a>.
+<a href="#references" class="header_style">  <h1 id="references">References</h1>  </a><ul>
   <li> https://arxiv.org/pdf/1603.07285.pdf </li>
   <li> http://cs231n.github.io/convolutional-networks/#conv </li>
   <li> <a href=https://www.youtube.com/watch?v=u6aEYuemt0M>Deep Learning for Computer Vision (Andrej Karpathy, OpenAI)</a> </li>
