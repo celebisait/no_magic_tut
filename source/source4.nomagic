@@ -270,6 +270,11 @@ Original Le-net 5 architecture is here (taken from the paper):
 
 <img class="static_image" style="width: 900px;" src="../static_images/lenet5_example.png"/>
 
+<p>
+We are not going to build the exact same network with Le-net5, however it is
+inspired by Le-net5 heavily.
+</p>
+
 # CODE
 {}
 mnist = tf.keras.datasets.mnist
@@ -438,7 +443,7 @@ Here are some famouse network architectures, would be useful to take a look:
   <li> ResNet </li>
 </ol>
 
-For more information, check <a href=http://cs231n.github.io/convolutional-networks/#conv>this</a>.
+For more information, check <a href=http://cs231n.github.io/convolutional-networks/#case>this</a>.
 
 # HEADER
 {'header': 'References'}
@@ -447,7 +452,7 @@ For more information, check <a href=http://cs231n.github.io/convolutional-networ
 {}
 <ul>
   <li> https://arxiv.org/pdf/1603.07285.pdf </li>
-  <li> http://cs231n.github.io/convolutional-networks/#conv </li>
+  <li> http://cs231n.github.io/convolutional-networks/ </li>
   <li> <a href=https://www.youtube.com/watch?v=u6aEYuemt0M>Deep Learning for Computer Vision (Andrej Karpathy, OpenAI)</a> </li>
   <li> https://github.com/TaavishThaman/LeNet-5-with-Keras </li>
 </ul>
