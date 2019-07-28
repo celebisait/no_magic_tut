@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 2: Softmax Regression <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: February 18 2019</center><p>
+<center>Last updated: February 28 2019</center><p>
 "What I cannot create, I do not understand."
 -- Richard Feynman
 </p>
@@ -94,7 +94,7 @@ and <b>blue</b> points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.197 seconds.)</div><img class="generated_image" width="600" src="../images/image012.png"/><p>
+<div class="executed_in">(Executed in 0.258 seconds.)</div><img class="generated_image" width="600" src="../images/image012.png"/><p>
 In other words, given a point in 2-dimensions, $\mathbf{x} = (x_1, x_2)$, we want to
 output either <b>red</b>, <b>green</b> or <b>blue</b>.
 </p>
@@ -887,7 +887,7 @@ Let's apply these:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.211 seconds.)</div><img class="generated_image" width="600" src="../images/image013.png"/><h1> Decision Boundary </h1>
+<div class="executed_in">(Executed in 0.290 seconds.)</div><img class="generated_image" width="600" src="../images/image013.png"/><h1> Decision Boundary </h1>
 
 <p>
 So, essentially, we have 3 equations:
@@ -947,7 +947,7 @@ If we plot these three lines:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.203 seconds.)</div><img class="generated_image" width="600" src="../images/image014.png"/><p>
+<div class="executed_in">(Executed in 0.196 seconds.)</div><img class="generated_image" width="600" src="../images/image014.png"/><p>
 Above, we simply find the boundaries and plot them. The definition of the boundary is
 the region in which the predictions are equally confident for both of the classifiers. Since
 we have three classes, there are (3 choose 2) = 3 boundaries.
@@ -1000,7 +1000,7 @@ As you may guess, it should start from a random point and get smarter in each st
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 1.825 seconds.)</div><video class="generated_video" width="600" controls>
+<div class="executed_in">(Executed in 1.997 seconds.)</div><video class="generated_video" width="600" controls>
 <source src="../animations/animation004.mp4" type="video/mp4">
 </video><p>
 As you can see, it starts from a random classifier that does not seem to be working well in the
@@ -1048,7 +1048,7 @@ step through the gradient descent iterations.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.372 seconds.)</div><img class="generated_image" width="600" src="../images/image015.png"/><p>
+<div class="executed_in">(Executed in 0.425 seconds.)</div><img class="generated_image" width="600" src="../images/image015.png"/><p>
 Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
 is $\mathbf{a}$ and it is three dimensional. So, we simply convert that vector to RGB space. So, for example
 if the prediction is: $[0.98, 0.01, 0.01]$, it will be almost a perfect <b>red</b>, and so on.
@@ -1108,7 +1108,7 @@ and blue which gives us purple. Similar phenomena happens between other decision
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 2.969 seconds.)</div><video class="generated_video" width="1000" controls>
+<div class="executed_in">(Executed in 3.142 seconds.)</div><video class="generated_video" width="1000" controls>
 <source src="../animations/animation005.mp4" type="video/mp4">
 </video><p>
 This is a nice animation that shows the progress of our parameters $\mathbf{W}$ and $\mathbf{b}$
@@ -1171,7 +1171,7 @@ parameters.
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.698 seconds.)</div><img class="generated_image" width="600" src="../images/image016.png"/>
+<div class="executed_in">(Executed in 0.439 seconds.)</div><img class="generated_image" width="600" src="../images/image016.png"/>
 <h1>Exercises</h1>
 <ol>
   <li>

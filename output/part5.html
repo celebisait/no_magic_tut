@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-51676383-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-51676383-1');
+</script>
+
+<title>Part 5: Word Embeddings (Word2Vec)</title>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    TeX: {
+       equationNumbers: { autoNumber: "AMS" },
+       TagSide: "right"
+
+    }
+  });
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<link rel="stylesheet" href="pygments.css">
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="outer">
+    <div id="inner">
+<center><h1>Part 5: Word Embeddings (Word2Vec)  <span style="color: red">[Draft]</span></h1></center>
+<center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
+<center>Last updated: July 27 2019</center><p>
+"TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO."
+-- Werner Heisenberg
+</p>
+<a href="#introduction" class="header_style">  <h1 id="introduction">Introduction</h1>  </a>
+<p>
+In Part 1, 2 and 3, we learned how back-propagation works by constructing the computation
+graph by hand and computing the gradients one by one and applying gradient descent iteratively.
+In Part 4, we saw how people applied the same idea for a more complex computation graph:
+Convolutional Neural Networks (CNNs). The construction of the computation graph itself may have been
+a bit more creative, but other than that the logic for the backpropagation was almost identical.
+Word2Vec will be similar in this nature to CNNs. We will construct a different type of computational
+graph and apply backpropagation on top of it.
+</p>
+
+<img class="static_image" style="width: 800px;" src="../static_images/mnist_images.png"/>
+
+<p>
+These are 28x28 gray-scale images each represents a handwritten digit. It is called
+<a href=http://yann.lecun.com/exdb/mnist/>The MMNIST Dataset</a>. Here is the
+<a href=https://en.wikipedia.org/wiki/MNIST_database>Wikipedia entry</a>.
+The original dataset contains 60,000 train examples, 10,000 test examples.
+It is fair to say this is one of the most famous Machine Learning dataset of all time.
+</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">PIL</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+</pre></div>
+<div class="executed_in">(Executed in 1.859 seconds.)</div><a href="#references" class="header_style">  <h1 id="references">References</h1>  </a><ul>
+  <li> https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf </li>
+  <li> https://arxiv.org/pdf/1301.3781.pdf </li>
+  <li> http://colah.github.io/posts/2014-07-NLP-RNNs-Representations/ </li>
+  <li> https://jalammar.github.io/illustrated-word2vec/ </li>
+  <li> https://towardsdatascience.com/word2vec-skip-gram-model-part-1-intuition-78614e4d6e0b </li>
+  <li> https://www.coursera.org/lecture/nlp-sequence-models by Andrew Ng </li>
+</ul>
+    </div>
+</div>
+
+</body>
+</html>

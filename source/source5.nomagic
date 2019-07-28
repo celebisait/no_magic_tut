@@ -1,0 +1,67 @@
+# HTML
+{}
+<center><h1>Part 5: Word Embeddings (word2vec)  <span style="color: red">[Draft]</span></h1></center>
+<center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
+
+# LAST_UPDATED
+{}
+
+# HTML
+{}
+<p>
+"TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO."
+-- Werner Heisenberg
+</p>
+
+# HEADER
+{'header': 'Introduction'}
+
+# HTML
+{}
+
+<p>
+In Part 1, 2 and 3, we learned how back-propagation works by constructing the computation
+graph by hand and computing the gradients one by one and applying gradient descent iteratively.
+In Part 4, we saw how people applied the same idea for a more complex computation graph:
+Convolutional Neural Networks (CNNs) to classify images.
+</p>
+
+<p>
+The construction of the computation graph itself may have been
+a bit more complicated, but other than that the logic for the backpropagation was almost identical in CNNs.
+Word2Vec will be similar in this nature to CNNs. We will construct a different type of computational
+graph and apply backpropagation on top of it.
+</p>
+
+<img class="static_image" style="width: 800px;" src="../static_images/mnist_images.png"/>
+
+<p>
+These are 28x28 gray-scale images each represents a handwritten digit. It is called
+<a href=http://yann.lecun.com/exdb/mnist/>The MMNIST Dataset</a>. Here is the
+<a href=https://en.wikipedia.org/wiki/MNIST_database>Wikipedia entry</a>.
+The original dataset contains 60,000 train examples, 10,000 test examples.
+It is fair to say this is one of the most famous Machine Learning dataset of all time.
+</p>
+
+# CODE
+{}
+import collections
+import numpy as np
+import matplotlib.pyplot as plt
+import PIL
+import tensorflow as tf
+
+
+# HEADER
+{'header': 'References'}
+
+# HTML
+{}
+<ul>
+  <li> https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf </li>
+  <li> https://arxiv.org/pdf/1301.3781.pdf </li>
+  <li> http://colah.github.io/posts/2014-07-NLP-RNNs-Representations/ </li>
+  <li> https://jalammar.github.io/illustrated-word2vec/ </li>
+  <li> https://towardsdatascience.com/word2vec-skip-gram-model-part-1-intuition-78614e4d6e0b </li>
+  <li> https://www.coursera.org/lecture/nlp-sequence-models by Andrew Ng </li>
+</ul>

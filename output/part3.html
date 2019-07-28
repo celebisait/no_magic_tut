@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 3: Building a Simple Neural Network <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: February 18 2019</center><p>
+<center>Last updated: February 28 2019</center><p>
 "Truth is ever to be found in the simplicity, and not in the multiplicity and confusion of things."
 -- Sir Isaac Newton
 </p>
@@ -94,7 +94,7 @@ points in 2-dimensional space:
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.179 seconds.)</div><img class="generated_image" width="600" src="../images/image017.png"/><p>
+<div class="executed_in">(Executed in 0.310 seconds.)</div><img class="generated_image" width="600" src="../images/image021.png"/><p>
 In other words, given a point, $(x_1, x_2)$, we want to output either <b>red</b>,
 or <b>green</b>. (In this tutorial 0.0 means red and 1.0 means green.)
 </p>
@@ -209,8 +209,8 @@ Let's try to apply the above equations using an <b>initial</b> random set of wei
 <span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="k">print</span><span class="p">(</span><span class="n">a3</span><span class="p">)</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.003 seconds.)</div><div class="code_stdout"><pre>0
-[[0.711]]
+<div class="executed_in">(Executed in 0.004 seconds.)</div><div class="code_stdout"><pre>0
+[[0.802]]
 </pre></div><p>
 Above we print our prediction for the first point out of 20 points.
 We use random initial set of weights and bias. We are <b>randomly
@@ -792,7 +792,7 @@ Let's apply the <b>backprop</b> altogether!
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 5.939 seconds.)</div><img class="generated_image" width="600" src="../images/image018.png"/><p>
+<div class="executed_in">(Executed in 7.879 seconds.)</div><img class="generated_image" width="600" src="../images/image022.png"/><p>
 Let's see our <b>inferences</b> on the same points using our classifier.
 </p>
 <div class="highlight"><pre><span></span><span class="n">a3s</span> <span class="o">=</span> <span class="p">[]</span>
@@ -804,26 +804,26 @@ Let's see our <b>inferences</b> on the same points using our classifier.
 <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">a3s</span><span class="p">):</span>
   <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">(</span><span class="n">j</span> <span class="o">&gt;=</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.002 seconds.)</div><div class="code_stdout"><pre>(0, 0.008188315164388964, True)
-(0, 0.004445853774202614, True)
-(1, 0.9971547365021658, True)
-(1, 0.9972030616183277, True)
-(0, 0.01144912704425036, True)
-(1, 0.9971130800695222, True)
-(1, 0.9945580006586844, True)
-(0, 0.003787072989967124, True)
-(0, 0.004704594407895399, True)
-(1, 0.9946217830686711, True)
-(0, 0.007409162836495071, True)
-(0, 0.010099448621810354, True)
-(1, 0.9963482064722444, True)
-(1, 0.9971570121463521, True)
-(0, 0.004483652225169016, True)
-(1, 0.9972512173673416, True)
-(1, 0.9961832053270997, True)
-(1, 0.9938867187099526, True)
-(1, 0.9967757797264277, True)
-(1, 0.9966851938526877, True)
+<div class="executed_in">(Executed in 0.002 seconds.)</div><div class="code_stdout"><pre>(0, 0.0031506807960418465, True)
+(0, 0.006575825913662335, True)
+(1, 0.9956909702531819, True)
+(1, 0.9968175624933837, True)
+(0, 0.004000457461096418, True)
+(1, 0.9969317048154863, True)
+(1, 0.9970500582174188, True)
+(0, 0.011316181722098131, True)
+(0, 0.011906281102383126, True)
+(1, 0.9966432582082213, True)
+(0, 0.0037054959152141888, True)
+(0, 0.006797834058656563, True)
+(1, 0.9978081334818114, True)
+(1, 0.9968844406425068, True)
+(0, 0.013487328417851148, True)
+(1, 0.9954263746790356, True)
+(1, 0.997794064256752, True)
+(1, 0.9976105769051488, True)
+(1, 0.9956601742298449, True)
+(1, 0.9970607102184175, True)
 </pre></div>If you see all "True"s above, then, we have 100% accuracy!
 <a href="#decision_boundary" class="header_style">  <h1 id="decision_boundary">Decision Boundary</h1>  </a><p>
 Let's try to visualize the decision boundary that error final classifier learns.
@@ -870,7 +870,7 @@ Thanks to our non-linear sigmoid function. (Please see Exercise 1)
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.221 seconds.)</div><img class="generated_image" width="600" src="../images/image019.png"/><p>
+<div class="executed_in">(Executed in 0.234 seconds.)</div><img class="generated_image" width="600" src="../images/image023.png"/><p>
 Here, the color of the background depicts our prediction for that imaginary point. Remember that our prediction
 is one dimensional and between $[0,1]$. If it is $0.0$ it means we are classifying the point confidently as
 red and if it is $1.0$ we are very confident on green.
@@ -934,8 +934,8 @@ As you may guess, it should start from a random point and get smarter in each st
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 7.806 seconds.)</div><video class="generated_video" width="600" controls>
-<source src="../animations/animation006.mp4" type="video/mp4">
+<div class="executed_in">(Executed in 9.386 seconds.)</div><video class="generated_video" width="600" controls>
+<source src="../animations/animation007.mp4" type="video/mp4">
 </video><p>
 As you can see, it starts from a random classifier that does not seem to be working well in the
 beginning. And the learning process figures out where to go next to find a better classifier.
@@ -998,7 +998,7 @@ models from the same initial random starting point (same $W$ and same $b$) using
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 </pre></div>
-<div class="executed_in">(Executed in 5.181 seconds.)</div><img class="generated_image" width="600" src="../images/image020.png"/><a href="#exercises" class="header_style">  <h1 id="exercises">Exercises</h1>  </a><ol>
+<div class="executed_in">(Executed in 5.964 seconds.)</div><img class="generated_image" width="600" src="../images/image024.png"/><a href="#exercises" class="header_style">  <h1 id="exercises">Exercises</h1>  </a><ol>
   <li> We claim that the decision boundary of the 3-layer simple neural network as it explained
   in this chapter is not linear because using a non-linear activation function (sigmoid). However,
   we have used the same sigmoid function in Logistic Regression as well, and the decision boundary
@@ -1012,6 +1012,8 @@ models from the same initial random starting point (same $W$ and same $b$) using
   <li> http://karpathy.github.io/ </li>
   <li> http://colah.github.io/ </li>
   <li> https://github.com/tensorflow/workshops </li>
+  <li> https://cs.nyu.edu/~yann/talks/lecun-20071207-nonconvex.pdf </li>
+  <li> https://www.youtube.com/watch?v=8zdo6cnCW2w </li>
 </ul>
     </div>
 </div>

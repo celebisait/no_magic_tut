@@ -39,7 +39,7 @@ MathJax.Hub.Config({
     <div id="inner">
 <center><h1>Part 4: Convolutional Neural Networks <span style="color: red">[Draft]</span></h1></center>
 <center><b>Sait Celebi</b> (celebisait@gmail.com)</center>
-<center>Last updated: February 27 2019</center><p>
+<center>Last updated: February 28 2019</center><p>
 "What we observe is not nature itself, but nature exposed to our method of questioning."
 -- Werner Heisenberg
 </p>
@@ -75,7 +75,7 @@ Let's do some imports first, to get ready.
 <span class="kn">import</span> <span class="nn">PIL</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 </pre></div>
-<div class="executed_in">(Executed in 0.765 seconds.)</div><a href="#edge_detection_using_kernels_(filters)" class="header_style">  <h1 id="edge_detection_using_kernels_(filters)">Edge detection using kernels (filters)</h1>  </a><p>
+<div class="executed_in">(Executed in 0.000 seconds.)</div><a href="#edge_detection_using_kernels_(filters)" class="header_style">  <h1 id="edge_detection_using_kernels_(filters)">Edge detection using kernels (filters)</h1>  </a><p>
 Historically, in image processing, people have used various filters for various tasks.
 For example, some of the known filters are:
 </p>
@@ -151,7 +151,7 @@ Let's play with the Sobel operator on the following image:
 
 <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;image.png&#39;</span><span class="p">)</span>
 </pre></div>
-<div class="executed_in">(Executed in 4.421 seconds.)</div><img class="generated_image" width="500" src="../images/image000.png"/><a href="#convolution_operations_in_two_dimensions" class="header_style">  <h1 id="convolution_operations_in_two_dimensions">Convolution operations in two dimensions</h1>  </a><p>
+<div class="executed_in">(Executed in 5.225 seconds.)</div><img class="generated_image" width="500" src="../images/image025.png"/><a href="#convolution_operations_in_two_dimensions" class="header_style">  <h1 id="convolution_operations_in_two_dimensions">Convolution operations in two dimensions</h1>  </a><p>
 Let's discuss the convolution operation in 2-dimensions. It is basically moving a kernel on
 an the image and recording values on the corresponding pixels.
 </p>
@@ -256,13 +256,13 @@ Learning hiererchical features in different layers (simpler to complex)
 <span class="k">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
-<div class="executed_in">(Executed in 11.110 seconds.)</div><div class="code_stdout"><pre>x_train.shape: (60000, 28, 28)
+<div class="executed_in">(Executed in 10.780 seconds.)</div><div class="code_stdout"><pre>x_train.shape: (60000, 28, 28)
 y_train.shape: (60000,)
 x_test.shape: (10000, 28, 28)
 y_test.shape: (10000,)
 ['loss', 'acc']
-[0.09437241498865187, 0.97215]
-[0.10864689696636051, 0.9669]
+[0.09440224265828728, 0.9731666666666666]
+[0.10339117852300406, 0.9693]
 </pre></div><a href="#neural_network_structure_inspired_by_le-net_5" class="header_style">  <h1 id="neural_network_structure_inspired_by_le-net_5">Neural Network structure inspired by Le-net 5</h1>  </a><p>
 Original Le-net 5 architecture is here (taken from the paper):
 </p>
@@ -308,9 +308,9 @@ inspired by Le-net5 heavily.
 <span class="k">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
-<div class="executed_in">(Executed in 23.379 seconds.)</div><div class="code_stdout"><pre>['loss', 'acc']
-[0.07444516042368486, 0.9768333333333333]
-[0.06581769113363699, 0.9783]
+<div class="executed_in">(Executed in 23.287 seconds.)</div><div class="code_stdout"><pre>['loss', 'acc']
+[0.06508412354442601, 0.9805833333333334]
+[0.0623367296718061, 0.98]
 </pre></div><a href="#a_little_bit_history_and_links" class="header_style">  <h1 id="a_little_bit_history_and_links">A little bit history and links</h1>  </a><p>
 Here I want to link couple interesting papers. Not all of these papers are necessarily exclusively
 about CNNs.

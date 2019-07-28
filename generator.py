@@ -175,31 +175,36 @@ def main():
   input_file = 'source/source0.nomagic'
   output_file = 'output/part0.html'
   title = 'Part 0: Introduction and Notation'
-  write_one_file(input_file, output_file, title)
+  # write_one_file(input_file, output_file, title)
 
   input_file = 'source/source1.nomagic'
   output_file = 'output/part1.html'
   title = 'Part 1: Logistic Regression'
-  write_one_file(input_file, output_file, title)
+  # write_one_file(input_file, output_file, title)
 
   input_file = 'source/source2.nomagic'
   output_file = 'output/part2.html'
   title = 'Part 2: Softmax Regression'
-  write_one_file(input_file, output_file, title)
+  # write_one_file(input_file, output_file, title)
 
   input_file = 'source/source3.nomagic'
   output_file = 'output/part3.html'
   title = 'Part 3: Building a Simple Neural Network'
-  write_one_file(input_file, output_file, title)
+  # write_one_file(input_file, output_file, title)
 
   input_file = 'source/source3.nomagic'
   output_file = 'output/part3.html'
   title = 'Part 3: Building a Simple Neural Network'
-  write_one_file(input_file, output_file, title)
+  # write_one_file(input_file, output_file, title)
 
   input_file = 'source/source4.nomagic'
   output_file = 'output/part4.html'
   title = 'Part 4: Convolutional Neural Networks'
+  # write_one_file(input_file, output_file, title)
+
+  input_file = 'source/source5.nomagic'
+  output_file = 'output/part5.html'
+  title = 'Part 5: Word Embeddings (Word2Vec)'
   write_one_file(input_file, output_file, title)
 
 
